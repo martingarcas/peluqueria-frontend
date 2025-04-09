@@ -8,8 +8,8 @@ import { routes } from './app.routes';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './components/auth/login/login.component';
 import { RegisterComponent } from './components/auth/register/register.component';
-import { HeaderComponent } from './components/shared/header/header.component';
-import { FooterComponent } from './components/shared/footer/footer.component';
+import { HeaderComponent } from './components/public/header/header.component';
+import { FooterComponent } from './components/public/footer/footer.component';
 import { HomeComponent } from './components/client/home/home.component';
 
 @NgModule({

@@ -1,1 +1,53 @@
-<p>header works!</p>
+<header class="header">
+  <nav class="nav-container">
+    <!-- Logo -->
+    <div class="logo" (click)="navigateTo('/')">
+      <img src="assets/images/logo.png" alt="Logo Peluquería">
+    </div>
+
+    <!-- Menú de navegación -->
+    <div class="nav-menu" [class.active]="isMenuActive">
+      <ul class="nav-list">
+        <li><a (click)="navigateTo('/')">Inicio</a></li>
+        <li><a (click)="navigateTo('/servicios')">Servicios</a></li>
+        <li><a (click)="navigateTo('/productos')">Productos</a></li>
+        <li><a (click)="navigateTo('/citas')">Reservar Cita</a></li>
+        <li><a (click)="navigateTo('/contacto')">Contacto</a></li>
+        <!-- Separador y opciones de usuario solo visibles en móvil -->
+        <li class="mobile-separator"></li>
+        <li class="mobile-only">
+          <a (click)="onUserAccessClick()" class="menu-action-btn">
+            <i class="fas fa-user"></i>
+            <span>Acceder</span>
+          </a>
+        </li>
+        <li class="mobile-only">
+          <a (click)="onCartClick()" class="menu-action-btn">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Carrito</span>
+            <span class="menu-cart-count" *ngIf="cartItemCount > 0">({{cartItemCount}})</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Iconos de usuario y carrito (solo visibles en desktop) -->
+    <div class="nav-actions desktop-only">
+      <button class="access-button" (click)="onUserAccessClick()">
+        <span>Acceder</span>
+        <i class="fas fa-user"></i>
+      </button>
+      <button class="icon-button cart-button" (click)="onCartClick()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" *ngIf="cartItemCount > 0">{{cartItemCount}}</span>
+      </button>
+    </div>
+
+    <!-- Botón hamburguesa (solo visible en móvil) -->
+    <button class="hamburger" [class.active]="isMenuActive" (click)="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+</header>

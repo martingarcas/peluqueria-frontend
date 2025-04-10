@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { LoginRequest } from '../../models/auth/login-request';
 import { LoginResponse } from '../../models/auth/login-response';
 import { User } from '../../models/auth/user';
@@ -10,115 +9,111 @@ import { User } from '../../models/auth/user';
   providedIn: 'root'
 })
 export class LoginService {
+  private apiUrl = 'http://localhost:9000';
   private profileSubject = new BehaviorSubject<string | null>(this.getProfileFromStorage());
-
-  token: string;
-  profile: string;
-  logged: boolean;
-  user: User | null;
+  private userSubject = new BehaviorSubject<User | null>(null);
 
   constructor(private http: HttpClient) {
-    this.token = "";
-    this.profile = "";
-    this.logged = false;
-    this.user = null;
     this.recover();
   }
 
-  private store() {
-    const data = {
-      token: this.token,
-      profile: this.profile,
-      logged: this.logged,
-      user: this.user
-    }
-    sessionStorage.setItem("LOGIN", JSON.stringify(data));
-    sessionStorage.setItem("token", this.token);
-    this.profileSubject.next(this.profile);
+  private store(loginData: any) {
+    // Guardamos datos esenciales incluyendo el email
+    const essentialData = {
+      token: loginData.token,
+      profile: loginData.profile,
+      user: {
+        id: loginData.user.id,
+        email: loginData.user.email,
+        nombre: loginData.user.nombre,
+        role: loginData.user.role,
+        fotoThumbnail: loginData.user.fotoThumbnail // Thumbnail pequeño para avatar
+      }
+    };
+    sessionStorage.setItem("LOGIN", JSON.stringify(essentialData));
+    this.profileSubject.next(loginData.profile);
+    this.userSubject.next(loginData.user);
   }
 
   recover() {
-    if (sessionStorage.getItem("LOGIN")) {
-      const data = sessionStorage.getItem("LOGIN") || "";
-
-      if (data) {
-        const obj = JSON.parse(data);
-        this.token = obj.token;
-        this.profile = obj.profile;
-        this.logged = obj.logged;
-        this.user = obj.user;
-      }
+    const data = sessionStorage.getItem("LOGIN");
+    if (data) {
+      const parsed = JSON.parse(data);
+      this.profileSubject.next(parsed.profile);
+      this.userSubject.next(parsed.user);
     } else {
-      this.logged = false;
-      this.token = "";
-      this.profile = "";
-      this.user = null;
+      this.profileSubject.next(null);
+      this.userSubject.next(null);
     }
-
-    this.profileSubject.next(this.profile);
   }
 
-  login(email: string, password: string): Observable<any> {
-    const loginRequest: LoginRequest = { email, password };
-
-    return this.http.post<LoginResponse>("http://localhost:9000/auth/login", loginRequest)
+  login(email: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { email, password })
       .pipe(
-        map((response: LoginResponse) => {
-          if (response && response.token) {
-            this.user = {
-              id: 0,
-              name: response.name,
-              surname: response.surname,
+        tap((response: LoginResponse) => {
+          const loginData = {
+            token: response.token,
+            profile: response.role,
+            user: {
+              id: response.id,
               email: response.email,
+              nombre: response.nombre,
+              apellidos: response.apellidos,
               role: response.role,
-              phone: "",
-              registrationDate: new Date()
-            };
-            this.profile = response.role.toLowerCase();
-            this.token = response.token;
-            this.logged = true;
-            this.store();
-            return { success: true, profile: this.profile };
-          }
-          return { success: false };
+              direccion: response.direccion,
+              telefono: response.telefono,
+              fotoUrl: response.fotoUrl,
+              fotoThumbnail: response.fotoThumbnail
+            }
+          };
+
+          // Guardamos los datos completos en el BehaviorSubject
+          this.userSubject.next(loginData.user);
+          // Pero en sessionStorage solo los esenciales
+          this.store(loginData);
         })
       );
   }
 
-  private clear() {
-    sessionStorage.removeItem("LOGIN");
-    sessionStorage.removeItem("token");
-    this.profile = "";
-    this.logged = false;
-    this.user = null;
+  logout(): void {
+    sessionStorage.removeItem('LOGIN');
     this.profileSubject.next(null);
+    this.userSubject.next(null);
   }
 
-  logout() {
-    this.clear();
+  isLoggedIn(): boolean {
+    return sessionStorage.getItem('LOGIN') !== null;
   }
 
-  isLogged(): boolean {
-    const data = sessionStorage.getItem("LOGIN");
-    return data ? JSON.parse(data).logged : false;
+  getToken(): string | null {
+    const data = sessionStorage.getItem('LOGIN');
+    return data ? JSON.parse(data).token : null;
   }
 
-  getName(): string {
-    const data = sessionStorage.getItem("LOGIN");
-    return data ? JSON.parse(data).user.name : "";
+  // Observable para datos del usuario
+  get user$(): Observable<User | null> {
+    return this.userSubject.asObservable();
   }
 
-  getProfile(): string {
-    const data = sessionStorage.getItem("LOGIN");
-    return data ? JSON.parse(data).profile : "";
+  // Observable para el perfil
+  get profile$(): Observable<string | null> {
+    return this.profileSubject.asObservable();
+  }
+
+  // Método para obtener datos completos del usuario
+  getUserProfile(): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/users/profile`);
+  }
+
+  // Método para subir foto de usuario
+  uploadUserPhoto(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post(`${this.apiUrl}/users/photo`, formData);
   }
 
   private getProfileFromStorage(): string | null {
     const data = sessionStorage.getItem("LOGIN");
     return data ? JSON.parse(data).profile : null;
-  }
-
-  get profileObservable() {
-    return this.profileSubject.asObservable();
   }
 }

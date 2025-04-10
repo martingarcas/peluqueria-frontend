@@ -1,0 +1,118 @@
+.auth-form {
+  width: 100%;
+  max-width: 840px;
+  margin: 0 auto;
+}
+
+.auth-form h1 {
+  font-family: 'Gilda Display', serif;
+  font-size: 2.5rem;
+  color: #CEA148;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: normal;
+}
+
+.form-cnt {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+}
+
+.form-group {
+  width: 400px;
+  margin-bottom: 2rem;
+  position: relative;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid rgba(206, 161, 72, 0.2);
+  border-radius: 8px;
+  background-color: rgba(206, 161, 72, 0.05);
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-group input::placeholder {
+  color: rgba(206, 161, 72, 0.5);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #CEA148;
+  background-color: rgba(206, 161, 72, 0.1);
+}
+
+.form-group input.invalid {
+  border-color: #ff4444;
+  background-color: rgba(255, 68, 68, 0.05);
+}
+
+.error-message {
+  color: #ff4444;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  position: absolute;
+  width: 100%;
+}
+
+button {
+  display: block;
+  max-width: 400px;
+  width: 100%;
+  padding: 1rem;
+  background-color: #CEA148;
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 1.5rem auto;
+  box-sizing: border-box;
+}
+
+button:hover {
+  background-color: rgba(206, 161, 72, 0.9);
+}
+
+button:disabled {
+  background-color: rgba(206, 161, 72, 0.3);
+  cursor: not-allowed;
+}
+
+.auth-redirect {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.auth-redirect p {
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.auth-redirect a {
+  color: #CEA148;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.auth-redirect a:hover {
+  color: rgba(206, 161, 72, 0.8);
+}
+
+.success-message {
+  background-color: #4CAF50;
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+}

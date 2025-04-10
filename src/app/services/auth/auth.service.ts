@@ -40,14 +40,14 @@ export class AuthService {
   }
 
   isLogged(): boolean {
-    return this.loginService.isLogged();
+    return this.loginService.isLoggedIn();
   }
 
-  getProfile(): string {
-    return this.loginService.getProfile();
+  getProfile(): Observable<string | null> {
+    return this.loginService.profile$;
   }
 
-  get profileObservable() {
-    return this.loginService.profileObservable;
+  get profileObservable(): Observable<string | null> {
+    return this.loginService.profile$;
   }
 }

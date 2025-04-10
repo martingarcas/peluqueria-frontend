@@ -1,0 +1,19 @@
+<div class="auth-container">
+  <div class="auth-toggle">
+    <button
+      [class.active]="activeForm === 'login'"
+      (click)="setActiveForm('login')">
+      Iniciar sesión
+    </button>
+    <button
+      [class.active]="activeForm === 'register'"
+      (click)="setActiveForm('register')">
+      Registrarse
+    </button>
+  </div>
+
+  <div class="auth-content">
+    <app-login *ngIf="activeForm === 'login'"></app-login>
+    <app-register *ngIf="activeForm === 'register'"></app-register>
+  </div>
+</div>

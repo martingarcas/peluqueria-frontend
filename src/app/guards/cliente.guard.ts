@@ -1,15 +1,23 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { Observable } from 'rxjs';
+import { CanActivate, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClienteGuard implements CanActivate {
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    return true;
+
+  constructor(private router: Router) {}
+
+  canActivate(): boolean {
+    const loginData = JSON.parse(sessionStorage.getItem('LOGIN') || '{}');
+    const role = loginData.user?.role?.toLowerCase();
+
+    if (role === 'cliente') {
+      return true;
+    }
+
+    // Si no es cliente, lo llevamos a la home pública
+    this.router.navigate(['/']);
+    return false;
   }
-  
 }

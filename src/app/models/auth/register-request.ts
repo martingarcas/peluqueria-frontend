@@ -1,9 +1,9 @@
 export interface RegisterRequest {
-    name: string;         // User's name
-    surname: string;      // User's surname
-    email: string;        // User's email
-    password: string;     // User's password
-    phone: string;        // User's phone number
-    address?: string;     // User's address (optional)
-    role?: string;        // User's role (optional, default 'client')
+    nombre: string;       // Nombre del usuario
+    apellidos: string;    // Apellidos del usuario
+    email: string;        // Email del usuario
+    password: string;     // Contraseña del usuario
+    telefono: string;     // Teléfono del usuario
+    direccion?: string;   // Dirección del usuario (opcional)
+    role?: string;        // Role del usuario (opcional, por defecto 'cliente')
 }

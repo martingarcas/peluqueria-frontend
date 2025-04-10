@@ -1,1 +1,44 @@
-<p>login works!</p>
+<div class="auth-form">
+  <h1>Acceder</h1>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <input
+        type="email"
+        formControlName="email"
+        placeholder="Correo electrónico"
+        [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+      <div class="error-message" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+        <span *ngIf="loginForm.get('email')?.errors?.['required']">El correo electrónico es obligatorio</span>
+        <span *ngIf="loginForm.get('email')?.errors?.['email']">Introduce un correo electrónico válido</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <input
+        type="password"
+        formControlName="password"
+        placeholder="Contraseña"
+        [class.invalid]="loginForm.get('password')?.errors?.['required'] && loginForm.get('password')?.touched">
+      <div class="error-message" *ngIf="loginForm.get('password')?.errors?.['required'] && loginForm.get('password')?.touched">
+        <span>La contraseña es obligatoria</span>
+      </div>
+    </div>
+
+    <div class="error-message server-error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </div>
+
+    <div class="forgot-password">
+      <a href="#">¿Olvidaste tu contraseña?</a>
+    </div>
+
+    <button type="submit" [disabled]="loginForm.invalid">
+      ACCEDER
+    </button>
+
+    <div class="auth-redirect">
+      <p>¿No tienes cuenta? <a (click)="setActiveForm('register')">Regístrate</a></p>
+    </div>
+  </form>
+</div>

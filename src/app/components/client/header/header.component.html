@@ -1,1 +1,69 @@
-<p>header works!</p>
+<header class="header">
+  <nav class="nav-container">
+    <!-- Logo -->
+    <div class="logo" (click)="navigateTo('/client')">
+      <img src="assets/images/logo.png" alt="Logo Peluquería">
+    </div>
+
+    <!-- Menú de navegación -->
+    <div class="nav-menu" [class.active]="isMenuActive">
+      <ul class="nav-list">
+        <li><a (click)="navigateTo('/client')">Inicio</a></li>
+        <li><a (click)="navigateTo('/servicios')">Servicios</a></li>
+        <li><a (click)="navigateTo('/productos')">Productos</a></li>
+        <li><a (click)="navigateTo('/citas')">Reservar Cita</a></li>
+        <li><a (click)="navigateTo('/contacto')">Contacto</a></li>
+        <!-- Separador y opciones de usuario solo visibles en móvil -->
+        <div class="mobile-separator"></div>
+        <li class="mobile-only">
+          <a (click)="onUserAccessClick()" class="menu-action-btn">
+            <i class="fas fa-user"></i>
+            <span>{{ userName }}</span>
+          </a>
+        </li>
+        <li class="mobile-only">
+          <a (click)="onCartClick()" class="menu-action-btn">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Carrito</span>
+            <span class="menu-cart-count" *ngIf="cartItemCount > 0">({{cartItemCount}})</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Iconos de usuario y carrito (solo visibles en desktop) -->
+    <div class="nav-actions desktop-only">
+      <div class="user-dropdown">
+        <button class="access-button">
+          <span>{{ userName }}</span>
+          <i class="fas fa-user"></i>
+        </button>
+        <div class="dropdown-menu">
+          <a (click)="onUserAccessClick()">
+            <i class="fas fa-user-circle"></i>
+            <span>Mi Perfil</span>
+          </a>
+          <a (click)="logout()" class="logout-option">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Cerrar Sesión</span>
+          </a>
+        </div>
+      </div>
+      <button class="icon-button cart-button" (click)="onCartClick()">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" *ngIf="cartItemCount > 0">{{cartItemCount}}</span>
+      </button>
+    </div>
+
+    <!-- Botón hamburguesa (solo visible en móvil) -->
+    <button class="hamburger" [class.active]="isMenuActive" (click)="toggleMenu()">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+</header>
+
+<div class="success-message" *ngIf="successMessage">
+  {{ successMessage }}
+</div>

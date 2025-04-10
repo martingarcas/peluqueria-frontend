@@ -14,7 +14,7 @@
         <li><a (click)="navigateTo('/citas')">Reservar Cita</a></li>
         <li><a (click)="navigateTo('/contacto')">Contacto</a></li>
         <!-- Separador y opciones de usuario solo visibles en móvil -->
-        <li class="mobile-separator"></li>
+        <div class="mobile-separator"></div>
         <li class="mobile-only">
           <a (click)="onUserAccessClick()" class="menu-action-btn">
             <i class="fas fa-user"></i>
@@ -33,7 +33,7 @@
 
     <!-- Iconos de usuario y carrito (solo visibles en desktop) -->
     <div class="nav-actions desktop-only">
-      <button class="access-button" (click)="onUserAccessClick()">
+      <button class="access-button" routerLink="/auth">
         <span>Acceder</span>
         <i class="fas fa-user"></i>
       </button>

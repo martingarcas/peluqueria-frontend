@@ -1,7 +1,14 @@
 export interface LoginResponse {
-    token: string;       // JWT authentication token
-    email: string;       // User's email
-    role: string;       // User's role
-    name: string;       // User's name
-    surname: string;    // User's surname
+    id: number;
+    username: string;
+    authorities: string[];
+    token: string;
+    nombre: string;
+    apellidos: string;
+    email: string;
+    role: string;
+    direccion: string;
+    telefono: string;
+    fotoUrl: string;
+    fotoThumbnail: string;
 }

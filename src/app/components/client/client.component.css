@@ -1,0 +1,12 @@
+:host {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.client-content {
+    flex: 1;
+    padding: 20px;
+    margin-top: 64px; /* Ajusta este valor según la altura de tu header */
+    background-color: var(--background-color);
+}

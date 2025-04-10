@@ -1,0 +1,4 @@
+.main-content {
+  min-height: calc(100vh - 160px); /* Ajustar según el tamaño real de tu header/footer */
+  padding: 20px;
+}

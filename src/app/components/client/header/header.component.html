@@ -16,7 +16,7 @@
         <!-- Separador y opciones de usuario solo visibles en móvil -->
         <div class="mobile-separator"></div>
         <li class="mobile-only">
-          <a (click)="onUserAccessClick()" class="menu-action-btn">
+          <a (click)="navigateTo('/client/profile')" class="menu-action-btn">
             <i class="fas fa-user"></i>
             <span>{{ userName }}</span>
           </a>
@@ -26,6 +26,12 @@
             <i class="fas fa-shopping-cart"></i>
             <span>Carrito</span>
             <span class="menu-cart-count" *ngIf="cartItemCount > 0">({{cartItemCount}})</span>
+          </a>
+        </li>
+        <li class="mobile-only">
+          <a (click)="logout()" class="menu-action-btn logout-btn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Cerrar Sesión</span>
           </a>
         </li>
       </ul>

@@ -13,7 +13,13 @@
   </div>
 
   <div class="auth-content">
-    <app-login *ngIf="activeForm === 'login'"></app-login>
-    <app-register *ngIf="activeForm === 'register'"></app-register>
+    <app-login
+      *ngIf="activeForm === 'login'"
+      (switchForm)="setActiveForm($event)">
+    </app-login>
+    <app-register
+      *ngIf="activeForm === 'register'"
+      (switchForm)="setActiveForm($event)">
+    </app-register>
   </div>
 </div>

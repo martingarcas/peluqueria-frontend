@@ -301,6 +301,10 @@
     display: block;
   }
 
+  .mobile-only .logout-btn {
+    width: 170px;
+  }
+
   .desktop-only {
     display: none;
   }
@@ -337,6 +341,18 @@
 
 .menu-action-btn:hover {
   color: var(--accent-color);
+}
+
+.menu-action-btn.logout-btn {
+  color: #ff4444;
+}
+
+.menu-action-btn.logout-btn i {
+  color: #ff4444;
+}
+
+.menu-action-btn.logout-btn:hover {
+  color: #ff6666;
 }
 
 .menu-cart-count {

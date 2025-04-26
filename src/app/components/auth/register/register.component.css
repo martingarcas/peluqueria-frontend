@@ -56,7 +56,6 @@
   color: #ff4444;
   font-size: 0.85rem;
   margin-top: 0.5rem;
-  position: absolute;
   width: 100%;
 }
 
@@ -110,6 +109,15 @@ button:disabled {
 
 .success-message {
   background-color: #4CAF50;
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.internal-error {
+  background-color: #ff4444;
   color: white;
   padding: 1rem;
   border-radius: 8px;

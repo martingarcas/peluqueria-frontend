@@ -34,9 +34,11 @@ export class LoginComponent {
       this.loginService.login(email, password).subscribe({
         next: (response) => {
           console.log('Login exitoso:', response);
-          // Obtener el rol del usuario del token
+
+          // El servicio ya se encarga de guardar los datos en sessionStorage
+          // Solo necesitamos obtener el rol para la redirección
           const loginData = JSON.parse(sessionStorage.getItem('LOGIN') || '{}');
-          const role = loginData.user.role?.toLowerCase();
+          const role = loginData.user?.role?.toLowerCase();
 
           // Redirigir según el rol
           switch(role) {
@@ -55,8 +57,17 @@ export class LoginComponent {
         },
         error: (error) => {
           console.error('Error en el login:', error);
-          // El backend devuelve los errores en la estructura { error: "mensaje" }
-          this.errorMessage = error.error.error || 'Error al iniciar sesión';
+          if (error.error) {
+            if (error.error.errores) {
+              // Si hay múltiples errores de validación, los concatenamos
+              this.errorMessage = Object.values(error.error.errores).join(', ');
+            } else {
+              // Si es un error simple, mostramos el mensaje
+              this.errorMessage = error.error.mensaje || 'Error al iniciar sesión';
+            }
+          } else {
+            this.errorMessage = 'Error al iniciar sesión';
+          }
         }
       });
     }

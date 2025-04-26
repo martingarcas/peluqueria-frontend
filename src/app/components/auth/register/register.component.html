@@ -3,7 +3,7 @@
 
   <!-- Mensajes de éxito y error -->
   <div class="success-message" *ngIf="successMessage">{{ successMessage }}</div>
-  <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="error-message internal-error" *ngIf="errorMessage">{{ errorMessage }}</div>
 
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
     <div class="form-cnt">

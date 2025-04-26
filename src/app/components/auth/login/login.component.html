@@ -23,6 +23,7 @@
       <div class="error-message" *ngIf="loginForm.get('password')?.errors?.['required'] && loginForm.get('password')?.touched">
         <span>La contraseña es obligatoria</span>
       </div>
+
     </div>
 
     <div class="error-message server-error" *ngIf="errorMessage">
@@ -42,3 +43,4 @@
     </div>
   </form>
 </div>
+

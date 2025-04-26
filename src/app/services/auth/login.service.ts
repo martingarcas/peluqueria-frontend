@@ -50,20 +50,22 @@ export class LoginService {
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, { email, password })
       .pipe(
-        tap((response: LoginResponse) => {
+        tap((response: any) => {
+          // Adaptamos la respuesta del backend a nuestra estructura
+          const userData = response.data;
           const loginData = {
-            token: response.token,
-            profile: response.role,
+            token: userData.token,
+            profile: userData.role,
             user: {
-              id: response.id,
-              email: response.email,
-              nombre: response.nombre,
-              apellidos: response.apellidos,
-              role: response.role,
-              direccion: response.direccion,
-              telefono: response.telefono,
-              fotoUrl: response.fotoUrl,
-              fotoThumbnail: response.fotoThumbnail
+              id: userData.id || null,
+              email: userData.email,
+              nombre: userData.nombre,
+              apellidos: userData.apellidos,
+              role: userData.role,
+              direccion: userData.direccion,
+              telefono: userData.telefono,
+              fotoUrl: userData.foto,
+              fotoThumbnail: userData.foto
             }
           };
 

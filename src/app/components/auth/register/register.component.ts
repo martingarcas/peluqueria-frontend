@@ -14,6 +14,7 @@ export class RegisterComponent {
   registerForm: FormGroup;
   errorMessage: string = '';
   successMessage: string = '';
+  backendErrors: { [key: string]: string } = {};
 
   private passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   private emailPattern = /^[A-Za-z0-9+_.-]+@(.+)$/;
@@ -47,6 +48,7 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       this.errorMessage = '';
       this.successMessage = '';
+      this.backendErrors = {};
 
       const request = {
         ...this.registerForm.value,
@@ -57,7 +59,7 @@ export class RegisterComponent {
       this.registerService.register(request).subscribe({
         next: (response) => {
           console.log('Registro exitoso', response);
-          this.successMessage = '¡Registro exitoso! Redirigiendo al login...';
+          this.successMessage = response.mensaje || '¡Registro exitoso! Redirigiendo al login...';
           this.registerForm.reset();
           setTimeout(() => {
             this.setActiveForm('login');
@@ -65,10 +67,35 @@ export class RegisterComponent {
         },
         error: (error) => {
           console.error('Error en el registro', error);
-          this.errorMessage = error;
+          if (error.error) {
+            if (error.error.errores) {
+              // Asignar errores a campos específicos
+              Object.entries(error.error.errores).forEach(([key, value]) => {
+                // Marcar el campo como touched para que se muestren los errores
+                const control = this.registerForm.get(key);
+                if (control) {
+                  control.setErrors({ serverError: value });
+                  control.markAsTouched();
+                }
+              });
+            } else {
+              this.errorMessage = error.error.mensaje || 'Error en el registro';
+            }
+          } else {
+            this.errorMessage = 'Error en el registro';
+          }
         }
       });
     }
+  }
+
+  // Método helper para obtener errores del backend para un campo específico
+  getBackendError(fieldName: string): string | null {
+    const control = this.registerForm.get(fieldName);
+    if (control?.errors?.['serverError']) {
+      return control.errors['serverError'];
+    }
+    return null;
   }
 
   passwordMatchValidator(g: FormGroup) {

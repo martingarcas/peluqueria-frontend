@@ -15,8 +15,11 @@ import { AuthContainerComponent } from './components/auth/auth-container/auth-co
 import { TestImageComponent } from './components/test-image/test-image.component';
 import { HomeComponent } from './components/client/home/home.component';
 import { ClientComponent } from './components/client/client.component';
-import { HeaderComponent } from './components/client/header/header.component';
-import { FooterComponent } from './components/client/footer/footer.component';
+import { HeaderComponent as ClientHeaderComponent} from './components/client/header/header.component';
+import { FooterComponent as ClientFooterComponent} from './components/client/footer/footer.component';
+import { AdminComponent } from './components/admin/admin.component';
+import { HeaderComponent as AdminHeaderComponent } from './components/admin/header/header.component';
+import { FooterComponent as AdminFooterComponent } from './components/admin/footer/footer.component';
 
 @NgModule({
   declarations: [
@@ -30,8 +33,11 @@ import { FooterComponent } from './components/client/footer/footer.component';
     TestImageComponent,
     HomeComponent,
     ClientComponent,
-    HeaderComponent,
-    FooterComponent
+    ClientHeaderComponent,
+    ClientFooterComponent,
+    AdminComponent,
+    AdminHeaderComponent,
+    AdminFooterComponent
   ],
   imports: [
     BrowserModule,

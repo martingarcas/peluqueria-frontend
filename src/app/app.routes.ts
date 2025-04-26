@@ -10,6 +10,21 @@ import { AuthContainerComponent } from './components/auth/auth-container/auth-co
 // Cliente
 import { ClientComponent } from './components/client/client.component';
 import { HomeComponent as ClientHomeComponent } from './components/client/home/home.component';
+//import { ProfileComponent } from './components/client/profile/profile.component';
+//import { AppointmentsComponent } from './components/client/appointments/appointments.component';
+
+// Admin
+import { AdminComponent } from './components/admin/admin.component';
+import { HomeComponent as AdminHomeComponent } from './components/admin/home/home.component';
+import { HeaderComponent as AdminHeaderComponent } from './components/admin/header/header.component';
+import { FooterComponent as AdminFooterComponent } from './components/admin/footer/footer.component';
+//import { UsersComponent } from './components/admin/users/users.component';
+//import { ServicesComponent } from './components/admin/services/services.component';
+//import { AppointmentsComponent as AdminAppointmentsComponent } from './components/admin/appointments/appointments.component';
+//import { CategoriesComponent } from './components/admin/categories/categories.component';
+//import { ProductsComponent } from './components/admin/products/products.component';
+//import { OrdersComponent } from './components/admin/orders/orders.component';
+//import { SchedulesComponent } from './components/admin/schedules/schedules.component';
 
 // Otros
 import { TestImageComponent } from './components/test-image/test-image.component';
@@ -17,7 +32,9 @@ import { TestImageComponent } from './components/test-image/test-image.component
 // Guards
 import { AuthGuard } from './guards/auth.guard';
 import { ClienteGuard } from './guards/cliente.guard';
-// futuros guards: adminGuard, workerGuard
+import { AdminGuard } from './guards/admin.guard';
+import { TrabajadorGuard } from './guards/trabajador.guard';
+// futuros guards: workerGuard
 
 export const routes: Routes = [
   // Layout público
@@ -39,6 +56,25 @@ export const routes: Routes = [
     canActivate: [AuthGuard, ClienteGuard],
     children: [
       { path: '', component: ClientHomeComponent },
+      //{ path: 'profile', component: ProfileComponent },
+      //{ path: 'appointments', component: AppointmentsComponent }
+    ]
+  },
+
+  // Layout admin
+  {
+    path: 'admin',
+    component: AdminComponent,
+    canActivate: [AuthGuard, AdminGuard],
+    children: [
+      { path: '', component: AdminHomeComponent },
+      //{ path: 'usuarios', component: UsersComponent },
+      //{ path: 'servicios', component: ServicesComponent },
+      //{ path: 'citas', component: AdminAppointmentsComponent },
+      //{ path: 'categorias', component: CategoriesComponent },
+      //{ path: 'productos', component: ProductsComponent },
+      //{ path: 'pedidos', component: OrdersComponent },
+      //{ path: 'horarios', component: SchedulesComponent }
     ]
   },
 

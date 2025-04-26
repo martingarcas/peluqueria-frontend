@@ -36,11 +36,11 @@ export class LoginComponent {
           console.log('Login exitoso:', response);
 
           // El servicio ya se encarga de guardar los datos en sessionStorage
-          // Solo necesitamos obtener el rol para la redirección
+          // Solo necesitamos obtener el perfil para la redirección
           const loginData = JSON.parse(sessionStorage.getItem('LOGIN') || '{}');
-          const role = loginData.user?.role?.toLowerCase();
+          const role = loginData.user?.role;
 
-          // Redirigir según el rol
+          console.log('Role:', role);
           switch(role) {
             case 'admin':
               this.router.navigate(['/admin']);

@@ -21,17 +21,15 @@ export class LoginService {
     // Guardamos datos esenciales incluyendo el email
     const essentialData = {
       token: loginData.token,
-      profile: loginData.profile,
       user: {
         id: loginData.user.id,
         email: loginData.user.email,
         nombre: loginData.user.nombre,
         role: loginData.user.role,
-        fotoThumbnail: loginData.user.fotoThumbnail // Thumbnail pequeño para avatar
+        fotoThumbnail: loginData.user.fotoThumbnail
       }
     };
     sessionStorage.setItem("LOGIN", JSON.stringify(essentialData));
-    this.profileSubject.next(loginData.profile);
     this.userSubject.next(loginData.user);
   }
 
@@ -39,10 +37,8 @@ export class LoginService {
     const data = sessionStorage.getItem("LOGIN");
     if (data) {
       const parsed = JSON.parse(data);
-      this.profileSubject.next(parsed.profile);
       this.userSubject.next(parsed.user);
     } else {
-      this.profileSubject.next(null);
       this.userSubject.next(null);
     }
   }
@@ -55,7 +51,6 @@ export class LoginService {
           const userData = response.data;
           const loginData = {
             token: userData.token,
-            profile: userData.role,
             user: {
               id: userData.id || null,
               email: userData.email,
@@ -69,9 +64,7 @@ export class LoginService {
             }
           };
 
-          // Guardamos los datos completos en el BehaviorSubject
-          this.userSubject.next(loginData.user);
-          // Pero en sessionStorage solo los esenciales
+          // Guardamos los datos en el BehaviorSubject y sessionStorage
           this.store(loginData);
         })
       );
@@ -115,7 +108,14 @@ export class LoginService {
   }
 
   private getProfileFromStorage(): string | null {
-    const data = sessionStorage.getItem("LOGIN");
+    const data = sessionStorage.getItem('LOGIN');
     return data ? JSON.parse(data).profile : null;
+  }
+
+  isAdmin(): boolean {
+    const data = sessionStorage.getItem('LOGIN');
+    if (!data) return false;
+    const loginData = JSON.parse(data);
+    return loginData.user?.role === 'ADMIN';
   }
 }

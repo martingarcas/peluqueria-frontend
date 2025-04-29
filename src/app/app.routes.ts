@@ -18,6 +18,7 @@ import { AdminComponent } from './components/admin/admin.component';
 import { HomeComponent as AdminHomeComponent } from './components/admin/home/home.component';
 import { HeaderComponent as AdminHeaderComponent } from './components/admin/header/header.component';
 import { FooterComponent as AdminFooterComponent } from './components/admin/footer/footer.component';
+import { ListaCategoriasComponent } from './components/admin/categorias/lista-categorias/lista-categorias.component';
 //import { UsersComponent } from './components/admin/users/users.component';
 //import { ServicesComponent } from './components/admin/services/services.component';
 //import { AppointmentsComponent as AdminAppointmentsComponent } from './components/admin/appointments/appointments.component';
@@ -68,6 +69,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard, AdminGuard],
     children: [
       { path: '', component: AdminHomeComponent },
+      { path: 'categorias', component: ListaCategoriasComponent },
       //{ path: 'usuarios', component: UsersComponent },
       //{ path: 'servicios', component: ServicesComponent },
       //{ path: 'citas', component: AdminAppointmentsComponent },

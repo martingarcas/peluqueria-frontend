@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 import { routes } from './app.routes';
@@ -20,6 +20,9 @@ import { FooterComponent as ClientFooterComponent} from './components/client/foo
 import { AdminComponent } from './components/admin/admin.component';
 import { HeaderComponent as AdminHeaderComponent } from './components/admin/header/header.component';
 import { FooterComponent as AdminFooterComponent } from './components/admin/footer/footer.component';
+import { ListaCategoriasComponent } from './components/admin/categorias/lista-categorias/lista-categorias.component';
+import { FormCategoriaComponent } from './components/admin/categorias/form-categoria/form-categoria.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -37,13 +40,17 @@ import { FooterComponent as AdminFooterComponent } from './components/admin/foot
     ClientFooterComponent,
     AdminComponent,
     AdminHeaderComponent,
-    AdminFooterComponent
+    AdminFooterComponent,
+    ListaCategoriasComponent,
+    FormCategoriaComponent
   ],
   imports: [
     BrowserModule,
     RouterModule.forRoot(routes),
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule,
+    CommonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

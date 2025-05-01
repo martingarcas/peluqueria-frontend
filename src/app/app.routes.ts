@@ -35,6 +35,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { ClienteGuard } from './guards/cliente.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { TrabajadorGuard } from './guards/trabajador.guard';
+import { ListaProductosComponent } from './components/admin/productos/lista-productos/lista-productos.component';
 // futuros guards: workerGuard
 
 export const routes: Routes = [
@@ -70,6 +71,7 @@ export const routes: Routes = [
     children: [
       { path: '', component: AdminHomeComponent },
       { path: 'categorias', component: ListaCategoriasComponent },
+      { path: 'productos', component: ListaProductosComponent },
       //{ path: 'usuarios', component: UsersComponent },
       //{ path: 'servicios', component: ServicesComponent },
       //{ path: 'citas', component: AdminAppointmentsComponent },

@@ -23,6 +23,8 @@ import { FooterComponent as AdminFooterComponent } from './components/admin/foot
 import { ListaCategoriasComponent } from './components/admin/categorias/lista-categorias/lista-categorias.component';
 import { FormCategoriaComponent } from './components/admin/categorias/form-categoria/form-categoria.component';
 import { CommonModule } from '@angular/common';
+import { ListaProductosComponent } from './components/admin/productos/lista-productos/lista-productos.component';
+import { FormProductoComponent } from './components/admin/productos/form-producto/form-producto.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +44,9 @@ import { CommonModule } from '@angular/common';
     AdminHeaderComponent,
     AdminFooterComponent,
     ListaCategoriasComponent,
-    FormCategoriaComponent
+    FormCategoriaComponent,
+    ListaProductosComponent,
+    FormProductoComponent
   ],
   imports: [
     BrowserModule,

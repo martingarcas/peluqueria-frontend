@@ -301,6 +301,46 @@
   color: var(--background-dark);
 }
 
+/* Formulario container y estilos nuevos */
+.formulario-container {
+  padding: var(--spacing-xl);
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  animation: fadeIn 0.3s ease;
+}
+
+.header-formulario {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  gap: var(--spacing-lg);
+}
+
+.volver-button {
+  background: transparent;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-family: var(--font-secondary);
+  padding: var(--spacing-md);
+  transition: all var(--transition-speed) ease;
+}
+
+.volver-button:hover {
+  color: var(--text-color);
+}
+
+.header-formulario h1 {
+  font-family: 'Gilda Display', serif;
+  color: var(--primary-color);
+  font-size: var(--font-size-4xl);
+  margin: 0;
+  font-weight: normal;
+}
+
 /* Mensajes de éxito y error */
 .success-message {
   background-color: #4CAF50;
@@ -338,6 +378,17 @@
   from {
     opacity: 0;
     transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
   to {
     opacity: 1;
@@ -421,5 +472,16 @@
     justify-content: center;
     display: flex;
     align-items: center;
+  }
+
+  /* Responsive para el formulario */
+  .header-formulario {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .volver-button {
+    width: 100%;
+    justify-content: center;
   }
 }

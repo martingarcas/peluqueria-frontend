@@ -1,5 +1,6 @@
 <!-- lista-productos.component.html -->
 <div class="productos-container">
+  <!-- Mensajes siempre visibles -->
   <div class="success-message" *ngIf="mensajeExito">
     {{ mensajeExito }}
   </div>
@@ -8,60 +9,64 @@
     {{ mensajeError }}
   </div>
 
-  <div class="header">
-    <h1>Productos</h1>
-    <div class="actions">
-      <div class="search-box">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="onSearchChange()"
-          placeholder="Buscar producto">
+  <!-- Vista de lista de productos -->
+  <div *ngIf="!mostrarFormulario">
+    <div class="header">
+      <h1>Productos</h1>
+      <div class="actions">
+        <div class="search-box">
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Buscar producto">
+        </div>
+        <button class="add-button" (click)="mostrarFormularioCrear()">
+          + Añadir nuevo producto
+        </button>
       </div>
-      <button class="add-button" (click)="crearProducto()">
-        + Añadir nuevo producto
-      </button>
-    </div>
-  </div>
-
-  <div class="table-container">
-    <div class="table-header">
-      <div class="column imagen">Imagen</div>
-      <div class="column nombre">Nombre</div>
-      <div class="column descripcion">Descripción</div>
-      <div class="column precio">Precio</div>
-      <div class="column stock">Stock</div>
-      <div class="column categoria">Categoría</div>
-      <div class="column acciones">Acciones</div>
     </div>
 
-    <div class="table-body">
-      <div class="table-row" *ngFor="let producto of productosFiltrados">
-        <div class="column imagen" data-label="Imagen:">
-          <img [src]="getImageUrl(producto.foto)" [alt]="producto.nombre">
-        </div>
-        <div class="column nombre" data-label="Nombre:">
-          {{ producto.nombre }}
-        </div>
-        <div class="column descripcion" data-label="Descripción:">
-          {{ producto.descripcion }}
-        </div>
-        <div class="column precio" data-label="Precio:">
-          {{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}
-        </div>
-        <div class="column stock" data-label="Stock:">
-          {{ producto.stock }}
-        </div>
-        <div class="column categoria" data-label="Categoría:">
-          {{ producto.categoriaNombre || 'Sin categoría' }}
-        </div>
-        <div class="column acciones" data-label="Acciones:">
-          <button class="edit-button" (click)="editarProducto(producto)">
-            Editar
-          </button>
-          <button class="delete-button" (click)="confirmarEliminacion(producto)">
-            Eliminar
-          </button>
+    <!-- Tabla de productos -->
+    <div class="table-container">
+      <div class="table-header">
+        <div class="column imagen">Imagen</div>
+        <div class="column nombre">Nombre</div>
+        <div class="column descripcion">Descripción</div>
+        <div class="column precio">Precio</div>
+        <div class="column stock">Stock</div>
+        <div class="column categoria">Categoría</div>
+        <div class="column acciones">Acciones</div>
+      </div>
+
+      <div class="table-body">
+        <div class="table-row" *ngFor="let producto of productosFiltrados">
+          <div class="column imagen" data-label="Imagen:">
+            <img [src]="getImageUrl(producto.foto)" [alt]="producto.nombre">
+          </div>
+          <div class="column nombre" data-label="Nombre:">
+            {{ producto.nombre }}
+          </div>
+          <div class="column descripcion" data-label="Descripción:">
+            {{ producto.descripcion }}
+          </div>
+          <div class="column precio" data-label="Precio:">
+            {{ producto.precio }}€
+          </div>
+          <div class="column stock" data-label="Stock:">
+            {{ producto.stock }}
+          </div>
+          <div class="column categoria" data-label="Categoría:">
+            {{ producto.categoriaNombre || 'Sin categoría' }}
+          </div>
+          <div class="column acciones" data-label="Acciones:">
+            <button class="edit-button" (click)="mostrarFormularioEditar(producto)">
+              Editar
+            </button>
+            <button class="delete-button" (click)="confirmarEliminacion(producto)">
+              Eliminar
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -98,5 +103,22 @@
         </button>
       </div>
     </div>
+  </div>
+
+  <!-- Vista del formulario -->
+  <div class="formulario-container" *ngIf="mostrarFormulario">
+    <div class="header-formulario">
+      <button class="volver-button" (click)="volverALista()">
+        <i class="fas fa-arrow-left"></i> Volver a la lista
+      </button>
+      <h1>{{ modoFormulario === 'crear' ? 'Crear Producto' : 'Editar Producto' }}</h1>
+    </div>
+
+    <app-form-producto
+      [modo]="modoFormulario"
+      [productoAEditar]="productoEnEdicion"
+      (onGuardar)="guardarProducto($event)"
+      (onCancelar)="volverALista()">
+    </app-form-producto>
   </div>
 </div>

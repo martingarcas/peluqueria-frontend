@@ -1,4 +1,4 @@
-// src/app/components/admin/productos/lista-productos/lista-productos.component.ts
+// lista-productos.component.ts
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -16,11 +16,16 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
   productosFiltrados: ProductoResponse[] = [];
   mensajeError: string = '';
   mensajeExito: string = '';
-  searchTerm: string = ' ';
+  searchTerm: string = '';
 
-  // Propiedades para el modal
+  // Propiedades para el modal de eliminación
   mostrarModalConfirmacion = false;
   productoAEliminar: ProductoResponse | null = null;
+
+  // Propiedades para el formulario
+  mostrarFormulario = false;
+  modoFormulario: 'crear' | 'editar' = 'crear';
+  productoEnEdicion: ProductoResponse | null = null;
 
   // Cache de imágenes
   imagenesCache = new Map<string, SafeUrl>();
@@ -92,14 +97,31 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
     );
   }
 
-  crearProducto(): void {
-    this.router.navigate(['/admin/productos/crear']);
+  // Métodos para el formulario
+  mostrarFormularioCrear(): void {
+    this.modoFormulario = 'crear';
+    this.productoEnEdicion = null;
+    this.mostrarFormulario = true;
   }
 
-  editarProducto(producto: ProductoResponse): void {
-    this.router.navigate([`/admin/productos/editar/${producto.id}`]);
+  mostrarFormularioEditar(producto: ProductoResponse): void {
+    this.modoFormulario = 'editar';
+    this.productoEnEdicion = producto;
+    this.mostrarFormulario = true;
   }
 
+  volverALista(): void {
+    this.mostrarFormulario = false;
+    this.productoEnEdicion = null;
+  }
+
+  guardarProducto(response: { mensaje: string, producto: ProductoResponse }): void {
+    this.cargarProductos();
+    this.volverALista();
+    this.mostrarExito(response.mensaje);
+  }
+
+  // Métodos para eliminación
   confirmarEliminacion(producto: ProductoResponse): void {
     this.limpiarMensajes();
     this.productoAEliminar = producto;

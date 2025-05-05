@@ -24,8 +24,7 @@ export class ProductoService {
 
     if (isMultipart) {
       return new HttpHeaders({
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+        'Authorization': `Bearer ${token}`
       });
     }
 
@@ -41,13 +40,20 @@ export class ProductoService {
 
   crear(producto: ProductoRequest): Observable<{ mensaje: string, producto: ProductoResponse }> {
     const formData = new FormData();
-    formData.append('nombre', producto.nombre);
-    formData.append('descripcion', producto.descripcion);
-    formData.append('precio', producto.precio.toString());
-    formData.append('stock', producto.stock.toString());
-    if (producto.categoriaId) {
-      formData.append('categoriaId', producto.categoriaId.toString());
-    }
+
+    // Crear un Blob con el JSON del producto
+    const productoBlob = new Blob([JSON.stringify({
+      nombre: producto.nombre,
+      descripcion: producto.descripcion,
+      precio: producto.precio,
+      stock: producto.stock,
+      categoriaId: producto.categoriaId
+    })], {
+      type: 'application/json'
+    });
+
+    formData.append('producto', productoBlob);
+
     if (producto.foto) {
       formData.append('foto', producto.foto);
     }
@@ -60,10 +66,29 @@ export class ProductoService {
   }
 
   actualizar(id: number, producto: ProductoRequest): Observable<{ mensaje: string, producto: ProductoResponse }> {
+    const formData = new FormData();
+
+    // Crear un Blob con el JSON del producto
+    const productoBlob = new Blob([JSON.stringify({
+      nombre: producto.nombre,
+      descripcion: producto.descripcion,
+      precio: producto.precio,
+      stock: producto.stock,
+      categoriaId: producto.categoriaId
+    })], {
+      type: 'application/json'
+    });
+
+    formData.append('producto', productoBlob);
+
+    if (producto.foto) {
+      formData.append('foto', producto.foto);
+    }
+
     return this.http.put<{ mensaje: string, producto: ProductoResponse }>(
       `${this.apiUrl}/${id}`,
-      producto,
-      { headers: this.obtenerHeaders() }
+      formData,
+      { headers: this.obtenerHeaders(true) }
     );
   }
 

@@ -19,6 +19,7 @@ import { HomeComponent as AdminHomeComponent } from './components/admin/home/hom
 import { HeaderComponent as AdminHeaderComponent } from './components/admin/header/header.component';
 import { FooterComponent as AdminFooterComponent } from './components/admin/footer/footer.component';
 import { ListaCategoriasComponent } from './components/admin/categorias/lista-categorias/lista-categorias.component';
+import { ListaProductosComponent } from './components/admin/productos/lista-productos/lista-productos.component';
 //import { UsersComponent } from './components/admin/users/users.component';
 //import { ServicesComponent } from './components/admin/services/services.component';
 //import { AppointmentsComponent as AdminAppointmentsComponent } from './components/admin/appointments/appointments.component';
@@ -35,7 +36,6 @@ import { AuthGuard } from './guards/auth.guard';
 import { ClienteGuard } from './guards/cliente.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { TrabajadorGuard } from './guards/trabajador.guard';
-import { ListaProductosComponent } from './components/admin/productos/lista-productos/lista-productos.component';
 // futuros guards: workerGuard
 
 export const routes: Routes = [

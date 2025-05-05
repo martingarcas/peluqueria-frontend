@@ -9,53 +9,96 @@
     {{ mensajeError }}
   </div>
 
-  <div class="header">
-    <h1>Categorías</h1>
-    <div class="actions">
-      <div class="search-box">
-        <input
-          type="text"
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="onSearchChange()"
-          placeholder="Buscar categoría">
+  <!-- Vista de lista -->
+  <div *ngIf="!mostrarFormulario">
+    <div class="header">
+      <h1>Categorías</h1>
+      <div class="actions">
+        <div class="search-box">
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Buscar categoría">
+        </div>
+        <button class="add-button" (click)="crearCategoria()">
+          + Añadir nueva categoría
+        </button>
       </div>
-      <button class="add-button" (click)="crearCategoria()">
-        + Añadir nueva categoría
-      </button>
+    </div>
+
+    <div class="table-container">
+      <div class="table-header">
+        <div class="column nombre">Nombre</div>
+        <div class="column descripcion">Descripción</div>
+        <div class="column productos">Productos</div>
+        <div class="column acciones">Acciones</div>
+      </div>
+
+      <div class="table-body">
+        <ng-container *ngFor="let categoria of categoriasFiltradas">
+          <!-- Fila principal de la categoría -->
+          <div class="table-row">
+            <div class="column nombre" data-label="Nombre:">
+              {{ categoria.nombre }}
+            </div>
+            <div class="column descripcion" data-label="Descripción:">
+              {{ categoria.descripcion }}
+            </div>
+            <div class="column productos" data-label="Productos:">
+              {{ categoria.productos?.length || 0 }} productos
+            </div>
+            <div class="column acciones" data-label="Acciones:">
+              <button class="view-button" (click)="toggleProductos(categoria.id)">
+                {{ isExpanded(categoria.id) ? 'Ocultar' : 'Ver' }} productos
+              </button>
+              <button class="edit-button" (click)="editarCategoria(categoria)">
+                Editar
+              </button>
+              <button class="delete-button" (click)="confirmarEliminacion(categoria)">
+                Eliminar
+              </button>
+            </div>
+          </div>
+
+          <!-- Sección expandible de productos -->
+          <div class="productos-expandidos" *ngIf="isExpanded(categoria.id)">
+            <div class="productos-header">
+              <div class="producto-column foto">Foto</div>
+              <div class="producto-column nombre">Nombre</div>
+              <div class="producto-column descripcion">Descripción</div>
+              <div class="producto-column precio">Precio</div>
+              <div class="producto-column stock">Stock</div>
+            </div>
+            <div class="productos-body">
+              <div class="producto-row" *ngFor="let producto of categoria.productos">
+                <div class="producto-column foto" data-label="Foto:">
+                  <img [src]="getImageUrl(producto.foto)" [alt]="producto.nombre">
+                </div>
+                <div class="producto-column nombre" data-label="Nombre:">{{ producto.nombre }}</div>
+                <div class="producto-column descripcion" data-label="Descripción:">{{ producto.descripcion }}</div>
+                <div class="producto-column precio" data-label="Precio:">{{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}</div>
+                <div class="producto-column stock" data-label="Stock:">{{ producto.stock }}</div>
+              </div>
+              <div class="no-productos" *ngIf="!categoria.productos?.length">
+                No hay productos en esta categoría
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </div>
     </div>
   </div>
 
-  <div class="table-container">
-    <div class="table-header">
-      <div class="column nombre">Nombre</div>
-      <div class="column descripcion">Descripción</div>
-      <div class="column productos">Productos</div>
-      <div class="column acciones">Acciones</div>
-    </div>
+  <!-- Vista de formulario -->
+  <app-form-categoria
+    *ngIf="mostrarFormulario"
+    [categoriaId]="categoriaEnEdicion?.id"
+    (formularioCerrado)="onFormularioCerrado()"
+    (categoriaGuardada)="onCategoriaGuardada($event)">
+  </app-form-categoria>
 
-    <div class="table-body">
-      <div class="table-row" *ngFor="let categoria of categoriasFiltradas">
-        <div class="column nombre" data-label="Nombre:">
-          {{ categoria.nombre }}
-        </div>
-        <div class="column descripcion" data-label="Descripción:">
-          {{ categoria.descripcion }}
-        </div>
-        <div class="column productos" data-label="Productos:">
-          {{ categoria.productos?.length || 0 }} productos
-        </div>
-        <div class="column acciones" data-label="Acciones:">
-          <button class="edit-button" (click)="editarCategoria(categoria)">
-            Editar
-          </button>
-          <button class="delete-button" (click)="confirmarEliminacion(categoria)">
-            Eliminar
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  <!-- Modal de confirmación -->
   <div class="modal-overlay" *ngIf="mostrarModalConfirmacion">
     <div class="modal-container">
       <div class="modal-header">

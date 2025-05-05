@@ -1,1 +1,208 @@
-<p>form-categoria works!</p>
+<div class="form-container">
+  <div class="success-message" *ngIf="mensajeExito">
+    {{ mensajeExito }}
+  </div>
+
+  <div class="error-message" *ngIf="mensajeError">
+    {{ mensajeError }}
+  </div>
+
+  <div class="form-header">
+    <h1>{{ isEditing ? 'Editar' : 'Crear' }} Categoría</h1>
+  </div>
+
+  <form [formGroup]="categoriaForm" (ngSubmit)="onSubmit()" class="categoria-form">
+    <!-- Información básica de la categoría -->
+    <div class="form-section">
+      <h2>Información de la Categoría</h2>
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input
+          type="text"
+          id="nombre"
+          formControlName="nombre"
+          placeholder="Nombre de la categoría"
+          [class.invalid]="categoriaForm.get('nombre')?.invalid && categoriaForm.get('nombre')?.touched"
+          [class.disabled]="camposDeshabilitados"
+        >
+        <div class="validation-error" *ngIf="categoriaForm.get('nombre')?.invalid && categoriaForm.get('nombre')?.touched">
+          <span *ngIf="categoriaForm.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+          <span *ngIf="categoriaForm.get('nombre')?.errors?.['minlength']">El nombre debe tener al menos 3 caracteres</span>
+        </div>
+        <small class="campo-protegido" *ngIf="camposDeshabilitados">Este campo está protegido y no puede modificarse</small>
+      </div>
+
+      <div class="form-group">
+        <label for="descripcion">Descripción</label>
+        <textarea
+          id="descripcion"
+          formControlName="descripcion"
+          placeholder="Descripción de la categoría"
+          rows="4"
+          [class.invalid]="categoriaForm.get('descripcion')?.invalid && categoriaForm.get('descripcion')?.touched"
+          [class.disabled]="camposDeshabilitados"
+        ></textarea>
+        <div class="validation-error" *ngIf="categoriaForm.get('descripcion')?.invalid && categoriaForm.get('descripcion')?.touched">
+          <span *ngIf="categoriaForm.get('descripcion')?.errors?.['required']">La descripción es obligatoria</span>
+          <span *ngIf="categoriaForm.get('descripcion')?.errors?.['minlength']">La descripción debe tener al menos 10 caracteres</span>
+        </div>
+        <small class="campo-protegido" *ngIf="camposDeshabilitados">Este campo está protegido y no puede modificarse</small>
+      </div>
+    </div>
+
+    <!-- Sección de productos existentes -->
+    <div class="form-section">
+      <div class="section-header">
+        <h2>Productos Existentes</h2>
+        <button type="button" class="toggle-button" (click)="mostrarProductosExistentes = !mostrarProductosExistentes">
+          {{ mostrarProductosExistentes ? 'Ocultar' : 'Mostrar' }} productos
+        </button>
+      </div>
+
+      <div class="productos-list" *ngIf="mostrarProductosExistentes">
+        <p class="info-text">Selecciona los productos que deseas mover a esta categoría</p>
+
+        <div *ngIf="productosDisponibles.length === 0" class="empty-state">
+          <p>No hay productos disponibles para añadir a esta categoría</p>
+        </div>
+
+        <div *ngIf="productosDisponibles.length > 0">
+          <div *ngFor="let producto of productosDisponibles" class="producto-item">
+            <label class="custom-checkbox">
+              <input
+                type="checkbox"
+                [checked]="productosSeleccionados.includes(producto.id)"
+                (change)="toggleSeleccionProducto(producto.id)"
+              >
+              <span class="checkmark"></span>
+              <span class="producto-info">
+                {{ producto.nombre }}
+                <small *ngIf="producto.categoriaId">
+                  (Actualmente en: {{ producto.categoriaNombre }})
+                </small>
+                <div class="producto-detalles">
+                  <span class="precio">{{ producto.precio | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  <span class="stock">Stock: {{ producto.stock }}</span>
+                </div>
+              </span>
+            </label>
+          </div>
+
+          <div class="form-group" *ngIf="productosSeleccionados.length > 0">
+            <label class="custom-checkbox">
+              <input type="checkbox" formControlName="forzarMovimiento">
+              <span class="checkmark"></span>
+              <span class="checkbox-text">Forzar movimiento de productos con categoría</span>
+            </label>
+            <small class="info-text">
+              Si no se marca esta opción, solo se moverán los productos sin categoría
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de productos nuevos -->
+    <div class="form-section" *ngIf="!isEditing">
+      <div class="section-header">
+        <h2>Productos Nuevos</h2>
+        <button type="button" class="toggle-button" (click)="mostrarNuevosProductos = !mostrarNuevosProductos">
+          {{ mostrarNuevosProductos ? 'Ocultar' : 'Mostrar' }} formulario
+        </button>
+      </div>
+
+      <div *ngIf="mostrarNuevosProductos" formArrayName="productosNuevos">
+        <div *ngFor="let producto of productosNuevosArray.controls; let i = index" [formGroupName]="i" class="producto-form">
+          <div class="producto-header">
+            <h3>Producto #{{i + 1}}</h3>
+            <button type="button" class="remove-button" (click)="eliminarNuevoProducto(i)">
+              Eliminar
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label [for]="'producto-nombre-' + i">Nombre</label>
+            <input
+              [id]="'producto-nombre-' + i"
+              type="text"
+              formControlName="nombre"
+              placeholder="Nombre del producto"
+            >
+            <div class="validation-error" *ngIf="producto.get('nombre')?.invalid && producto.get('nombre')?.touched">
+              <span *ngIf="producto.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+              <span *ngIf="producto.get('nombre')?.errors?.['minlength']">El nombre debe tener al menos 3 caracteres</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label [for]="'producto-descripcion-' + i">Descripción</label>
+            <textarea
+              [id]="'producto-descripcion-' + i"
+              formControlName="descripcion"
+              placeholder="Descripción del producto"
+              rows="3"
+            ></textarea>
+            <div class="validation-error" *ngIf="producto.get('descripcion')?.invalid && producto.get('descripcion')?.touched">
+              <span *ngIf="producto.get('descripcion')?.errors?.['required']">La descripción es obligatoria</span>
+              <span *ngIf="producto.get('descripcion')?.errors?.['minlength']">La descripción debe tener al menos 10 caracteres</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label [for]="'producto-precio-' + i">Precio</label>
+            <input
+              [id]="'producto-precio-' + i"
+              type="number"
+              formControlName="precio"
+              placeholder="Precio del producto"
+              step="0.01"
+              min="0"
+            >
+            <div class="validation-error" *ngIf="producto.get('precio')?.invalid && producto.get('precio')?.touched">
+              <span *ngIf="producto.get('precio')?.errors?.['required']">El precio es obligatorio</span>
+              <span *ngIf="producto.get('precio')?.errors?.['min']">El precio debe ser mayor que 0</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label [for]="'producto-stock-' + i">Stock</label>
+            <input
+              [id]="'producto-stock-' + i"
+              type="number"
+              formControlName="stock"
+              placeholder="Stock disponible"
+              min="0"
+            >
+            <div class="validation-error" *ngIf="producto.get('stock')?.invalid && producto.get('stock')?.touched">
+              <span *ngIf="producto.get('stock')?.errors?.['required']">El stock es obligatorio</span>
+              <span *ngIf="producto.get('stock')?.errors?.['min']">El stock debe ser mayor o igual a 0</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label [for]="'producto-foto-' + i">Foto (opcional)</label>
+            <input
+              [id]="'producto-foto-' + i"
+              type="file"
+              (change)="onFileSelected($event, i)"
+              accept="image/*"
+            >
+          </div>
+        </div>
+
+        <button type="button" class="add-product-button" (click)="agregarNuevoProducto()">
+          + Añadir Producto
+        </button>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="cancel-button" (click)="cancelar()">
+        Cancelar
+      </button>
+      <button type="submit" class="submit-button" [disabled]="categoriaForm.invalid">
+        {{ isEditing ? 'Actualizar' : 'Crear' }} Categoría
+      </button>
+    </div>
+  </form>
+</div>

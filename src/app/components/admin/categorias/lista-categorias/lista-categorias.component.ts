@@ -1,32 +1,77 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { SecurityContext } from '@angular/core';
 import { CategoriaResponse } from 'src/app/models/categorias/categoria-response';
 import { CategoriaService } from 'src/app/services/categoria/categoria.service';
+import { ProductoService } from 'src/app/services/producto/producto.service';
 
 @Component({
   selector: 'app-lista-categorias',
   templateUrl: './lista-categorias.component.html',
   styleUrls: ['./lista-categorias.component.css']
 })
-export class ListaCategoriasComponent implements OnInit {
+export class ListaCategoriasComponent implements OnInit, OnDestroy {
   categorias: CategoriaResponse[] = [];
   categoriasFiltradas: CategoriaResponse[] = [];
   mensajeError: string = '';
   mensajeExito: string = '';
   searchTerm: string = '';
+  categoriasExpandidas: Set<number> = new Set();
+
+  // Cache de imágenes
+  imagenesCache = new Map<string, SafeUrl>();
 
   // Propiedades para el modal
   mostrarModalConfirmacion = false;
   categoriaAEliminar: CategoriaResponse | null = null;
   eliminarProductosAsociados = false;
 
+  // Propiedades para el formulario
+  mostrarFormulario = false;
+  categoriaEnEdicion: CategoriaResponse | null = null;
+
   constructor(
     private categoriaService: CategoriaService,
-    private router: Router
+    private productoService: ProductoService,
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
     this.cargarCategorias();
+  }
+
+  ngOnDestroy(): void {
+    // Limpiar las URLs de las imágenes cacheadas
+    this.imagenesCache.forEach((safeUrl) => {
+      const url = this.sanitizer.sanitize(SecurityContext.URL, safeUrl);
+      if (url) URL.revokeObjectURL(url);
+    });
+  }
+
+  getImageUrl(fotoPath: string | undefined): SafeUrl {
+    if (!fotoPath) return 'assets/images/no-image.png';
+
+    if (this.imagenesCache.has(fotoPath)) {
+      return this.imagenesCache.get(fotoPath)!;
+    }
+
+    this.productoService.obtenerImagen(fotoPath).subscribe({
+      next: (blob: Blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+        const safeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+        this.imagenesCache.set(fotoPath, safeUrl);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error al cargar la imagen:', error);
+        this.imagenesCache.set(fotoPath, 'assets/images/no-image.png');
+      }
+    });
+
+    return 'assets/images/no-image.png';
   }
 
   cargarCategorias(): void {
@@ -55,11 +100,13 @@ export class ListaCategoriasComponent implements OnInit {
   }
 
   crearCategoria(): void {
-    this.router.navigate(['/admin/categorias/crear']);
+    this.categoriaEnEdicion = null;
+    this.mostrarFormulario = true;
   }
 
   editarCategoria(categoria: CategoriaResponse): void {
-    this.router.navigate([`/admin/categorias/editar/${categoria.id}`]);
+    this.categoriaEnEdicion = categoria;
+    this.mostrarFormulario = true;
   }
 
   confirmarEliminacion(categoria: CategoriaResponse): void {
@@ -100,6 +147,20 @@ export class ListaCategoriasComponent implements OnInit {
     this.filtrarCategorias();
   }
 
+  // Métodos para el formulario
+  onFormularioCerrado(): void {
+    this.mostrarFormulario = false;
+    this.categoriaEnEdicion = null;
+    this.cargarCategorias();
+  }
+
+  onCategoriaGuardada(mensaje: string): void {
+    this.mostrarExito(mensaje);
+    this.mostrarFormulario = false;
+    this.categoriaEnEdicion = null;
+    this.cargarCategorias();
+  }
+
   // Métodos para manejar mensajes
   private mostrarExito(mensaje: string): void {
     this.limpiarMensajes();
@@ -116,5 +177,17 @@ export class ListaCategoriasComponent implements OnInit {
   private limpiarMensajes(): void {
     this.mensajeError = '';
     this.mensajeExito = '';
+  }
+
+  toggleProductos(categoriaId: number): void {
+    if (this.categoriasExpandidas.has(categoriaId)) {
+      this.categoriasExpandidas.delete(categoriaId);
+    } else {
+      this.categoriasExpandidas.add(categoriaId);
+    }
+  }
+
+  isExpanded(categoriaId: number): boolean {
+    return this.categoriasExpandidas.has(categoriaId);
   }
 }

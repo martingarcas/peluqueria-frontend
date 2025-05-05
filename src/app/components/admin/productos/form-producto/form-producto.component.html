@@ -1,1 +1,113 @@
-<p>form-producto works!</p>
+<form [formGroup]="productoForm" (ngSubmit)="onSubmit()" class="producto-form">
+  <!-- Mensajes de éxito y error -->
+  <div *ngIf="mensajeExito" class="success-message">
+    {{ mensajeExito }}
+  </div>
+  <div *ngIf="mensajeError" class="error-message">
+    {{ mensajeError }}
+  </div>
+
+  <!-- Campo Nombre -->
+  <div class="form-group">
+    <label for="nombre">NOMBRE</label>
+    <input
+      type="text"
+      id="nombre"
+      formControlName="nombre"
+      [class.invalid]="productoForm.get('nombre')?.invalid && productoForm.get('nombre')?.touched">
+    <div class="error-hint" *ngIf="productoForm.get('nombre')?.invalid && productoForm.get('nombre')?.touched">
+      El nombre es requerido y debe tener al menos 3 caracteres
+    </div>
+  </div>
+
+  <!-- Campo Descripción -->
+  <div class="form-group">
+    <label for="descripcion">DESCRIPCIÓN</label>
+    <textarea
+      id="descripcion"
+      formControlName="descripcion"
+      rows="4"
+      [class.invalid]="productoForm.get('descripcion')?.invalid && productoForm.get('descripcion')?.touched">
+    </textarea>
+    <div class="error-hint" *ngIf="productoForm.get('descripcion')?.invalid && productoForm.get('descripcion')?.touched">
+      La descripción es requerida y debe tener al menos 10 caracteres
+    </div>
+  </div>
+
+  <!-- Campos Precio y Stock en la misma fila -->
+  <div class="form-row">
+    <div class="form-group">
+      <label for="precio">PRECIO</label>
+      <input
+        type="number"
+        id="precio"
+        formControlName="precio"
+        min="0"
+        step="0.01"
+        [class.invalid]="productoForm.get('precio')?.invalid && productoForm.get('precio')?.touched">
+      <div class="error-hint" *ngIf="productoForm.get('precio')?.invalid && productoForm.get('precio')?.touched">
+        El precio debe ser mayor o igual a 0
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="stock">STOCK</label>
+      <input
+        type="number"
+        id="stock"
+        formControlName="stock"
+        min="0"
+        [class.invalid]="productoForm.get('stock')?.invalid && productoForm.get('stock')?.touched">
+      <div class="error-hint" *ngIf="productoForm.get('stock')?.invalid && productoForm.get('stock')?.touched">
+        El stock debe ser mayor o igual a 0
+      </div>
+    </div>
+  </div>
+
+  <!-- Campo Categoría -->
+  <div class="form-group">
+    <label for="categoriaId">CATEGORÍA</label>
+    <select
+      id="categoriaId"
+      formControlName="categoriaId"
+      [class.invalid]="productoForm.get('categoriaId')?.invalid && productoForm.get('categoriaId')?.touched">
+      <option value="">Seleccione una categoría</option>
+      <option *ngFor="let categoria of categorias" [value]="categoria.id">
+        {{ categoria.nombre }}
+      </option>
+    </select>
+    <div class="error-hint" *ngIf="productoForm.get('categoriaId')?.invalid && productoForm.get('categoriaId')?.touched">
+      Debe seleccionar una categoría
+    </div>
+  </div>
+
+  <!-- Campo Imagen -->
+  <div class="form-group">
+    <label for="imagen">IMAGEN</label>
+    <div class="imagen-container">
+      <div class="imagen-preview" *ngIf="previewImagen">
+        <img [src]="previewImagen" alt="Preview">
+      </div>
+      <div class="imagen-upload">
+        <input
+          type="file"
+          id="imagen"
+          (change)="onImagenSeleccionada($event)"
+          accept="image/*">
+        <label for="imagen" class="upload-label">
+          {{ previewImagen ? 'Cambiar imagen' : 'Elegir archivo' }}
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botones de acción -->
+  <div class="form-actions">
+    <button type="button" class="cancel-button" (click)="cancelar()">
+      Cancelar
+    </button>
+    <button type="submit" class="submit-button" [disabled]="productoForm.invalid">
+      {{ modo === 'crear' ? 'Crear Producto' : 'Guardar Cambios' }}
+    </button>
+  </div>
+</form>

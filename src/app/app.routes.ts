@@ -36,6 +36,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { ClienteGuard } from './guards/cliente.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { TrabajadorGuard } from './guards/trabajador.guard';
+import { ListaUsuariosComponent } from './components/admin/usuarios/lista-usuarios/lista-usuarios.component';
 // futuros guards: workerGuard
 
 export const routes: Routes = [
@@ -74,6 +75,7 @@ export const routes: Routes = [
       { path: 'productos', component: ListaProductosComponent },
       { path: 'servicios', component: ListaServiciosComponent },
       { path: 'horarios', component: ListaHorariosComponent },
+      { path: 'usuarios', component: ListaUsuariosComponent },
       //{ path: 'usuarios', component: UsersComponent },
       //{ path: 'servicios', component: ServicesComponent },
       //{ path: 'citas', component: AdminAppointmentsComponent },

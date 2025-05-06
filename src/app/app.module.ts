@@ -29,6 +29,8 @@ import { ListaServiciosComponent } from './components/admin/servicios/lista-serv
 import { FormServicioComponent } from './components/admin/servicios/form-servicio/form-servicio.component';
 import { ListaHorariosComponent } from './components/admin/horarios/lista-horarios/lista-horarios.component';
 import { FormHorarioComponent } from './components/admin/horarios/form-horario/form-horario.component';
+import { FormUsuarioComponent } from './components/admin/usuarios/form-usuario/form-usuario.component';
+import { ListaUsuariosComponent } from './components/admin/usuarios/lista-usuarios/lista-usuarios.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +56,9 @@ import { FormHorarioComponent } from './components/admin/horarios/form-horario/f
     ListaServiciosComponent,
     FormServicioComponent,
     ListaHorariosComponent,
-    FormHorarioComponent
+    FormHorarioComponent,
+    FormUsuarioComponent,
+    ListaUsuariosComponent
   ],
   imports: [
     BrowserModule,

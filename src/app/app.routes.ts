@@ -20,6 +20,7 @@ import { HeaderComponent as AdminHeaderComponent } from './components/admin/head
 import { FooterComponent as AdminFooterComponent } from './components/admin/footer/footer.component';
 import { ListaCategoriasComponent } from './components/admin/categorias/lista-categorias/lista-categorias.component';
 import { ListaProductosComponent } from './components/admin/productos/lista-productos/lista-productos.component';
+import { ListaServiciosComponent } from './components/admin/servicios/lista-servicios/lista-servicios.component';
 //import { UsersComponent } from './components/admin/users/users.component';
 //import { ServicesComponent } from './components/admin/services/services.component';
 //import { AppointmentsComponent as AdminAppointmentsComponent } from './components/admin/appointments/appointments.component';
@@ -72,6 +73,7 @@ export const routes: Routes = [
       { path: '', component: AdminHomeComponent },
       { path: 'categorias', component: ListaCategoriasComponent },
       { path: 'productos', component: ListaProductosComponent },
+      { path: 'servicios', component: ListaServiciosComponent },
       //{ path: 'usuarios', component: UsersComponent },
       //{ path: 'servicios', component: ServicesComponent },
       //{ path: 'citas', component: AdminAppointmentsComponent },

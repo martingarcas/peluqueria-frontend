@@ -1,0 +1,112 @@
+<!-- lista-servicios.component.html -->
+<div class="servicios-container">
+  <!-- Mensajes de éxito y error -->
+  <div class="success-message" *ngIf="mensajeExito">
+    {{ mensajeExito }}
+  </div>
+
+  <div class="internal-error" *ngIf="mensajeError">
+    {{ mensajeError }}
+  </div>
+
+  <!-- Vista de lista -->
+  <div *ngIf="!mostrarFormulario">
+    <div class="header">
+      <h1>Servicios</h1>
+      <div class="actions">
+        <div class="search-box">
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Buscar servicio">
+        </div>
+        <button class="add-button" (click)="mostrarFormularioCrear()">
+          + Añadir nuevo servicio
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabla de servicios -->
+    <div class="table-container">
+      <div class="table-header">
+        <div class="column nombre">Nombre</div>
+        <div class="column descripcion">Descripción</div>
+        <div class="column duracion">Duración</div>
+        <div class="column precio">Precio</div>
+        <div class="column acciones">Acciones</div>
+      </div>
+
+      <div class="table-body">
+        <div class="table-row" *ngFor="let servicio of serviciosFiltrados">
+          <div class="column nombre" data-label="Nombre:">
+            {{ servicio.nombre }}
+          </div>
+          <div class="column descripcion" data-label="Descripción:">
+            {{ servicio.descripcion }}
+          </div>
+          <div class="column duracion" data-label="Duración:">
+            {{ servicio.duracion }} min
+          </div>
+          <div class="column precio" data-label="Precio:">
+            {{ servicio.precio }}€
+          </div>
+          <div class="column acciones" data-label="Acciones:">
+            <button class="edit-button" (click)="mostrarFormularioEditar(servicio)">
+              Editar
+            </button>
+            <button class="delete-button" (click)="confirmarEliminacion(servicio)">
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación -->
+  <div class="modal-overlay" *ngIf="mostrarModalConfirmacion">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Confirmar eliminación</h2>
+        <button class="close-button" (click)="cancelarEliminacion()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar el servicio <strong>"{{servicioAEliminar?.nombre}}"</strong>?</p>
+        <div class="servicio-preview" *ngIf="servicioAEliminar">
+          <div class="servicio-info">
+            <p class="precio">{{ servicioAEliminar.precio | currency:'EUR':'symbol':'1.2-2' }}</p>
+            <p class="duracion">Duración: {{ servicioAEliminar.duracion }} minutos</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="cancel-button" (click)="cancelarEliminacion()">
+          Cancelar
+        </button>
+        <button class="confirm-button" (click)="eliminarServicio()">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vista del formulario -->
+  <div class="formulario-container" *ngIf="mostrarFormulario">
+    <div class="header-formulario">
+      <button class="volver-button" (click)="volverALista()">
+        <i class="fas fa-arrow-left"></i> Volver a la lista
+      </button>
+      <h1>{{ modoFormulario === 'crear' ? 'Crear Servicio' : 'Editar Servicio' }}</h1>
+    </div>
+
+    <app-form-servicio
+      [modo]="modoFormulario"
+      [servicioAEditar]="servicioEnEdicion"
+      (onGuardar)="guardarServicio($event)"
+      (onCancelar)="volverALista()">
+    </app-form-servicio>
+  </div>
+</div>

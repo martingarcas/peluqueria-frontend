@@ -1,0 +1,80 @@
+<form [formGroup]="servicioForm" (ngSubmit)="onSubmit()" class="servicio-form">
+  <!-- Mensajes de éxito y error -->
+  <div class="success-message" *ngIf="mensajeExito">
+    {{ mensajeExito }}
+  </div>
+  <div class="error-message" *ngIf="mensajeError">
+    {{ mensajeError }}
+  </div>
+
+  <!-- Campo Nombre -->
+  <div class="form-group">
+    <label for="nombre">Nombre</label>
+    <input
+      type="text"
+      id="nombre"
+      formControlName="nombre"
+      [class.invalid]="servicioForm.get('nombre')?.invalid && servicioForm.get('nombre')?.touched">
+    <div class="error-hint" *ngIf="servicioForm.get('nombre')?.invalid && servicioForm.get('nombre')?.touched">
+      <span *ngIf="servicioForm.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+      <span *ngIf="servicioForm.get('nombre')?.errors?.['minlength']">El nombre debe tener al menos 3 caracteres</span>
+    </div>
+  </div>
+
+  <!-- Campo Descripción -->
+  <div class="form-group">
+    <label for="descripcion">Descripción</label>
+    <textarea
+      id="descripcion"
+      formControlName="descripcion"
+      rows="4"
+      [class.invalid]="servicioForm.get('descripcion')?.invalid && servicioForm.get('descripcion')?.touched">
+    </textarea>
+    <div class="error-hint" *ngIf="servicioForm.get('descripcion')?.invalid && servicioForm.get('descripcion')?.touched">
+      <span *ngIf="servicioForm.get('descripcion')?.errors?.['required']">La descripción es obligatoria</span>
+      <span *ngIf="servicioForm.get('descripcion')?.errors?.['minlength']">La descripción debe tener al menos 10 caracteres</span>
+    </div>
+  </div>
+
+  <!-- Campos Duración y Precio en la misma fila -->
+  <div class="form-row">
+    <div class="form-group">
+      <label for="duracion">Duración (minutos)</label>
+      <input
+        type="number"
+        id="duracion"
+        formControlName="duracion"
+        min="1"
+        [class.invalid]="servicioForm.get('duracion')?.invalid && servicioForm.get('duracion')?.touched">
+      <div class="error-hint" *ngIf="servicioForm.get('duracion')?.invalid && servicioForm.get('duracion')?.touched">
+        <span *ngIf="servicioForm.get('duracion')?.errors?.['required']">La duración es obligatoria</span>
+        <span *ngIf="servicioForm.get('duracion')?.errors?.['min']">La duración debe ser mayor a 0</span>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="precio">Precio</label>
+      <input
+        type="number"
+        id="precio"
+        formControlName="precio"
+        min="0"
+        step="0.01"
+        [class.invalid]="servicioForm.get('precio')?.invalid && servicioForm.get('precio')?.touched">
+      <div class="error-hint" *ngIf="servicioForm.get('precio')?.invalid && servicioForm.get('precio')?.touched">
+        <span *ngIf="servicioForm.get('precio')?.errors?.['required']">El precio es obligatorio</span>
+        <span *ngIf="servicioForm.get('precio')?.errors?.['min']">El precio debe ser mayor o igual a 0</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Botones de acción -->
+  <div class="form-actions">
+    <button type="button" class="cancel-button" (click)="cancelar()">
+      Cancelar
+    </button>
+    <button type="submit" class="submit-button" [disabled]="servicioForm.invalid">
+      {{ modo === 'crear' ? 'Crear Servicio' : 'Guardar Cambios' }}
+    </button>
+  </div>
+</form>

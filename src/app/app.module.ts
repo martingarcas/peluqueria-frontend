@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 
 import { routes } from './app.routes';
 import { AppComponent } from './app.component';
@@ -22,10 +23,10 @@ import { HeaderComponent as AdminHeaderComponent } from './components/admin/head
 import { FooterComponent as AdminFooterComponent } from './components/admin/footer/footer.component';
 import { ListaCategoriasComponent } from './components/admin/categorias/lista-categorias/lista-categorias.component';
 import { FormCategoriaComponent } from './components/admin/categorias/form-categoria/form-categoria.component';
-import { CommonModule } from '@angular/common';
 import { ListaProductosComponent } from './components/admin/productos/lista-productos/lista-productos.component';
 import { FormProductoComponent } from './components/admin/productos/form-producto/form-producto.component';
-
+import { ListaServiciosComponent } from './components/admin/servicios/lista-servicios/lista-servicios.component';
+import { FormServicioComponent } from './components/admin/servicios/form-servicio/form-servicio.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -46,7 +47,9 @@ import { FormProductoComponent } from './components/admin/productos/form-product
     ListaCategoriasComponent,
     FormCategoriaComponent,
     ListaProductosComponent,
-    FormProductoComponent
+    FormProductoComponent,
+    ListaServiciosComponent,
+    FormServicioComponent
   ],
   imports: [
     BrowserModule,

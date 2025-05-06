@@ -1,0 +1,79 @@
+<div class="form-container">
+  <div class="success-message" *ngIf="mensajeExito">
+    {{ mensajeExito }}
+  </div>
+
+  <div class="error-message" *ngIf="mensajeError">
+    {{ mensajeError }}
+  </div>
+
+  <form [formGroup]="horarioForm" (ngSubmit)="onSubmit()" class="horario-form">
+    <!-- Campo Nombre -->
+    <div class="form-group">
+      <label for="nombre">NOMBRE</label>
+      <input
+        type="text"
+        id="nombre"
+        formControlName="nombre"
+        placeholder="Nombre del horario"
+        [class.invalid]="horarioForm.get('nombre')?.invalid && horarioForm.get('nombre')?.touched">
+      <div class="error-hint" *ngIf="horarioForm.get('nombre')?.invalid && horarioForm.get('nombre')?.touched">
+        El nombre es obligatorio
+      </div>
+    </div>
+
+    <!-- Campo Día de la semana -->
+    <div class="form-group">
+      <label for="diaSemana">DÍA DE LA SEMANA</label>
+      <select
+        id="diaSemana"
+        formControlName="diaSemana"
+        [class.invalid]="horarioForm.get('diaSemana')?.invalid && horarioForm.get('diaSemana')?.touched">
+        <option value="">Seleccione el día de la semana</option>
+        <option *ngFor="let dia of diasSemana" [value]="dia">
+          {{ formatDiaSemana(dia) }}
+        </option>
+      </select>
+      <div class="error-hint" *ngIf="horarioForm.get('diaSemana')?.invalid && horarioForm.get('diaSemana')?.touched">
+        El día de la semana es obligatorio
+      </div>
+    </div>
+
+    <!-- Campos Hora inicio y fin en la misma fila -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="horaInicio">HORA DE INICIO</label>
+        <input
+          type="time"
+          id="horaInicio"
+          formControlName="horaInicio"
+          [class.invalid]="horarioForm.get('horaInicio')?.invalid && horarioForm.get('horaInicio')?.touched">
+          <div class="error-hint" *ngIf="horarioForm.get('horaInicio')?.invalid && horarioForm.get('horaInicio')?.touched">
+            La hora de inicio es obligatoria
+          </div>
+      </div>
+
+      <div class="form-group">
+        <label for="horaFin">HORA DE FIN</label>
+        <input
+          type="time"
+          id="horaFin"
+          formControlName="horaFin"
+          [class.invalid]="horarioForm.get('horaFin')?.invalid && horarioForm.get('horaFin')?.touched">
+          <div class="error-hint" *ngIf="horarioForm.get('horaFin')?.invalid && horarioForm.get('horaFin')?.touched">
+            La hora de fin es obligatoria
+          </div>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="form-actions">
+      <button type="button" class="cancel-button" (click)="cancelar()">
+        Cancelar
+      </button>
+      <button type="submit" class="submit-button" [disabled]="horarioForm.invalid">
+        {{ modo === 'crear' ? 'Crear Horario' : 'Guardar Cambios' }}
+      </button>
+    </div>
+  </form>
+</div>

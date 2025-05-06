@@ -27,6 +27,9 @@ import { ListaProductosComponent } from './components/admin/productos/lista-prod
 import { FormProductoComponent } from './components/admin/productos/form-producto/form-producto.component';
 import { ListaServiciosComponent } from './components/admin/servicios/lista-servicios/lista-servicios.component';
 import { FormServicioComponent } from './components/admin/servicios/form-servicio/form-servicio.component';
+import { ListaHorariosComponent } from './components/admin/horarios/lista-horarios/lista-horarios.component';
+import { FormHorarioComponent } from './components/admin/horarios/form-horario/form-horario.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -49,7 +52,9 @@ import { FormServicioComponent } from './components/admin/servicios/form-servici
     ListaProductosComponent,
     FormProductoComponent,
     ListaServiciosComponent,
-    FormServicioComponent
+    FormServicioComponent,
+    ListaHorariosComponent,
+    FormHorarioComponent
   ],
   imports: [
     BrowserModule,

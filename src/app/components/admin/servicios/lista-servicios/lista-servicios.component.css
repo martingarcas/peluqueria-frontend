@@ -387,7 +387,6 @@
 
   .actions {
     flex-direction: column;
-    width: 100%;
   }
 
   .search-box input {

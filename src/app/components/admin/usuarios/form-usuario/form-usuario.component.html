@@ -1,1 +1,245 @@
-<p>form-usuario works!</p>
+<div class="form-container">
+  <div class="success-message" *ngIf="mensajeExito">
+    {{ mensajeExito }}
+  </div>
+
+  <div class="error-message" *ngIf="mensajeError">
+    {{ mensajeError }}
+  </div>
+
+  <form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()" class="usuario-form">
+    <!-- Información básica del usuario -->
+    <div class="form-section">
+      <h2>Información del Usuario</h2>
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input
+          type="text"
+          id="nombre"
+          formControlName="nombre"
+          placeholder="Nombre del usuario"
+          [class.invalid]="usuarioForm.get('nombre')?.invalid && usuarioForm.get('nombre')?.touched"
+        >
+        <div class="validation-error" *ngIf="usuarioForm.get('nombre')?.invalid && usuarioForm.get('nombre')?.touched">
+          <span *ngIf="usuarioForm.get('nombre')?.errors?.['required']">El nombre es obligatorio</span>
+          <span *ngIf="usuarioForm.get('nombre')?.errors?.['minlength']">El nombre debe tener al menos 3 caracteres</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="apellidos">Apellidos</label>
+        <input
+          type="text"
+          id="apellidos"
+          formControlName="apellidos"
+          placeholder="Apellidos del usuario"
+          [class.invalid]="usuarioForm.get('apellidos')?.invalid && usuarioForm.get('apellidos')?.touched"
+        >
+        <div class="validation-error" *ngIf="usuarioForm.get('apellidos')?.invalid && usuarioForm.get('apellidos')?.touched">
+          <span *ngIf="usuarioForm.get('apellidos')?.errors?.['required']">Los apellidos son obligatorios</span>
+          <span *ngIf="usuarioForm.get('apellidos')?.errors?.['minlength']">Los apellidos deben tener al menos 3 caracteres</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          placeholder="Email del usuario"
+          [class.invalid]="usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched"
+        >
+        <div class="validation-error" *ngIf="usuarioForm.get('email')?.invalid && usuarioForm.get('email')?.touched">
+          <span *ngIf="usuarioForm.get('email')?.errors?.['required']">El email es obligatorio</span>
+          <span *ngIf="usuarioForm.get('email')?.errors?.['email']">El email no es válido</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          placeholder="Contraseña del usuario"
+          [class.invalid]="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched"
+        >
+        <div class="validation-error" *ngIf="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched">
+          <span *ngIf="usuarioForm.get('password')?.errors?.['required']">La contraseña es obligatoria</span>
+          <span *ngIf="usuarioForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="telefono">Teléfono</label>
+        <input
+          type="tel"
+          id="telefono"
+          formControlName="telefono"
+          placeholder="Teléfono del usuario"
+          [class.invalid]="usuarioForm.get('telefono')?.invalid && usuarioForm.get('telefono')?.touched"
+        >
+        <div class="validation-error" *ngIf="usuarioForm.get('telefono')?.invalid && usuarioForm.get('telefono')?.touched">
+          <span *ngIf="usuarioForm.get('telefono')?.errors?.['required']">El teléfono es obligatorio</span>
+          <span *ngIf="usuarioForm.get('telefono')?.errors?.['pattern']">El teléfono debe tener 9 dígitos</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="rol">Rol</label>
+        <select
+          id="rol"
+          formControlName="rol"
+          [class.invalid]="usuarioForm.get('rol')?.invalid && usuarioForm.get('rol')?.touched"
+        >
+          <option value="CLIENTE">Cliente</option>
+          <option value="TRABAJADOR">Trabajador</option>
+          <option value="ADMIN">Administrador</option>
+        </select>
+        <div class="validation-error" *ngIf="usuarioForm.get('rol')?.invalid && usuarioForm.get('rol')?.touched">
+          <span *ngIf="usuarioForm.get('rol')?.errors?.['required']">El rol es obligatorio</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de contrato (solo para trabajadores) -->
+    <div class="form-section" *ngIf="esTrabajador">
+      <div class="section-header">
+        <h2>Contrato</h2>
+        <button type="button" class="toggle-button" (click)="mostrarFormularioContrato = !mostrarFormularioContrato">
+          {{ mostrarFormularioContrato ? 'Ocultar' : 'Mostrar' }} formulario
+        </button>
+      </div>
+
+      <div *ngIf="mostrarFormularioContrato" formGroupName="contrato">
+        <div class="form-group">
+          <label for="fechaInicio">Fecha de inicio</label>
+          <input
+            type="date"
+            id="fechaInicio"
+            formControlName="fechaInicio"
+            [class.invalid]="usuarioForm.get('contrato.fechaInicio')?.invalid && usuarioForm.get('contrato.fechaInicio')?.touched"
+          >
+          <div class="validation-error" *ngIf="usuarioForm.get('contrato.fechaInicio')?.invalid && usuarioForm.get('contrato.fechaInicio')?.touched">
+            <span *ngIf="usuarioForm.get('contrato.fechaInicio')?.errors?.['required']">La fecha de inicio es obligatoria</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fechaFin">Fecha de fin</label>
+          <input
+            type="date"
+            id="fechaFin"
+            formControlName="fechaFin"
+            [class.invalid]="usuarioForm.get('contrato.fechaFin')?.invalid && usuarioForm.get('contrato.fechaFin')?.touched"
+          >
+          <div class="validation-error" *ngIf="usuarioForm.get('contrato.fechaFin')?.invalid && usuarioForm.get('contrato.fechaFin')?.touched">
+            <span *ngIf="usuarioForm.get('contrato.fechaFin')?.errors?.['required']">La fecha de fin es obligatoria</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="salario">Salario</label>
+          <input
+            type="number"
+            id="salario"
+            formControlName="salario"
+            placeholder="Salario mensual"
+            step="0.01"
+            min="0"
+            [class.invalid]="usuarioForm.get('contrato.salario')?.invalid && usuarioForm.get('contrato.salario')?.touched"
+          >
+          <div class="validation-error" *ngIf="usuarioForm.get('contrato.salario')?.invalid && usuarioForm.get('contrato.salario')?.touched">
+            <span *ngIf="usuarioForm.get('contrato.salario')?.errors?.['required']">El salario es obligatorio</span>
+            <span *ngIf="usuarioForm.get('contrato.salario')?.errors?.['min']">El salario debe ser mayor que 0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de servicios (opcional para trabajadores) -->
+    <div class="form-section" *ngIf="esTrabajador">
+      <div class="section-header">
+        <h2>Servicios</h2>
+        <button type="button" class="toggle-button" (click)="mostrarFormularioServicios = !mostrarFormularioServicios">
+          {{ mostrarFormularioServicios ? 'Ocultar' : 'Mostrar' }} servicios
+        </button>
+      </div>
+
+      <div class="servicios-list" *ngIf="mostrarFormularioServicios">
+        <p class="info-text">Selecciona los servicios que puede realizar este trabajador</p>
+
+        <div *ngIf="serviciosDisponibles.length === 0" class="empty-state">
+          <p>No hay servicios disponibles para asignar</p>
+        </div>
+
+        <div *ngIf="serviciosDisponibles.length > 0">
+          <div *ngFor="let servicio of serviciosDisponibles" class="servicio-item">
+            <label class="custom-checkbox">
+              <input
+                type="checkbox"
+                [checked]="serviciosSeleccionados.includes(servicio.id)"
+                (change)="toggleSeleccionServicio(servicio.id)"
+              >
+              <span class="checkmark"></span>
+              <span class="servicio-info">
+                {{ servicio.nombre }}
+                <div class="servicio-detalles">
+                  <span class="precio">{{ servicio.precio | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  <span class="duracion">{{ servicio.duracion }}</span>
+                </div>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección de horarios (opcional para trabajadores) -->
+    <div class="form-section" *ngIf="esTrabajador">
+      <div class="section-header">
+        <h2>Horarios</h2>
+        <button type="button" class="toggle-button" (click)="mostrarFormularioHorarios = !mostrarFormularioHorarios">
+          {{ mostrarFormularioHorarios ? 'Ocultar' : 'Mostrar' }} horarios
+        </button>
+      </div>
+
+      <div class="horarios-list" *ngIf="mostrarFormularioHorarios">
+        <p class="info-text">Selecciona los horarios de trabajo de este trabajador</p>
+
+        <div *ngIf="horariosDisponibles.length === 0" class="empty-state">
+          <p>No hay horarios disponibles para asignar</p>
+        </div>
+
+        <div *ngIf="horariosDisponibles.length > 0">
+          <div *ngFor="let horario of horariosDisponibles" class="horario-item">
+            <label class="custom-checkbox">
+              <input
+                type="checkbox"
+                [checked]="horariosSeleccionados.includes(horario.id)"
+                (change)="toggleSeleccionHorario(horario.id)"
+              >
+              <span class="checkmark"></span>
+              <span class="horario-info">
+                {{ horario.diaSemana | titlecase }}
+                <div class="horario-detalles">
+                  <span class="hora">{{ horario.horaInicio }} - {{ horario.horaFin }}</span>
+                </div>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="cancel-button" (click)="cancelar()">
+        Cancelar
+      </button>
+      <button type="submit" class="submit-button" [disabled]="usuarioForm.invalid">
+        {{ modo === 'crear' ? 'Crear' : 'Actualizar' }} Usuario
+      </button>
+    </div>
+  </form>
+</div>

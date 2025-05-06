@@ -1,1 +1,129 @@
-<p>lista-usuarios works!</p>
+<div class="usuarios-container">
+  <!-- Mensajes siempre visibles -->
+  <div class="success-message" *ngIf="mensajeExito">
+    {{ mensajeExito }}
+  </div>
+
+  <div class="internal-error" *ngIf="mensajeError">
+    {{ mensajeError }}
+  </div>
+
+  <!-- Vista de lista de usuarios -->
+  <div *ngIf="!mostrarFormulario">
+    <div class="header">
+      <h1>Usuarios</h1>
+      <div class="actions">
+        <div class="search-box">
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Buscar usuario">
+        </div>
+        <button class="add-button" (click)="mostrarFormularioCrear()">
+          + Añadir nuevo usuario
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabla de usuarios -->
+    <div class="table-container">
+      <div class="table-header">
+        <div class="column nombre">Nombre</div>
+        <div class="column apellidos">Apellidos</div>
+        <div class="column email">Email</div>
+        <div class="column telefono">Teléfono</div>
+        <div class="column rol">Rol</div>
+        <div class="column estado">Estado</div>
+        <div class="column acciones">Acciones</div>
+      </div>
+
+      <div class="table-body">
+        <div class="table-row" *ngFor="let usuario of usuariosFiltrados">
+          <div class="column nombre" data-label="Nombre:">
+            {{ usuario.nombre }}
+          </div>
+          <div class="column apellidos" data-label="Apellidos:">
+            {{ usuario.apellidos }}
+          </div>
+          <div class="column email" data-label="Email:">
+            {{ usuario.email }}
+          </div>
+          <div class="column telefono" data-label="Teléfono:">
+            {{ usuario.telefono }}
+          </div>
+          <div class="column rol" data-label="Rol:">
+            {{ usuario.rol }}
+          </div>
+          <div class="column estado" data-label="Estado:">
+            {{ usuario.contrato?.estado || 'N/A' }}
+          </div>
+          <div class="column acciones" data-label="Acciones:">
+            <button class="edit-button" (click)="mostrarFormularioEditar(usuario)">
+              Editar
+            </button>
+            <button class="delete-button" (click)="confirmarEliminacion(usuario)">
+              Eliminar
+            </button>
+            <button
+              class="download-button"
+              *ngIf="usuario.contrato"
+              (click)="descargarContratoPDF(usuario)">
+              Contrato
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación -->
+  <div class="modal-overlay" *ngIf="mostrarModalConfirmacion">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h2>Confirmar eliminación</h2>
+        <button class="close-button" (click)="cancelarEliminacion()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="modal-content">
+        <p>¿Estás seguro de que deseas eliminar el usuario <strong>"{{usuarioAEliminar?.nombre}} {{usuarioAEliminar?.apellidos}}"</strong>?</p>
+        <div class="usuario-preview" *ngIf="usuarioAEliminar">
+          <div class="usuario-info">
+            <p><strong>Email:</strong> {{ usuarioAEliminar.email }}</p>
+            <p><strong>Teléfono:</strong> {{ usuarioAEliminar.telefono }}</p>
+            <p><strong>Rol:</strong> {{ usuarioAEliminar.rol }}</p>
+            <p *ngIf="usuarioAEliminar.contrato">
+              <strong>Estado:</strong> {{ usuarioAEliminar.contrato.estado }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="cancel-button" (click)="cancelarEliminacion()">
+          Cancelar
+        </button>
+        <button class="confirm-button" (click)="eliminarUsuario()">
+          Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vista del formulario -->
+  <div class="formulario-container" *ngIf="mostrarFormulario">
+    <div class="header-formulario">
+      <button class="volver-button" (click)="volverALista()">
+        <i class="fas fa-arrow-left"></i> Volver a la lista
+      </button>
+      <h1>{{ modoFormulario === 'crear' ? 'Crear Usuario' : 'Editar Usuario' }}</h1>
+    </div>
+
+    <app-form-usuario
+      [modo]="modoFormulario"
+      [usuarioAEditar]="usuarioEnEdicion"
+      (onGuardar)="guardarUsuario($event)"
+      (onCancelar)="volverALista()">
+    </app-form-usuario>
+  </div>
+</div>

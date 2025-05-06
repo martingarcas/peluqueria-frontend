@@ -1,0 +1,293 @@
+/* form-usuario.component.css */
+.form-container {
+  padding: var(--spacing-xl);
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+}
+
+.form-section {
+  background-color: var(--background-dark);
+  border: 1px solid rgba(206, 161, 72, 0.1);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.form-section h2 {
+  font-family: 'Gilda Display', serif;
+  color: var(--primary-color);
+  font-size: var(--font-size-2xl);
+  margin: 0 0 var(--spacing-lg);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.toggle-button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  border-radius: 4px;
+  color: var(--primary-color);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+  font-family: var(--font-secondary);
+}
+
+.toggle-button:hover {
+  background-color: var(--primary-color);
+  color: var(--background-dark);
+}
+
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+  display: block;
+  color: var(--text-color);
+  font-family: var(--font-secondary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: var(--spacing-md);
+  background-color: rgba(206, 161, 72, 0.05);
+  border: 1px solid rgba(206, 161, 72, 0.2);
+  border-radius: 4px;
+  color: var(--text-color);
+  font-family: var(--font-secondary);
+  transition: all var(--transition-speed) ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background-color: rgba(206, 161, 72, 0.1);
+}
+
+.form-group input.invalid,
+.form-group select.invalid,
+.form-group textarea.invalid {
+  border-color: var(--error-color);
+  background-color: rgba(var(--error-color-rgb), 0.05);
+}
+
+.validation-error {
+  color: var(--error-color);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+  font-family: var(--font-secondary);
+}
+
+.info-text {
+  color: var(--text-color);
+  font-family: var(--font-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-xl);
+  color: var(--text-color);
+  font-family: var(--font-secondary);
+}
+
+/* Estilos para los checkboxes personalizados */
+.custom-checkbox {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: var(--spacing-md);
+  cursor: pointer;
+  font-family: var(--font-secondary);
+  color: var(--text-color);
+}
+
+.custom-checkbox input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background-color: rgba(206, 161, 72, 0.05);
+  border: 1px solid rgba(206, 161, 72, 0.2);
+  border-radius: 4px;
+}
+
+.custom-checkbox:hover input ~ .checkmark {
+  background-color: rgba(206, 161, 72, 0.1);
+}
+
+.custom-checkbox input:checked ~ .checkmark {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.custom-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.custom-checkbox .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--background-dark);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Estilos para los items de servicios y horarios */
+.servicio-item,
+.horario-item {
+  background-color: rgba(206, 161, 72, 0.05);
+  border-radius: 4px;
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+}
+
+.servicio-info,
+.horario-info {
+  flex: 1;
+  margin-left: var(--spacing-md);
+}
+
+.servicio-detalles,
+.horario-detalles {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--text-color-light);
+}
+
+.precio,
+.duracion,
+.hora {
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+/* Estilos para los botones de acción */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-xl);
+}
+
+.cancel-button,
+.submit-button {
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: 4px;
+  font-family: var(--font-secondary);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.cancel-button {
+  background-color: transparent;
+  border: 1px solid var(--text-color);
+  color: var(--text-color);
+}
+
+.cancel-button:hover {
+  background-color: var(--text-color);
+  color: var(--background-dark);
+}
+
+.submit-button {
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: var(--primary-color);
+  color: var(--background-dark);
+}
+
+.submit-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Mensajes de éxito y error */
+.success-message,
+.error-message {
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-lg);
+  font-family: var(--font-secondary);
+}
+
+.success-message {
+  background-color: rgba(var(--success-color-rgb), 0.1);
+  color: var(--success-color);
+  border: 1px solid var(--success-color);
+}
+
+.error-message {
+  background-color: rgba(var(--error-color-rgb), 0.1);
+  color: var(--error-color);
+  border: 1px solid var(--error-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .form-container {
+    padding: var(--spacing-md);
+  }
+
+  .form-section {
+    padding: var(--spacing-lg);
+  }
+
+  .section-header {
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  .toggle-button {
+    width: 100%;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .cancel-button,
+  .submit-button {
+    width: 100%;
+  }
+
+  .servicio-detalles,
+  .horario-detalles {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+}

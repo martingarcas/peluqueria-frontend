@@ -16,7 +16,6 @@ export interface ContratoRequest {
   fechaInicio: string;
   fechaFin?: string;
   tipoContrato: string;
-  salario: number;
   usuario_id?: number; // Se asigna automáticamente en el backend
   documento?: File;
 }

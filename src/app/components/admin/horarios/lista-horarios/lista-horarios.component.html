@@ -42,8 +42,8 @@
           <div class="column nombre" data-label="Nombre:">
             {{ horario.nombre }}
           </div>
-          <div class="column dia" data-label="Día:">
-            {{ formatDiaSemana(horario.diaSemana) }}
+          <div class="column dia" data-label="Día de la Semana:">
+            {{ horario.diaSemana | titlecase }}
           </div>
           <div class="column hora" data-label="Hora Inicio:">
             {{ horario.horaInicio }}

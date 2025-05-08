@@ -1,8 +1,9 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UsuarioService } from 'src/app/services/usuario/usuario.service';
 import { ServicioService } from 'src/app/services/servicio/servicio.service';
 import { HorarioService } from 'src/app/services/horario/horario.service';
+import { PdfService } from 'src/app/services/pdf/pdf.service';
 import { UsuarioResponse, ContratoResponse } from 'src/app/models/usuarios/usuario-response';
 import { UsuarioRequest } from 'src/app/models/usuarios/usuario-request';
 import { ServicioResponse } from 'src/app/models/servicios/servicio-response';
@@ -30,12 +31,17 @@ export class FormUsuarioComponent implements OnInit {
   mostrarFormularioServicios: boolean = false;
   mostrarFormularioHorarios: boolean = false;
   esTrabajador: boolean = false;
+  fotoSeleccionada: File | null = null;
+  previewImagen: string | null = null;
+  contratoDocumento: File | null = null;
 
   constructor(
     private fb: FormBuilder,
     private usuarioService: UsuarioService,
     private servicioService: ServicioService,
-    private horarioService: HorarioService
+    private horarioService: HorarioService,
+    private pdfService: PdfService,
+    private cdr: ChangeDetectorRef
   ) {
     this.usuarioForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
@@ -47,8 +53,7 @@ export class FormUsuarioComponent implements OnInit {
       contrato: this.fb.group({
         fechaInicio: ['', []],
         fechaFin: ['', []],
-        tipoContrato: ['', []],
-        salario: ['', []]
+        tipoContrato: ['', []]
       })
     });
 
@@ -57,17 +62,26 @@ export class FormUsuarioComponent implements OnInit {
       this.esTrabajador = rol === 'TRABAJADOR';
       if (this.esTrabajador) {
         this.usuarioForm.get('contrato.fechaInicio')?.setValidators([Validators.required]);
-        this.usuarioForm.get('contrato.fechaFin')?.setValidators([Validators.required]);
-        this.usuarioForm.get('contrato.salario')?.setValidators([Validators.required, Validators.min(0)]);
+        this.usuarioForm.get('contrato.tipoContrato')?.setValidators([Validators.required]);
       } else {
         this.usuarioForm.get('contrato.fechaInicio')?.clearValidators();
+        this.usuarioForm.get('contrato.tipoContrato')?.clearValidators();
         this.usuarioForm.get('contrato.fechaFin')?.clearValidators();
-        this.usuarioForm.get('contrato.salario')?.clearValidators();
-        this.mostrarFormularioContrato = false;
-        this.mostrarFormularioServicios = false;
-        this.mostrarFormularioHorarios = false;
       }
       this.usuarioForm.get('contrato')?.updateValueAndValidity();
+      this.cdr.detectChanges();
+    });
+
+    // Escuchar cambios en el tipo de contrato
+    this.usuarioForm.get('contrato.tipoContrato')?.valueChanges.subscribe(tipo => {
+      const fechaFinControl = this.usuarioForm.get('contrato.fechaFin');
+      if (tipo === 'temporal') {
+        fechaFinControl?.setValidators([Validators.required]);
+      } else {
+        fechaFinControl?.clearValidators();
+        fechaFinControl?.setValue(null);
+      }
+      fechaFinControl?.updateValueAndValidity();
     });
   }
 
@@ -87,7 +101,7 @@ export class FormUsuarioComponent implements OnInit {
       apellidos: this.usuarioAEditar.apellidos,
       email: this.usuarioAEditar.email,
       telefono: this.usuarioAEditar.telefono,
-      rol: this.usuarioAEditar.rol
+      rol: this.usuarioAEditar.role
     });
 
     if (this.usuarioAEditar.contrato) {
@@ -95,8 +109,7 @@ export class FormUsuarioComponent implements OnInit {
         contrato: {
           fechaInicio: this.usuarioAEditar.contrato.fechaInicio,
           fechaFin: this.usuarioAEditar.contrato.fechaFin,
-          tipoContrato: this.usuarioAEditar.contrato.tipoContrato,
-          salario: this.usuarioAEditar.contrato.salario
+          tipoContrato: this.usuarioAEditar.contrato.tipoContrato
         }
       });
       this.mostrarFormularioContrato = true;
@@ -159,7 +172,27 @@ export class FormUsuarioComponent implements OnInit {
     }
   }
 
-  onSubmit(): void {
+  onFotoSeleccionada(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.fotoSeleccionada = input.files[0];
+      // Crear preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewImagen = reader.result as string;
+      };
+      reader.readAsDataURL(this.fotoSeleccionada);
+    }
+  }
+
+  onContratoDocumentoSeleccionado(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.contratoDocumento = input.files[0];
+    }
+  }
+
+  async onSubmit(): Promise<void> {
     if (this.usuarioForm.invalid) {
       Object.keys(this.usuarioForm.controls).forEach(key => {
         const control = this.usuarioForm.get(key);
@@ -176,24 +209,42 @@ export class FormUsuarioComponent implements OnInit {
       email: this.usuarioForm.get('email')?.value,
       password: this.usuarioForm.get('password')?.value,
       telefono: this.usuarioForm.get('telefono')?.value,
-      rol: this.usuarioForm.get('rol')?.value
+      rol: this.usuarioForm.get('rol')?.value,
+      foto: this.fotoSeleccionada || undefined
     };
 
-    if (this.esTrabajador && this.mostrarFormularioContrato) {
-      usuarioRequest.contrato = {
-        fechaInicio: this.usuarioForm.get('contrato.fechaInicio')?.value,
-        fechaFin: this.usuarioForm.get('contrato.fechaFin')?.value,
-        tipoContrato: this.usuarioForm.get('contrato.tipoContrato')?.value,
-        salario: this.usuarioForm.get('contrato.salario')?.value
-      };
-    }
+    if (this.esTrabajador) {
+      // Generar el PDF del contrato automáticamente
+      try {
+        const contratoFile = await this.pdfService.generarContratoLaboral({
+          nombreEmpleado: usuarioRequest.nombre,
+          apellidosEmpleado: usuarioRequest.apellidos,
+          emailEmpleado: usuarioRequest.email,
+          telefonoEmpleado: usuarioRequest.telefono,
+          fechaInicio: this.usuarioForm.get('contrato.fechaInicio')?.value,
+          fechaFin: this.usuarioForm.get('contrato.fechaFin')?.value,
+          tipoContrato: this.usuarioForm.get('contrato.tipoContrato')?.value
+        });
 
-    if (this.esTrabajador && this.mostrarFormularioServicios && this.serviciosSeleccionados.length > 0) {
-      usuarioRequest.serviciosIds = this.serviciosSeleccionados;
-    }
+        usuarioRequest.contrato = {
+          fechaInicio: this.usuarioForm.get('contrato.fechaInicio')?.value,
+          fechaFin: this.usuarioForm.get('contrato.fechaFin')?.value,
+          tipoContrato: this.usuarioForm.get('contrato.tipoContrato')?.value,
+          documento: contratoFile
+        };
 
-    if (this.esTrabajador && this.mostrarFormularioHorarios && this.horariosSeleccionados.length > 0) {
-      usuarioRequest.horariosIds = this.horariosSeleccionados;
+        if (this.serviciosSeleccionados.length > 0) {
+          usuarioRequest.serviciosIds = this.serviciosSeleccionados;
+        }
+
+        if (this.horariosSeleccionados.length > 0) {
+          usuarioRequest.horariosIds = this.horariosSeleccionados;
+        }
+      } catch (error) {
+        this.mostrarError('Error al generar el contrato PDF');
+        console.error('Error:', error);
+        return;
+      }
     }
 
     if (this.modo === 'crear') {

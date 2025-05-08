@@ -4,7 +4,7 @@ export interface UsuarioResponse {
   apellidos: string;
   email: string;
   telefono: string;
-  rol: string;
+  role: string;
   foto?: string;
   // Campos específicos para trabajadores
   contrato?: ContratoResponse;

@@ -12,13 +12,19 @@ export class UsuarioService {
 
   constructor(private http: HttpClient) {}
 
-  private obtenerHeaders(): HttpHeaders {
+  private obtenerHeaders(isMultipart: boolean = false): HttpHeaders {
     const storedLogin = sessionStorage.getItem('LOGIN');
     let token = '';
 
     if (storedLogin) {
       const loginData = JSON.parse(storedLogin);
       token = loginData.token || '';
+    }
+
+    if (isMultipart) {
+      return new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
     }
 
     return new HttpHeaders({
@@ -35,18 +41,116 @@ export class UsuarioService {
   }
 
   crear(usuario: UsuarioRequest): Observable<{ mensaje: string, usuario: UsuarioResponse }> {
+    if (usuario.role === 'trabajador') {
+      return this.crearTrabajador(usuario);
+    }
+
+    const formData = new FormData();
+
+    // Crear un Blob con el JSON del usuario
+    const usuarioBlob = new Blob([JSON.stringify({
+      nombre: usuario.nombre,
+      apellidos: usuario.apellidos,
+      email: usuario.email,
+      password: usuario.password,
+      telefono: usuario.telefono,
+      direccion: usuario.direccion,
+      role: usuario.role
+    })], {
+      type: 'application/json'
+    });
+
+    formData.append('usuario', usuarioBlob);
+
+    if (usuario.foto) {
+      formData.append('foto', usuario.foto);
+    }
+
     return this.http.post<{ mensaje: string, usuario: UsuarioResponse }>(
       this.apiUrl,
-      usuario,
-      { headers: this.obtenerHeaders() }
+      formData,
+      { headers: this.obtenerHeaders(true) }
+    );
+  }
+
+  private crearTrabajador(usuario: UsuarioRequest): Observable<{ mensaje: string, usuario: UsuarioResponse }> {
+    const formData = new FormData();
+
+    // Datos básicos del usuario
+    const usuarioBlob = new Blob([JSON.stringify({
+      nombre: usuario.nombre,
+      apellidos: usuario.apellidos,
+      email: usuario.email,
+      password: usuario.password,
+      telefono: usuario.telefono,
+      direccion: usuario.direccion || '',
+      role: 'trabajador',
+      serviciosIds: usuario.serviciosIds,
+      horariosIds: usuario.horariosIds
+    })], {
+      type: 'application/json'
+    });
+
+    formData.append('usuario', usuarioBlob);
+
+    // Foto del usuario
+    if (usuario.foto) {
+      formData.append('foto', usuario.foto);
+    }
+
+    // Documento del contrato
+    if (usuario.contrato && usuario.contrato.documento) {
+      formData.append('documentoContrato', usuario.contrato.documento);
+    }
+
+    // Parámetros del contrato
+    if (usuario.contrato) {
+      formData.append('fechaInicioContrato', usuario.contrato.fechaInicio);
+      if (usuario.contrato.fechaFin) {
+        formData.append('fechaFinContrato', usuario.contrato.fechaFin);
+      }
+      formData.append('tipoContrato', usuario.contrato.tipoContrato);
+      formData.append('salario', usuario.contrato.salario.toString());
+    }
+
+    return this.http.post<{ mensaje: string, usuario: UsuarioResponse }>(
+      `${this.apiUrl}/trabajador`,
+      formData,
+      { headers: this.obtenerHeaders(true) }
     );
   }
 
   actualizar(id: number, usuario: UsuarioRequest): Observable<{ mensaje: string, usuario: UsuarioResponse }> {
-    return this.http.put<{ mensaje: string, usuario: UsuarioResponse }>(
+    const formData = new FormData();
+
+    // Crear Blob con los datos del usuario
+    const usuarioBlob = new Blob([JSON.stringify({
+      id: id,
+      nombre: usuario.nombre,
+      apellidos: usuario.apellidos,
+      email: usuario.email,
+      password: usuario.password,
+      telefono: usuario.telefono,
+      direccion: usuario.direccion,
+      role: usuario.role
+    })], {
+      type: 'application/json'
+    });
+
+    formData.append('usuario', usuarioBlob);
+
+    // Agregar foto si se proporciona
+    if (usuario.foto) {
+      formData.append('foto', usuario.foto);
+    }
+
+    // En este método ya no permitimos actualizar a rol trabajador
+    // ni agregar documentos de contrato
+
+    return this.http.patch<{ mensaje: string, usuario: UsuarioResponse }>(
       `${this.apiUrl}/${id}`,
-      usuario,
-      { headers: this.obtenerHeaders() }
+      formData,
+      { headers: this.obtenerHeaders(true) }
     );
   }
 
@@ -57,21 +161,12 @@ export class UsuarioService {
     );
   }
 
-  // Métodos específicos para trabajadores
-  asignarServicios(usuarioId: number, serviciosIds: number[]): Observable<{ mensaje: string }> {
-    return this.http.post<{ mensaje: string }>(
-      `${this.apiUrl}/${usuarioId}/servicios`,
-      { serviciosIds },
-      { headers: this.obtenerHeaders() }
-    );
-  }
-
-  asignarHorarios(usuarioId: number, horariosIds: number[]): Observable<{ mensaje: string }> {
-    return this.http.post<{ mensaje: string }>(
-      `${this.apiUrl}/${usuarioId}/horarios`,
-      { horariosIds },
-      { headers: this.obtenerHeaders() }
-    );
+  // Métodos para manejo de imágenes
+  obtenerImagen(rutaImagen: string): Observable<Blob> {
+    return this.http.get(`http://localhost:9000${rutaImagen}`, {
+      headers: this.obtenerHeaders(),
+      responseType: 'blob'
+    });
   }
 
   // Método para generar el PDF del contrato

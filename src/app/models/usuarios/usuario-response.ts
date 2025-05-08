@@ -4,12 +4,13 @@ export interface UsuarioResponse {
   apellidos: string;
   email: string;
   telefono: string;
+  direccion: string;
   role: string;
   foto?: string;
   // Campos específicos para trabajadores
   contrato?: ContratoResponse;
-  servicios?: ServicioResponse[];
-  horarios?: HorarioResponse[];
+  servicios?: { id: number; nombre: string }[];
+  horarios?: { id: number; dia: string; horaInicio: string; horaFin: string }[];
 }
 
 export interface ContratoResponse {
@@ -17,10 +18,9 @@ export interface ContratoResponse {
   fechaInicio: string;
   fechaFin?: string;
   tipoContrato: string;
-  salario: number;
   estado: string;
-  usuario_id: number;
-  urlContrato?: string;
+  salario: number;
+  urlContrato: string;
 }
 
 export interface ServicioResponse {

@@ -19,14 +19,15 @@
     "@angular/platform-browser-dynamic": "~13.2.0",
     "@angular/router": "~13.2.0",
     "@types/pdfmake": "^0.2.11",
+    "jspdf": "^3.0.1",
     "pdfmake": "^0.2.19",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^19.2.11",
-    "@angular/cli": "^19.2.11",
+    "@angular-devkit/build-angular": "^13.2.0",
+    "@angular/cli": "^13.2.0",
     "@angular/compiler-cli": "~13.2.0",
     "@types/jasmine": "~3.10.0",
     "@types/node": "^12.11.1",

@@ -59,7 +59,7 @@
       </div>
     </div>
 
-    <!-- Campos Teléfono y Rol en la misma fila -->
+    <!-- Campos Teléfono y Dirección en la misma fila -->
     <div class="form-row">
       <div class="form-group">
         <label for="telefono">TELÉFONO</label>
@@ -74,19 +74,31 @@
       </div>
 
       <div class="form-group">
-        <label for="rol">ROL</label>
-        <select
-          id="rol"
-          formControlName="rol"
-          [class.invalid]="usuarioForm.get('rol')?.invalid && usuarioForm.get('rol')?.touched">
-          <option value="">Seleccione un rol</option>
-          <option value="CLIENTE">Cliente</option>
-          <option value="TRABAJADOR">Trabajador</option>
-          <option value="ADMIN">Administrador</option>
-        </select>
-        <div class="error-hint" *ngIf="usuarioForm.get('rol')?.invalid && usuarioForm.get('rol')?.touched">
-          Debe seleccionar un rol
+        <label for="direccion">DIRECCIÓN</label>
+        <input
+          type="text"
+          id="direccion"
+          formControlName="direccion"
+          [class.invalid]="usuarioForm.get('direccion')?.invalid && usuarioForm.get('direccion')?.touched">
+        <div class="error-hint" *ngIf="usuarioForm.get('direccion')?.invalid && usuarioForm.get('direccion')?.touched">
+          La dirección es requerida y debe tener al menos 5 caracteres
         </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="role">ROL</label>
+      <select
+        id="role"
+        formControlName="role"
+        [class.invalid]="usuarioForm.get('role')?.invalid && usuarioForm.get('role')?.touched">
+        <option value="">Seleccione un rol</option>
+        <option value="cliente">Cliente</option>
+        <option value="trabajador">Trabajador</option>
+        <option value="admin">Administrador</option>
+      </select>
+      <div class="error-hint" *ngIf="usuarioForm.get('role')?.invalid && usuarioForm.get('role')?.touched">
+        Debe seleccionar un rol
       </div>
     </div>
 
@@ -155,6 +167,20 @@
             <div class="error-hint" *ngIf="usuarioForm.get('contrato.fechaFin')?.invalid && usuarioForm.get('contrato.fechaFin')?.touched">
               La fecha de fin es requerida para contratos temporales
             </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="salario">SALARIO</label>
+          <input
+            type="number"
+            id="salario"
+            formControlName="salario"
+            step="0.01"
+            min="0"
+            [class.invalid]="usuarioForm.get('contrato.salario')?.invalid && usuarioForm.get('contrato.salario')?.touched">
+          <div class="error-hint" *ngIf="usuarioForm.get('contrato.salario')?.invalid && usuarioForm.get('contrato.salario')?.touched">
+            El salario es requerido y debe ser mayor que 0
           </div>
         </div>
 

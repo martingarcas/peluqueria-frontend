@@ -39,7 +39,7 @@ export class ListaUsuariosComponent implements OnInit {
         this.usuarios = response.usuarios;
         this.usuariosFiltrados = this.usuarios;
       },
-      error: (error) => {
+      error: (error: any) => {
         this.mostrarError(error.error?.mensaje || 'Error al cargar los usuarios');
         console.error('Error:', error);
       }
@@ -132,7 +132,7 @@ export class ListaUsuariosComponent implements OnInit {
           window.URL.revokeObjectURL(url);
           a.remove();
         },
-        error: (error) => {
+        error: (error: any) => {
           this.mostrarError('Error al descargar el contrato');
           console.error('Error:', error);
         }

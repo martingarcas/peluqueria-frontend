@@ -1,11 +1,6 @@
 import { Injectable } from '@angular/core';
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
-import { TDocumentDefinitions } from 'pdfmake/interfaces';
-
-// Configurar las fuentes virtuales
-(window as any).pdfMake = pdfMake;
-(window as any).pdfMake.vfs = pdfFonts.vfs;
+import { Observable, from } from 'rxjs';
+import jsPDF from 'jspdf';
 
 @Injectable({
   providedIn: 'root'
@@ -13,162 +8,55 @@ import { TDocumentDefinitions } from 'pdfmake/interfaces';
 export class PdfService {
   constructor() {}
 
-  async generarContratoLaboral(datosContrato: {
-    nombreEmpleado: string;
-    apellidosEmpleado: string;
-    dniEmpleado?: string;
-    emailEmpleado: string;
-    telefonoEmpleado: string;
-    fechaInicio: string;
-    fechaFin?: string;
-    tipoContrato: string;
-  }): Promise<File> {
-    const fechaActual = new Date().toLocaleDateString('es-ES');
+  generarContratoTrabajador(datos: any): Observable<File> {
+    return from(new Promise<File>((resolve, reject) => {
+      try {
+        const doc = new jsPDF();
 
-    const documentDefinition: TDocumentDefinitions = {
-      content: [
-        {
-          text: 'CONTRATO DE TRABAJO',
-          style: 'header',
-          alignment: 'center',
-          margin: [0, 0, 0, 20]
-        },
-        {
-          text: `En la ciudad de Madrid, a ${fechaActual}`,
-          margin: [0, 0, 0, 20]
-        },
-        {
-          text: 'REUNIDOS',
-          style: 'subheader',
-          margin: [0, 0, 0, 10]
-        },
-        {
-          text: [
-            'De una parte, ',
-            { text: 'PELUQUERÍA STYLE & CARE S.L.', bold: true },
-            ', con CIF B12345678 y domicilio social en Calle Principal 123, 28001 Madrid, representada por Dña. María García Pérez, en calidad de Administradora (en adelante, LA EMPRESA).'
-          ],
-          margin: [0, 0, 0, 10]
-        },
-        {
-          text: [
-            'Y de otra parte, ',
-            { text: `${datosContrato.nombreEmpleado} ${datosContrato.apellidosEmpleado}`, bold: true },
-            ', mayor de edad, con domicilio en Madrid y ',
-            `correo electrónico ${datosContrato.emailEmpleado}, teléfono ${datosContrato.telefonoEmpleado}`,
-            ' (en adelante, EL/LA TRABAJADOR/A).'
-          ],
-          margin: [0, 0, 0, 20]
-        },
-        {
-          text: 'MANIFIESTAN',
-          style: 'subheader',
-          margin: [0, 0, 0, 10]
-        },
-        {
-          text: 'Que han acordado celebrar un contrato de trabajo con arreglo a las siguientes:',
-          margin: [0, 0, 0, 20]
-        },
-        {
-          text: 'CLÁUSULAS',
-          style: 'subheader',
-          margin: [0, 0, 0, 10]
-        },
-        {
-          ol: [
-            {
-              text: [
-                'PRIMERA.- El/la trabajador/a prestará sus servicios como ',
-                { text: 'PELUQUERO/A PROFESIONAL', bold: true },
-                ' en el centro de trabajo ubicado en Calle Principal 123, Madrid.'
-              ],
-              margin: [0, 0, 0, 10]
-            },
-            {
-              text: [
-                'SEGUNDA.- La jornada de trabajo será de 40 horas semanales, prestadas de lunes a viernes, con los descansos establecidos legal o convencionalmente.'
-              ],
-              margin: [0, 0, 0, 10]
-            },
-            {
-              text: [
-                'TERCERA.- El presente contrato se celebra por ',
-                { text: datosContrato.tipoContrato, bold: true },
-                datosContrato.fechaFin ?
-                  `, iniciándose el ${new Date(datosContrato.fechaInicio).toLocaleDateString('es-ES')} y finalizando el ${new Date(datosContrato.fechaFin).toLocaleDateString('es-ES')}.` :
-                  `, iniciándose el ${new Date(datosContrato.fechaInicio).toLocaleDateString('es-ES')}.`
-              ],
-              margin: [0, 0, 0, 10]
-            },
-            {
-              text: 'CUARTA.- El/la trabajador/a percibirá una retribución conforme al Convenio Colectivo aplicable.',
-              margin: [0, 0, 0, 10]
-            },
-            {
-              text: 'QUINTA.- La duración de las vacaciones anuales será de 30 días naturales.',
-              margin: [0, 0, 0, 10]
-            },
-            {
-              text: 'SEXTA.- El presente contrato se regirá por lo dispuesto en la legislación vigente que resulte de aplicación, particularmente el Estatuto de los Trabajadores y Convenio Colectivo de Peluquerías.',
-              margin: [0, 0, 0, 10]
-            }
-          ]
-        },
-        {
-          text: 'Y para que conste y surta los efectos oportunos, se extiende y firma el presente contrato por duplicado ejemplar en el lugar y fecha indicados en el encabezamiento.',
-          margin: [0, 20, 0, 40]
-        },
-        {
-          columns: [
-            {
-              text: 'LA EMPRESA',
-              alignment: 'center'
-            },
-            {
-              text: 'EL/LA TRABAJADOR/A',
-              alignment: 'center'
-            }
-          ],
-          margin: [0, 0, 0, 40]
-        },
-        {
-          columns: [
-            {
-              text: 'Fdo.: María García Pérez',
-              alignment: 'center'
-            },
-            {
-              text: `Fdo.: ${datosContrato.nombreEmpleado} ${datosContrato.apellidosEmpleado}`,
-              alignment: 'center'
-            }
-          ]
-        }
-      ],
-      styles: {
-        header: {
-          fontSize: 18,
-          bold: true
-        },
-        subheader: {
-          fontSize: 14,
-          bold: true
-        }
-      },
-      defaultStyle: {
-        fontSize: 12,
-        lineHeight: 1.3
-      }
-    };
+        // Configuración de fuente y tamaños
+        doc.setFontSize(18);
+        doc.text('CONTRATO DE TRABAJO', 105, 20, { align: 'center' });
 
-    // Generar el PDF como Blob
-    const pdfDocGenerator = pdfMake.createPdf(documentDefinition);
+        doc.setFontSize(12);
+        doc.text(`En la ciudad de [CIUDAD], a ${new Date().toLocaleDateString()}`, 20, 40);
 
-    return new Promise((resolve) => {
-      pdfDocGenerator.getBlob((blob) => {
-        // Convertir el Blob a File
-        const file = new File([blob], 'contrato_laboral.pdf', { type: 'application/pdf' });
+        doc.setFontSize(12);
+        doc.text('REUNIDOS', 20, 60);
+
+        doc.text('De una parte, LA EMPRESA, con domicilio en [DIRECCIÓN EMPRESA].', 20, 70);
+        doc.text(`De otra parte, ${datos.nombre} ${datos.apellidos}, mayor de edad, con`, 20, 80);
+        doc.text('domicilio en [DIRECCIÓN TRABAJADOR].', 20, 90);
+
+        doc.text('ACUERDAN', 20, 110);
+
+        doc.text('Celebrar el presente CONTRATO DE TRABAJO, que se regirá por las siguientes:', 20, 120);
+
+        doc.text('CLÁUSULAS', 20, 140);
+
+        doc.text('PRIMERA.- El trabajador prestará sus servicios como PELUQUERO/A.', 20, 160);
+
+        const tipoContrato = datos.tipoContrato === 'fijo' ? 'INDEFINIDA' : 'TEMPORAL';
+        doc.text(`SEGUNDA.- La duración del contrato será ${tipoContrato}${
+          datos.tipoContrato === 'temporal' ? `, desde ${datos.fechaInicio} hasta ${datos.fechaFin}` : ''
+        }.`, 20, 170);
+
+        doc.text(`TERCERA.- El trabajador percibirá una retribución de ${datos.salario}€ brutos anuales.`, 20, 180);
+
+        doc.text('CUARTA.- La jornada de trabajo será según el horario asignado.', 20, 190);
+
+        doc.text('Y para que conste, se extiende este contrato por triplicado en el lugar y', 20, 210);
+        doc.text('fecha indicados, firmando las partes interesadas:', 20, 220);
+
+        doc.text('Firma del trabajador', 50, 250);
+        doc.text('Firma de la empresa', 150, 250);
+
+        // Convertir el PDF a File
+        const pdfBlob = new Blob([doc.output('blob')], { type: 'application/pdf' });
+        const file = new File([pdfBlob], 'contrato.pdf', { type: 'application/pdf' });
         resolve(file);
-      });
-    });
+      } catch (error) {
+        reject(error);
+      }
+    }));
   }
 }

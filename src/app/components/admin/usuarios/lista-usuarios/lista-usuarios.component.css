@@ -110,7 +110,7 @@
 }
 
 .table-row:hover {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(206, 161, 72, 0.05);
 }
 
 .table-row.expanded {

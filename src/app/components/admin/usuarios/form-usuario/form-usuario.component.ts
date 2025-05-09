@@ -310,10 +310,17 @@ export class FormUsuarioComponent implements OnInit {
       password: usuarioData.password,
       telefono: usuarioData.telefono,
       direccion: usuarioData.direccion,
-      // Incluir servicios y horarios en el objeto usuario si es trabajador
+      role: this.esTrabajador ? 'trabajador' : 'cliente',
+      // Incluir servicios, horarios y contrato si es trabajador
       ...(this.esTrabajador && {
         serviciosIds: this.serviciosSeleccionados,
-        horariosIds: this.horariosSeleccionados
+        horariosIds: this.horariosSeleccionados,
+        contrato: this.esTrabajador && usuarioData.contrato ? {
+          fechaInicioContrato: usuarioData.contrato.fechaInicio,
+          fechaFinContrato: usuarioData.contrato.fechaFin || null,
+          tipoContrato: usuarioData.contrato.tipoContrato,
+          salario: usuarioData.contrato.salario
+        } : null
       })
     };
 
@@ -331,28 +338,11 @@ export class FormUsuarioComponent implements OnInit {
       console.log('Foto adjuntada:', this.fotoSeleccionada.name);
     }
 
-    // Si es trabajador y hay datos de contrato, incluirlos
-    if (this.esTrabajador && usuarioData.contrato && this.mostrarFormularioContrato) {
-      console.log('Datos del contrato:', usuarioData.contrato);
-      formData.append('fechaInicioContrato', usuarioData.contrato.fechaInicio);
-      if (usuarioData.contrato.fechaFin) {
-        formData.append('fechaFinContrato', usuarioData.contrato.fechaFin);
-      }
-      formData.append('tipoContrato', usuarioData.contrato.tipoContrato);
-      formData.append('salario', usuarioData.contrato.salario.toString());
-    }
-
-    // Agregar el documento del contrato si existe
-    if (this.contratoDocumento) {
-      formData.append('documentoContrato', this.contratoDocumento);
-      console.log('Documento de contrato adjuntado:', this.contratoDocumento.name);
-    }
-
     try {
       let response;
       let contratoFile;
 
-      // Generar el PDF pero no añadirlo al FormData todavía
+      // Generar el PDF del contrato si es trabajador
       if (this.modo === 'crear' && this.esTrabajador) {
         console.log('Generando PDF del contrato...');
         contratoFile = await this.pdfService.generarContratoTrabajador({
@@ -363,14 +353,14 @@ export class FormUsuarioComponent implements OnInit {
           fechaFinContrato: usuarioData.contrato.fechaFin,
           salario: usuarioData.contrato.salario
         }).toPromise();
+
+        if (contratoFile) {
+          formData.append('documentoContrato', contratoFile, 'contrato.pdf');
+          console.log('PDF del contrato generado y adjuntado');
+        }
       }
 
       if (this.modo === 'crear') {
-        // Solo añadir el contrato al FormData si tenemos el archivo
-        if (this.esTrabajador && contratoFile) {
-          formData.append('documentoContrato', contratoFile);
-          console.log('PDF del contrato generado y adjuntado');
-        }
         console.log('Enviando petición de creación...');
         response = await this.usuarioService.crear(formData).toPromise();
       } else {

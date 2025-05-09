@@ -49,40 +49,83 @@
       </div>
 
       <div class="table-body">
-        <div class="table-row" *ngFor="let usuario of usuariosFiltrados">
-          <div class="column foto" data-label="Foto:">
-            <img [src]="getImageUrl(usuario.foto)" alt="Foto de perfil">
+        <ng-container *ngFor="let usuario of usuariosFiltrados">
+          <!-- Fila principal -->
+          <div class="table-row" (click)="toggleDetalles(usuario)" [class.expanded]="usuario.expanded">
+            <div class="column foto" data-label="Foto:">
+              <img [src]="getImageUrl(usuario.foto)" alt="Foto de perfil">
+            </div>
+            <div class="column nombre" data-label="Nombre:">
+              {{ usuario.nombre }}
+            </div>
+            <div class="column apellidos" data-label="Apellidos:">
+              {{ usuario.apellidos }}
+            </div>
+            <div class="column email" data-label="Email:">
+              {{ usuario.email }}
+            </div>
+            <div class="column telefono" data-label="Teléfono:">
+              {{ usuario.telefono }}
+            </div>
+            <div class="column rol" data-label="Rol:">
+              {{ usuario.role }}
+            </div>
+            <div class="column acciones" data-label="Acciones:">
+              <button class="edit-button" (click)="mostrarFormularioEditar(usuario); $event.stopPropagation()">
+                Editar
+              </button>
+              <button class="delete-button" (click)="confirmarEliminacion(usuario); $event.stopPropagation()">
+                Eliminar
+              </button>
+            </div>
           </div>
-          <div class="column nombre" data-label="Nombre:">
-            {{ usuario.nombre }}
+
+          <!-- Fila de detalles expandible -->
+          <div class="details-row" *ngIf="usuario.expanded" [@expandCollapse]>
+            <div class="details-content">
+              <!-- Información común para todos los usuarios -->
+              <div class="details-section">
+                <h3>Información Adicional</h3>
+                <p><strong>Dirección:</strong> {{ usuario.direccion || 'No especificada' }}</p>
+                <p><strong>Fecha de Registro:</strong> {{ usuario.fechaRegistro | date:'dd/MM/yyyy HH:mm' }}</p>
+              </div>
+
+              <!-- Información específica para trabajadores -->
+              <div class="details-section" *ngIf="usuario.role === 'trabajador'">
+                <h3>Información del Contrato</h3>
+                <div *ngIf="!usuario.contrato" class="alert alert-warning">
+                  <p>Este trabajador no tiene un contrato asignado.</p>
+                </div>
+                <div *ngIf="usuario.contrato" class="contrato-info" [ngClass]="{
+                  'contrato-activo': usuario.contrato.estadoNombre === 'ACTIVO',
+                  'contrato-pendiente': usuario.contrato.estadoNombre === 'PENDIENTE',
+                  'contrato-inactivo': usuario.contrato.estadoNombre === 'INACTIVO'
+                }">
+                  <div class="contrato-estado">
+                    <span class="estado-badge" [ngClass]="{
+                      'estado-activo': usuario.contrato.estadoNombre === 'ACTIVO',
+                      'estado-pendiente': usuario.contrato.estadoNombre === 'PENDIENTE',
+                      'estado-inactivo': usuario.contrato.estadoNombre === 'INACTIVO'
+                    }">{{ usuario.contrato.estadoNombre }}</span>
+                  </div>
+                  <div class="contrato-detalles">
+                    <p><strong>Tipo:</strong> {{ usuario.contrato.tipoContrato | titlecase }}</p>
+                    <p><strong>Fecha Inicio:</strong> {{ usuario.contrato.fechaInicioContrato | date:'dd/MM/yyyy' }}</p>
+                    <p *ngIf="usuario.contrato.fechaFinContrato">
+                      <strong>Fecha Fin:</strong> {{ usuario.contrato.fechaFinContrato | date:'dd/MM/yyyy' }}
+                    </p>
+                    <p><strong>Salario:</strong> {{ usuario.contrato.salario | currency:'EUR':'symbol' }}</p>
+                  </div>
+                  <div class="contrato-acciones">
+                    <button class="download-contract-button" (click)="descargarContratoPDF(usuario); $event.stopPropagation()">
+                      <i class="fas fa-file-pdf"></i> Descargar Contrato
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="column apellidos" data-label="Apellidos:">
-            {{ usuario.apellidos }}
-          </div>
-          <div class="column email" data-label="Email:">
-            {{ usuario.email }}
-          </div>
-          <div class="column telefono" data-label="Teléfono:">
-            {{ usuario.telefono }}
-          </div>
-          <div class="column rol" data-label="Rol:">
-            {{ usuario.role }}
-          </div>
-          <div class="column acciones" data-label="Acciones:">
-            <button class="edit-button" (click)="mostrarFormularioEditar(usuario)">
-              Editar
-            </button>
-            <button class="delete-button" (click)="confirmarEliminacion(usuario)">
-              Eliminar
-            </button>
-            <button
-              class="download-button"
-              *ngIf="usuario.contrato"
-              (click)="descargarContratoPDF(usuario)">
-              Contrato
-            </button>
-          </div>
-        </div>
+        </ng-container>
       </div>
     </div>
   </div>

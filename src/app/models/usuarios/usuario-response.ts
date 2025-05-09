@@ -9,6 +9,8 @@ export interface UsuarioResponse {
   direccion: string;
   role: string;
   foto?: string;
+  fechaRegistro: string;
+  expanded?: boolean;
   // Campos específicos para trabajadores
   contrato?: ContratoResponse;
   servicios?: { id: number; nombre: string }[];

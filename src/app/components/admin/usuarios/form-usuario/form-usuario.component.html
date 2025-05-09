@@ -209,12 +209,14 @@
                 <strong>Salario:</strong> {{usuarioAEditar?.contrato?.salario | currency:'EUR':'symbol'}}
               </p>
             </div>
-            <button *ngIf="usuarioAEditar?.contrato?.estadoNombre === 'INACTIVO'"
-                    type="button"
-                    class="btn btn-primary"
-                    (click)="mostrarFormularioContrato = true">
-              Crear Nuevo Contrato
-            </button>
+            <div class="d-flex flex-column gap-2">
+              <button *ngIf="usuarioAEditar?.contrato?.estadoNombre === 'INACTIVO'"
+                      type="button"
+                      class="btn btn-primary"
+                      (click)="mostrarFormularioContrato = true">
+                Crear Nuevo Contrato
+              </button>
+            </div>
           </div>
         </div>
 

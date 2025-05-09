@@ -10,6 +10,7 @@ import { ServicioResponse } from 'src/app/models/servicios/servicio-response';
 import { HorarioResponse } from 'src/app/models/horarios/horario-response';
 import { ContratoRequest } from 'src/app/models/usuarios/contrato-request';
 import { ContratoResponse } from 'src/app/models/usuarios/contrato-response';
+import { ContratoService } from 'src/app/services/contrato/contrato.service';
 
 @Component({
   selector: 'app-form-usuario',
@@ -58,6 +59,7 @@ export class FormUsuarioComponent implements OnInit {
     private usuarioService: UsuarioService,
     private servicioService: ServicioService,
     private horarioService: HorarioService,
+    private contratoService: ContratoService,
     private pdfService: PdfService,
     private cdr: ChangeDetectorRef
   ) {
@@ -162,17 +164,33 @@ export class FormUsuarioComponent implements OnInit {
       this.serviciosSeleccionados = this.usuarioAEditar.servicios?.map(s => s.id) || [];
       this.horariosSeleccionados = this.usuarioAEditar.horarios?.map(h => h.id) || [];
 
-      // En modo edición, el formulario de contrato está oculto por defecto
-      this.mostrarFormularioContrato = false;
+      // Cargar el contrato del usuario
+      this.contratoService.obtenerPorUsuarioId(this.usuarioAEditar.id).subscribe({
+        next: (response) => {
+          if (response.contratos && response.contratos.length > 0) {
+            // Tomamos el contrato más reciente
+            const contratoActual = response.contratos[0];
+            if (this.usuarioAEditar) {
+              this.usuarioAEditar.contrato = contratoActual;
+            }
 
-      // Si hay contrato activo o pendiente, deshabilitar el grupo de contrato
-      if (this.usuarioAEditar.contrato &&
-          ['ACTIVO', 'PENDIENTE'].includes(this.usuarioAEditar.contrato.estadoNombre)) {
-        this.usuarioForm.get('contrato')?.disable();
-      } else {
-        // Si no hay contrato o está inactivo, habilitar el grupo pero mantenerlo oculto
-        this.usuarioForm.get('contrato')?.enable();
-      }
+            // En modo edición, el formulario de contrato está oculto por defecto
+            this.mostrarFormularioContrato = false;
+
+            // Si hay contrato activo o pendiente, deshabilitar el grupo de contrato
+            if (['ACTIVO', 'PENDIENTE'].includes(contratoActual.estadoNombre)) {
+              this.usuarioForm.get('contrato')?.disable();
+            } else {
+              // Si está inactivo, habilitar el grupo pero mantenerlo oculto
+              this.usuarioForm.get('contrato')?.enable();
+            }
+          }
+        },
+        error: (error) => {
+          console.error('Error al cargar el contrato:', error);
+          this.mostrarError('Error al cargar el contrato del usuario');
+        }
+      });
     }
 
     if (this.usuarioAEditar.foto) {
@@ -390,8 +408,9 @@ export class FormUsuarioComponent implements OnInit {
     Object.values(formGroup.controls).forEach(control => {
       if (control instanceof FormGroup) {
         this.marcarCamposComoTocados(control);
+      } else {
+        control.markAsTouched();
       }
-      control.markAsTouched();
     });
   }
 }

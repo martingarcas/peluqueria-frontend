@@ -342,8 +342,9 @@ export class FormUsuarioComponent implements OnInit {
       let response;
       let contratoFile;
 
-      // Generar el PDF del contrato si es trabajador
-      if (this.modo === 'crear' && this.esTrabajador) {
+      // Generar el PDF del contrato si es trabajador y se está creando un nuevo contrato
+      if (this.esTrabajador && usuarioData.contrato &&
+        (this.modo === 'crear' || (this.modo === 'editar' && this.mostrarFormularioContrato))) {
         console.log('Generando PDF del contrato...');
         contratoFile = await this.pdfService.generarContratoTrabajador({
           nombre: usuarioData.nombre,
@@ -392,7 +393,7 @@ export class FormUsuarioComponent implements OnInit {
 
       // Si no hay errores específicos, mostrar el mensaje general
       const mensajeError = error.error?.mensaje ||
-                          'Error al guardar el usuario';
+                         'Error al guardar el usuario';
       this.mostrarError(mensajeError);
     }
   }

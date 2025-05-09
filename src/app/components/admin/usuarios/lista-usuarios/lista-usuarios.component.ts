@@ -6,6 +6,7 @@ import { UsuarioResponse } from 'src/app/models/usuarios/usuario-response';
 import { UsuarioService } from 'src/app/services/usuario/usuario.service';
 import { ContratoService } from 'src/app/services/contrato/contrato.service';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+import { ContratoResponse } from 'src/app/models/usuarios/contrato-response';
 
 @Component({
   selector: 'app-lista-usuarios',
@@ -224,7 +225,21 @@ export class ListaUsuariosComponent implements OnInit, OnDestroy {
       this.contratoService.obtenerPorUsuarioId(usuario.id).subscribe({
         next: (response) => {
           if (response.contratos && response.contratos.length > 0) {
-            usuario.contrato = response.contratos[0];
+            // Filtrar para obtener solo el contrato activo o pendiente
+            const contratoActivo = response.contratos.find(
+              (contrato: ContratoResponse) => contrato.estadoNombre === 'ACTIVO' || contrato.estadoNombre === 'PENDIENTE'
+            );
+
+            if (contratoActivo) {
+              usuario.contrato = contratoActivo;
+            } else {
+              // Si no hay contrato activo o pendiente, buscar el más reciente
+              const contratoMasReciente = response.contratos
+                .sort((a: ContratoResponse, b: ContratoResponse) =>
+                  new Date(b.fechaInicioContrato).getTime() - new Date(a.fechaInicioContrato).getTime()
+                )[0];
+              usuario.contrato = contratoMasReciente;
+            }
             this.cdr.detectChanges();
           }
         },

@@ -78,16 +78,18 @@ export class FormUsuarioComponent implements OnInit {
   private actualizarValidacionesTrabajador(): void {
     const contratoGroup = this.usuarioForm.get('contrato');
     if (this.esTrabajador) {
-      contratoGroup?.get('fechaInicio')?.setValidators([Validators.required]);
-      contratoGroup?.get('tipoContrato')?.setValidators([Validators.required]);
-      this.mostrarFormularioContrato = true;
+      if (this.modo === 'crear' || (this.modo === 'editar' && this.mostrarFormularioContrato)) {
+        contratoGroup?.get('fechaInicio')?.setValidators([Validators.required]);
+        contratoGroup?.get('tipoContrato')?.setValidators([Validators.required]);
+        contratoGroup?.get('salario')?.setValidators([Validators.required, Validators.min(0)]);
+      }
       this.mostrarFormularioServicios = true;
       this.mostrarFormularioHorarios = true;
     } else {
       contratoGroup?.get('fechaInicio')?.clearValidators();
       contratoGroup?.get('tipoContrato')?.clearValidators();
       contratoGroup?.get('fechaFin')?.clearValidators();
-      this.mostrarFormularioContrato = false;
+      contratoGroup?.get('salario')?.clearValidators();
       this.mostrarFormularioServicios = false;
       this.mostrarFormularioHorarios = false;
     }
@@ -160,14 +162,16 @@ export class FormUsuarioComponent implements OnInit {
       this.serviciosSeleccionados = this.usuarioAEditar.servicios?.map(s => s.id) || [];
       this.horariosSeleccionados = this.usuarioAEditar.horarios?.map(h => h.id) || [];
 
-      // Verificar si se puede crear nuevo contrato
-      this.mostrarNuevoContrato = !this.usuarioAEditar.contrato ||
-                                 this.usuarioAEditar.contrato.estadoNombre === 'INACTIVO';
+      // En modo edición, el formulario de contrato está oculto por defecto
+      this.mostrarFormularioContrato = false;
 
-      // Si hay contrato activo o pendiente, ocultar el formulario de contrato
+      // Si hay contrato activo o pendiente, deshabilitar el grupo de contrato
       if (this.usuarioAEditar.contrato &&
           ['ACTIVO', 'PENDIENTE'].includes(this.usuarioAEditar.contrato.estadoNombre)) {
         this.usuarioForm.get('contrato')?.disable();
+      } else {
+        // Si no hay contrato o está inactivo, habilitar el grupo pero mantenerlo oculto
+        this.usuarioForm.get('contrato')?.enable();
       }
     }
 

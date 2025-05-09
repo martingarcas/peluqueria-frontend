@@ -129,7 +129,8 @@
         <h2>CONTRATO</h2>
       </div>
 
-      <div formGroupName="contrato">
+      <!-- Modo Crear: Formulario normal -->
+      <div *ngIf="modo === 'crear'" formGroupName="contrato">
         <div class="form-group">
           <label for="tipoContrato">TIPO DE CONTRATO</label>
           <select
@@ -187,6 +188,114 @@
 
         <div class="info-text">
           El documento del contrato se generará automáticamente con los datos proporcionados.
+        </div>
+      </div>
+
+      <!-- Modo Editar: Panel de estado y formulario condicional -->
+      <div *ngIf="modo === 'editar'">
+        <!-- Estado del contrato actual -->
+        <div class="alert" [ngClass]="{
+          'alert-success': usuarioAEditar?.contrato?.estadoNombre === 'ACTIVO',
+          'alert-warning': usuarioAEditar?.contrato?.estadoNombre === 'PENDIENTE',
+          'alert-secondary': usuarioAEditar?.contrato?.estadoNombre === 'INACTIVO'
+        }" *ngIf="usuarioAEditar?.contrato">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h4 class="alert-heading mb-2">Estado del Contrato: {{usuarioAEditar?.contrato?.estadoNombre}}</h4>
+              <p class="mb-0">
+                <strong>Tipo:</strong> {{usuarioAEditar?.contrato?.tipoContrato | titlecase}}<br>
+                <strong>Fecha Inicio:</strong> {{usuarioAEditar?.contrato?.fechaInicioContrato | date:'dd/MM/yyyy'}}<br>
+                <strong>Fecha Fin:</strong> {{usuarioAEditar?.contrato?.fechaFinContrato | date:'dd/MM/yyyy'}}<br>
+                <strong>Salario:</strong> {{usuarioAEditar?.contrato?.salario | currency:'EUR':'symbol'}}
+              </p>
+            </div>
+            <button *ngIf="usuarioAEditar?.contrato?.estadoNombre === 'INACTIVO'"
+                    type="button"
+                    class="btn btn-primary"
+                    (click)="mostrarFormularioContrato = true">
+              Crear Nuevo Contrato
+            </button>
+          </div>
+        </div>
+
+        <!-- Mensaje cuando no hay contrato -->
+        <div class="alert alert-info" *ngIf="!usuarioAEditar?.contrato">
+          <div class="d-flex justify-content-between align-items-center">
+            <p class="mb-0">Este trabajador no tiene ningún contrato asignado.</p>
+            <button type="button" class="btn btn-primary" (click)="mostrarFormularioContrato = true">
+              Crear Contrato
+            </button>
+          </div>
+        </div>
+
+        <!-- Formulario de nuevo contrato (oculto por defecto) -->
+        <div *ngIf="mostrarFormularioContrato" class="mt-3">
+          <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+              <h5 class="mb-0">Nuevo Contrato</h5>
+              <button type="button" class="btn-close btn-close-white" (click)="mostrarFormularioContrato = false"></button>
+            </div>
+            <div class="card-body" formGroupName="contrato">
+              <div class="form-group">
+                <label for="tipoContrato">TIPO DE CONTRATO</label>
+                <select
+                  id="tipoContrato"
+                  formControlName="tipoContrato"
+                  [class.invalid]="usuarioForm.get('contrato.tipoContrato')?.invalid && usuarioForm.get('contrato.tipoContrato')?.touched">
+                  <option value="">Seleccione un tipo</option>
+                  <option value="fijo">Fijo</option>
+                  <option value="temporal">Temporal</option>
+                </select>
+                <div class="error-hint" *ngIf="usuarioForm.get('contrato.tipoContrato')?.invalid && usuarioForm.get('contrato.tipoContrato')?.touched">
+                  El tipo de contrato es requerido
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="fechaInicio">FECHA DE INICIO</label>
+                  <input
+                    type="date"
+                    id="fechaInicio"
+                    formControlName="fechaInicio"
+                    [class.invalid]="usuarioForm.get('contrato.fechaInicio')?.invalid && usuarioForm.get('contrato.fechaInicio')?.touched">
+                  <div class="error-hint" *ngIf="usuarioForm.get('contrato.fechaInicio')?.invalid && usuarioForm.get('contrato.fechaInicio')?.touched">
+                    La fecha de inicio es requerida
+                  </div>
+                </div>
+
+                <div class="form-group" *ngIf="usuarioForm.get('contrato.tipoContrato')?.value === 'temporal'">
+                  <label for="fechaFin">FECHA DE FIN</label>
+                  <input
+                    type="date"
+                    id="fechaFin"
+                    formControlName="fechaFin"
+                    [class.invalid]="usuarioForm.get('contrato.fechaFin')?.invalid && usuarioForm.get('contrato.fechaFin')?.touched">
+                  <div class="error-hint" *ngIf="usuarioForm.get('contrato.fechaFin')?.invalid && usuarioForm.get('contrato.fechaFin')?.touched">
+                    La fecha de fin es requerida para contratos temporales
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="salario">SALARIO</label>
+                <input
+                  type="number"
+                  id="salario"
+                  formControlName="salario"
+                  step="0.01"
+                  min="0"
+                  [class.invalid]="usuarioForm.get('contrato.salario')?.invalid && usuarioForm.get('contrato.salario')?.touched">
+                <div class="error-hint" *ngIf="usuarioForm.get('contrato.salario')?.invalid && usuarioForm.get('contrato.salario')?.touched">
+                  El salario es requerido y debe ser mayor que 0
+                </div>
+              </div>
+
+              <div class="info-text">
+                El documento del contrato se generará automáticamente con los datos proporcionados.
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -145,6 +145,8 @@ export class FormUsuarioComponent implements OnInit {
   cargarUsuario(): void {
     if (!this.usuarioAEditar) return;
 
+    console.log('Cargando usuario para editar:', this.usuarioAEditar);
+
     this.usuarioForm.patchValue({
       nombre: this.usuarioAEditar.nombre,
       apellidos: this.usuarioAEditar.apellidos,
@@ -161,8 +163,15 @@ export class FormUsuarioComponent implements OnInit {
       this.mostrarFormularioHorarios = true;
 
       // Inicializar los arrays de selección
-      this.serviciosSeleccionados = this.usuarioAEditar.servicios?.map(s => s.id) || [];
-      this.horariosSeleccionados = this.usuarioAEditar.horarios?.map(h => h.id) || [];
+      if (this.usuarioAEditar.servicios) {
+        this.serviciosSeleccionados = this.usuarioAEditar.servicios.map(s => s.id);
+        console.log('Servicios iniciales cargados:', this.serviciosSeleccionados);
+      }
+
+      if (this.usuarioAEditar.horarios) {
+        this.horariosSeleccionados = this.usuarioAEditar.horarios.map(h => h.id);
+        console.log('Horarios iniciales cargados:', this.horariosSeleccionados);
+      }
 
       // Cargar el contrato del usuario
       this.contratoService.obtenerPorUsuarioId(this.usuarioAEditar.id).subscribe({
@@ -229,6 +238,7 @@ export class FormUsuarioComponent implements OnInit {
     } else {
       this.serviciosSeleccionados.splice(index, 1);
     }
+    console.log('Servicios seleccionados:', this.serviciosSeleccionados);
   }
 
   toggleSeleccionHorario(horarioId: number): void {
@@ -238,6 +248,7 @@ export class FormUsuarioComponent implements OnInit {
     } else {
       this.horariosSeleccionados.splice(index, 1);
     }
+    console.log('Horarios seleccionados:', this.horariosSeleccionados);
   }
 
   onFotoSeleccionada(event: Event): void {
@@ -267,6 +278,10 @@ export class FormUsuarioComponent implements OnInit {
 
     // Validar que haya al menos un servicio y un horario seleccionado si es trabajador
     if (this.esTrabajador) {
+      console.log('Es trabajador, verificando selecciones...');
+      console.log('Servicios seleccionados antes de enviar:', this.serviciosSeleccionados);
+      console.log('Horarios seleccionados antes de enviar:', this.horariosSeleccionados);
+
       if (this.serviciosSeleccionados.length === 0) {
         this.mostrarError('Debe seleccionar al menos un servicio');
         return;
@@ -279,6 +294,7 @@ export class FormUsuarioComponent implements OnInit {
 
     this.limpiarMensajes();
     const usuarioData = this.usuarioForm.value;
+    console.log('Datos del formulario:', usuarioData);
 
     if (this.modo === 'editar' && (!usuarioData.password || usuarioData.password.trim() === '')) {
       delete usuarioData.password;
@@ -294,28 +310,17 @@ export class FormUsuarioComponent implements OnInit {
       password: usuarioData.password,
       telefono: usuarioData.telefono,
       direccion: usuarioData.direccion,
-      // Solo incluir el rol en modo crear
-      ...(this.modo === 'crear' && { role: usuarioData.role.toLowerCase() })
-    };
-
-    // Siempre incluir servicios y horarios si es trabajador (tanto en crear como en editar)
-    if (this.esTrabajador) {
-      Object.assign(usuarioRequest, {
+      // Incluir servicios y horarios en el objeto usuario si es trabajador
+      ...(this.esTrabajador && {
         serviciosIds: this.serviciosSeleccionados,
         horariosIds: this.horariosSeleccionados
-      });
+      })
+    };
 
-      if (usuarioData.contrato) {
-        Object.assign(usuarioRequest, {
-          contrato: {
-            fechaInicioContrato: usuarioData.contrato.fechaInicio,
-            fechaFinContrato: usuarioData.contrato.fechaFin,
-            tipoContrato: usuarioData.contrato.tipoContrato,
-            salario: usuarioData.contrato.salario
-          }
-        });
-      }
-    }
+    console.log('Datos del usuario a enviar:', usuarioRequest);
+    console.log('Es trabajador:', this.esTrabajador);
+    console.log('Servicios seleccionados:', this.serviciosSeleccionados);
+    console.log('Horarios seleccionados:', this.horariosSeleccionados);
 
     // Agregar el JSON del usuario
     formData.append('usuario', new Blob([JSON.stringify(usuarioRequest)], { type: 'application/json' }));
@@ -323,11 +328,24 @@ export class FormUsuarioComponent implements OnInit {
     // Agregar la foto si existe
     if (this.fotoSeleccionada) {
       formData.append('foto', this.fotoSeleccionada);
+      console.log('Foto adjuntada:', this.fotoSeleccionada.name);
+    }
+
+    // Si es trabajador y hay datos de contrato, incluirlos
+    if (this.esTrabajador && usuarioData.contrato && this.mostrarFormularioContrato) {
+      console.log('Datos del contrato:', usuarioData.contrato);
+      formData.append('fechaInicioContrato', usuarioData.contrato.fechaInicio);
+      if (usuarioData.contrato.fechaFin) {
+        formData.append('fechaFinContrato', usuarioData.contrato.fechaFin);
+      }
+      formData.append('tipoContrato', usuarioData.contrato.tipoContrato);
+      formData.append('salario', usuarioData.contrato.salario.toString());
     }
 
     // Agregar el documento del contrato si existe
     if (this.contratoDocumento) {
       formData.append('documentoContrato', this.contratoDocumento);
+      console.log('Documento de contrato adjuntado:', this.contratoDocumento.name);
     }
 
     try {
@@ -336,6 +354,7 @@ export class FormUsuarioComponent implements OnInit {
 
       // Generar el PDF pero no añadirlo al FormData todavía
       if (this.modo === 'crear' && this.esTrabajador) {
+        console.log('Generando PDF del contrato...');
         contratoFile = await this.pdfService.generarContratoTrabajador({
           nombre: usuarioData.nombre,
           apellidos: usuarioData.apellidos,
@@ -350,11 +369,16 @@ export class FormUsuarioComponent implements OnInit {
         // Solo añadir el contrato al FormData si tenemos el archivo
         if (this.esTrabajador && contratoFile) {
           formData.append('documentoContrato', contratoFile);
+          console.log('PDF del contrato generado y adjuntado');
         }
+        console.log('Enviando petición de creación...');
         response = await this.usuarioService.crear(formData).toPromise();
       } else {
+        console.log('Enviando petición de actualización para el usuario:', this.usuarioAEditar!.id);
         response = await this.usuarioService.actualizar(this.usuarioAEditar!.id, formData).toPromise();
       }
+
+      console.log('Respuesta recibida:', response);
 
       if (response) {
         this.mostrarExito(response.mensaje);

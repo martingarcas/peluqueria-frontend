@@ -321,7 +321,8 @@
               <input
                 type="checkbox"
                 [checked]="serviciosSeleccionados.includes(servicio.id)"
-                (change)="toggleSeleccionServicio(servicio.id)">
+                (change)="toggleSeleccionServicio(servicio.id)"
+                #checkbox>
               <span class="checkmark"></span>
               <span class="item-info">
                 {{ servicio.nombre }}
@@ -351,7 +352,8 @@
               <input
                 type="checkbox"
                 [checked]="horariosSeleccionados.includes(horario.id)"
-                (change)="toggleSeleccionHorario(horario.id)">
+                (change)="toggleSeleccionHorario(horario.id)"
+                #checkbox>
               <span class="checkmark"></span>
               <span class="item-info">
                 {{ horario.diaSemana | titlecase }}

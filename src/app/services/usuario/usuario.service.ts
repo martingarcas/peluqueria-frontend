@@ -106,7 +106,17 @@ export class UsuarioService {
   }
 
   actualizar(id: number, usuario: FormData): Observable<{ mensaje: string, usuario: UsuarioResponse }> {
-    return this.http.patch<{ mensaje: string, usuario: UsuarioResponse }>(
+    // Log para depuración
+    const formDataObj: any = {};
+    usuario.forEach((value, key) => {
+      formDataObj[key] = value;
+    });
+    console.log('Datos enviados al backend:', {
+      id: id,
+      formData: formDataObj
+    });
+
+    return this.http.put<{ mensaje: string, usuario: UsuarioResponse }>(
       `${this.apiUrl}/${id}`,
       usuario,
       {

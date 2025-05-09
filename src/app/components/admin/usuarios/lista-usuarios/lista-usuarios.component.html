@@ -114,7 +114,7 @@
                     <p *ngIf="usuario.contrato.fechaFinContrato">
                       <strong>Fecha Fin:</strong> {{ usuario.contrato.fechaFinContrato | date:'dd/MM/yyyy' }}
                     </p>
-                    <p><strong>Salario:</strong> {{ usuario.contrato.salario | currency:'EUR':'symbol' }}</p>
+                    <p><strong>Salario:</strong> {{ usuario.contrato.salario }} €</p>
                   </div>
                   <div class="contrato-acciones">
                     <button class="download-contract-button" (click)="descargarContratoPDF(usuario); $event.stopPropagation()">

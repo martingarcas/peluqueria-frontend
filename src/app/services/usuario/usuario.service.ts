@@ -21,12 +21,14 @@ export class UsuarioService {
       token = loginData.token || '';
     }
 
+    // Para peticiones multipart, solo enviamos el token de autorización
     if (isMultipart) {
       return new HttpHeaders({
         'Authorization': `Bearer ${token}`
       });
     }
 
+    // Para peticiones normales, incluimos también el Content-Type
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -36,40 +38,23 @@ export class UsuarioService {
   obtenerTodos(): Observable<{ mensaje: string, usuarios: UsuarioResponse[] }> {
     return this.http.get<{ mensaje: string, usuarios: UsuarioResponse[] }>(
       this.apiUrl,
-      { headers: this.obtenerHeaders() }
+      {
+        headers: this.obtenerHeaders(),
+        observe: 'body',
+        responseType: 'json'
+      }
     );
   }
 
-  crear(usuario: UsuarioRequest): Observable<{ mensaje: string, usuario: UsuarioResponse }> {
-    if (usuario.role === 'trabajador') {
-      return this.crearTrabajador(usuario);
-    }
-
-    const formData = new FormData();
-
-    // Crear un Blob con el JSON del usuario
-    const usuarioBlob = new Blob([JSON.stringify({
-      nombre: usuario.nombre,
-      apellidos: usuario.apellidos,
-      email: usuario.email,
-      password: usuario.password,
-      telefono: usuario.telefono,
-      direccion: usuario.direccion,
-      role: usuario.role
-    })], {
-      type: 'application/json'
-    });
-
-    formData.append('usuario', usuarioBlob);
-
-    if (usuario.foto) {
-      formData.append('foto', usuario.foto);
-    }
-
+  crear(usuario: FormData): Observable<{ mensaje: string, usuario: UsuarioResponse }> {
     return this.http.post<{ mensaje: string, usuario: UsuarioResponse }>(
       this.apiUrl,
-      formData,
-      { headers: this.obtenerHeaders(true) }
+      usuario,
+      {
+        headers: this.obtenerHeaders(true),
+        observe: 'body',
+        responseType: 'json'
+      }
     );
   }
 
@@ -120,44 +105,26 @@ export class UsuarioService {
     );
   }
 
-  actualizar(id: number, usuario: UsuarioRequest): Observable<{ mensaje: string, usuario: UsuarioResponse }> {
-    const formData = new FormData();
-
-    // Crear Blob con los datos del usuario
-    const usuarioBlob = new Blob([JSON.stringify({
-      id: id,
-      nombre: usuario.nombre,
-      apellidos: usuario.apellidos,
-      email: usuario.email,
-      password: usuario.password,
-      telefono: usuario.telefono,
-      direccion: usuario.direccion,
-      role: usuario.role
-    })], {
-      type: 'application/json'
-    });
-
-    formData.append('usuario', usuarioBlob);
-
-    // Agregar foto si se proporciona
-    if (usuario.foto) {
-      formData.append('foto', usuario.foto);
-    }
-
-    // En este método ya no permitimos actualizar a rol trabajador
-    // ni agregar documentos de contrato
-
+  actualizar(id: number, usuario: FormData): Observable<{ mensaje: string, usuario: UsuarioResponse }> {
     return this.http.patch<{ mensaje: string, usuario: UsuarioResponse }>(
       `${this.apiUrl}/${id}`,
-      formData,
-      { headers: this.obtenerHeaders(true) }
+      usuario,
+      {
+        headers: this.obtenerHeaders(true),
+        observe: 'body',
+        responseType: 'json'
+      }
     );
   }
 
   eliminar(id: number): Observable<{ mensaje: string }> {
     return this.http.delete<{ mensaje: string }>(
       `${this.apiUrl}/${id}`,
-      { headers: this.obtenerHeaders() }
+      {
+        headers: this.obtenerHeaders(),
+        observe: 'body',
+        responseType: 'json'
+      }
     );
   }
 
@@ -176,6 +143,28 @@ export class UsuarioService {
       {
         headers: this.obtenerHeaders(),
         responseType: 'blob'
+      }
+    );
+  }
+
+  obtenerTrabajadores(): Observable<{ mensaje: string, usuarios: UsuarioResponse[] }> {
+    return this.http.get<{ mensaje: string, usuarios: UsuarioResponse[] }>(
+      `${this.apiUrl}/trabajadores`,
+      {
+        headers: this.obtenerHeaders(),
+        observe: 'body',
+        responseType: 'json'
+      }
+    );
+  }
+
+  obtenerClientes(): Observable<{ mensaje: string, usuarios: UsuarioResponse[] }> {
+    return this.http.get<{ mensaje: string, usuarios: UsuarioResponse[] }>(
+      `${this.apiUrl}/clientes`,
+      {
+        headers: this.obtenerHeaders(),
+        observe: 'body',
+        responseType: 'json'
       }
     );
   }

@@ -9,6 +9,7 @@ import { UsuarioRequest } from 'src/app/models/usuarios/usuario-request';
 import { ServicioResponse } from 'src/app/models/servicios/servicio-response';
 import { HorarioResponse } from 'src/app/models/horarios/horario-response';
 import { ContratoRequest } from 'src/app/models/usuarios/contrato-request';
+import { ContratoResponse } from 'src/app/models/usuarios/contrato-response';
 
 @Component({
   selector: 'app-form-usuario',
@@ -47,6 +48,7 @@ export class FormUsuarioComponent implements OnInit {
   mostrarFormularioServicios: boolean = false;
   mostrarFormularioHorarios: boolean = false;
   esTrabajador: boolean = false;
+  mostrarNuevoContrato: boolean = false;
   fotoSeleccionada: File | null = null;
   previewImagen: string | null = null;
   contratoDocumento: File | null = null;
@@ -106,13 +108,32 @@ export class FormUsuarioComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.modo === 'editar' && this.usuarioAEditar) {
-      this.usuarioForm.get('password')?.clearValidators();
-      this.usuarioForm.get('password')?.updateValueAndValidity();
+      this.usuarioForm.get('password')?.setValidators([
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
+      ]);
+
+      // Si es trabajador, mostrar los formularios correspondientes
+      this.esTrabajador = this.usuarioAEditar.role === 'trabajador';
+      if (this.esTrabajador) {
+        this.mostrarFormularioServicios = true;
+        this.mostrarFormularioHorarios = true;
+      }
+    } else {
+      this.usuarioForm.get('password')?.setValidators([
+        Validators.required,
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
+      ]);
+    }
+    this.usuarioForm.get('password')?.updateValueAndValidity();
+
+    if (this.modo === 'editar' && this.usuarioAEditar) {
       this.cargarUsuario();
     } else if (this.modo === 'crear') {
-      this.usuarioForm.get('password')?.setValidators([Validators.required, Validators.minLength(6)]);
-      this.usuarioForm.get('password')?.updateValueAndValidity();
+      this.usuarioForm.get('role')?.setValidators([Validators.required]);
+      this.usuarioForm.get('role')?.updateValueAndValidity();
     }
+
+    // Cargar servicios y horarios después de determinar si es trabajador
     this.cargarServicios();
     this.cargarHorarios();
   }
@@ -125,30 +146,29 @@ export class FormUsuarioComponent implements OnInit {
       apellidos: this.usuarioAEditar.apellidos,
       email: this.usuarioAEditar.email,
       telefono: this.usuarioAEditar.telefono,
-      direccion: this.usuarioAEditar.direccion,
-      role: this.usuarioAEditar.role
+      direccion: this.usuarioAEditar.direccion
     });
 
-    if (this.usuarioAEditar.contrato) {
-      this.usuarioForm.patchValue({
-        contrato: {
-          fechaInicio: this.usuarioAEditar.contrato.fechaInicio,
-          fechaFin: this.usuarioAEditar.contrato.fechaFin,
-          tipoContrato: this.usuarioAEditar.contrato.tipoContrato,
-          salario: this.usuarioAEditar.contrato.salario
-        }
-      });
-      this.mostrarFormularioContrato = true;
-    }
+    // Establecer el rol y mostrar secciones correspondientes
+    this.esTrabajador = this.usuarioAEditar.role === 'trabajador';
 
-    if (this.usuarioAEditar.servicios) {
-      this.serviciosSeleccionados = this.usuarioAEditar.servicios.map(s => s.id);
+    if (this.esTrabajador) {
       this.mostrarFormularioServicios = true;
-    }
-
-    if (this.usuarioAEditar.horarios) {
-      this.horariosSeleccionados = this.usuarioAEditar.horarios.map(h => h.id);
       this.mostrarFormularioHorarios = true;
+
+      // Inicializar los arrays de selección
+      this.serviciosSeleccionados = this.usuarioAEditar.servicios?.map(s => s.id) || [];
+      this.horariosSeleccionados = this.usuarioAEditar.horarios?.map(h => h.id) || [];
+
+      // Verificar si se puede crear nuevo contrato
+      this.mostrarNuevoContrato = !this.usuarioAEditar.contrato ||
+                                 this.usuarioAEditar.contrato.estadoNombre === 'INACTIVO';
+
+      // Si hay contrato activo o pendiente, ocultar el formulario de contrato
+      if (this.usuarioAEditar.contrato &&
+          ['ACTIVO', 'PENDIENTE'].includes(this.usuarioAEditar.contrato.estadoNombre)) {
+        this.usuarioForm.get('contrato')?.disable();
+      }
     }
 
     if (this.usuarioAEditar.foto) {
@@ -220,82 +240,124 @@ export class FormUsuarioComponent implements OnInit {
   async onSubmit(): Promise<void> {
     if (this.usuarioForm.invalid) {
       this.marcarCamposComoTocados(this.usuarioForm);
-      this.mostrarError('Por favor, complete todos los campos requeridos correctamente');
       return;
     }
 
+    // Validar que haya al menos un servicio y un horario seleccionado si es trabajador
     if (this.esTrabajador) {
-      if (!this.fotoSeleccionada && this.modo === 'crear' && !this.usuarioAEditar?.foto) {
-        this.mostrarError('La foto es obligatoria para trabajadores');
-        return;
-      }
-
       if (this.serviciosSeleccionados.length === 0) {
         this.mostrarError('Debe seleccionar al menos un servicio');
         return;
       }
-
       if (this.horariosSeleccionados.length === 0) {
         this.mostrarError('Debe seleccionar al menos un horario');
         return;
       }
+    }
 
-      // Generar el PDF del contrato
-      try {
-        const datosContrato = {
-          nombre: this.usuarioForm.get('nombre')?.value,
-          apellidos: this.usuarioForm.get('apellidos')?.value,
-          fechaInicio: this.usuarioForm.get('contrato.fechaInicio')?.value,
-          fechaFin: this.usuarioForm.get('contrato.fechaFin')?.value,
-          tipoContrato: this.usuarioForm.get('contrato.tipoContrato')?.value,
-          salario: this.usuarioForm.get('contrato.salario')?.value
-        };
+    this.limpiarMensajes();
+    const usuarioData = this.usuarioForm.value;
 
-        const documento = await this.pdfService.generarContratoTrabajador(datosContrato).toPromise();
-        this.contratoDocumento = documento || null;
-      } catch (error) {
-        this.mostrarError('Error al generar el contrato');
-        console.error('Error:', error);
-        return;
+    if (this.modo === 'editar' && (!usuarioData.password || usuarioData.password.trim() === '')) {
+      delete usuarioData.password;
+    }
+
+    const formData = new FormData();
+
+    // Preparar datos del usuario
+    const usuarioRequest = {
+      nombre: usuarioData.nombre,
+      apellidos: usuarioData.apellidos,
+      email: usuarioData.email,
+      password: usuarioData.password,
+      telefono: usuarioData.telefono,
+      direccion: usuarioData.direccion,
+      // Solo incluir el rol en modo crear
+      ...(this.modo === 'crear' && { role: usuarioData.role.toLowerCase() })
+    };
+
+    // Siempre incluir servicios y horarios si es trabajador (tanto en crear como en editar)
+    if (this.esTrabajador) {
+      Object.assign(usuarioRequest, {
+        serviciosIds: this.serviciosSeleccionados,
+        horariosIds: this.horariosSeleccionados
+      });
+
+      if (usuarioData.contrato) {
+        Object.assign(usuarioRequest, {
+          contrato: {
+            fechaInicioContrato: usuarioData.contrato.fechaInicio,
+            fechaFinContrato: usuarioData.contrato.fechaFin,
+            tipoContrato: usuarioData.contrato.tipoContrato,
+            salario: usuarioData.contrato.salario
+          }
+        });
       }
     }
 
-    const usuarioRequest: UsuarioRequest = {
-      nombre: this.usuarioForm.get('nombre')?.value,
-      apellidos: this.usuarioForm.get('apellidos')?.value,
-      email: this.usuarioForm.get('email')?.value,
-      password: this.usuarioForm.get('password')?.value,
-      telefono: this.usuarioForm.get('telefono')?.value,
-      direccion: this.usuarioForm.get('direccion')?.value,
-      role: this.usuarioForm.get('role')?.value,
-      foto: this.fotoSeleccionada || undefined
-    };
+    // Agregar el JSON del usuario
+    formData.append('usuario', new Blob([JSON.stringify(usuarioRequest)], { type: 'application/json' }));
 
-    if (this.esTrabajador) {
-      usuarioRequest.contrato = {
-        fechaInicio: this.usuarioForm.get('contrato.fechaInicio')?.value,
-        fechaFin: this.usuarioForm.get('contrato.fechaFin')?.value,
-        tipoContrato: this.usuarioForm.get('contrato.tipoContrato')?.value,
-        salario: this.usuarioForm.get('contrato.salario')?.value,
-        documento: this.contratoDocumento || undefined
-      };
-      usuarioRequest.serviciosIds = this.serviciosSeleccionados;
-      usuarioRequest.horariosIds = this.horariosSeleccionados;
+    // Agregar la foto si existe
+    if (this.fotoSeleccionada) {
+      formData.append('foto', this.fotoSeleccionada);
+    }
+
+    // Agregar el documento del contrato si existe
+    if (this.contratoDocumento) {
+      formData.append('documentoContrato', this.contratoDocumento);
     }
 
     try {
       let response;
-      if (this.modo === 'crear') {
-        response = await this.usuarioService.crear(usuarioRequest).toPromise();
-      } else {
-        response = await this.usuarioService.actualizar(this.usuarioAEditar!.id, usuarioRequest).toPromise();
+      let contratoFile;
+
+      // Generar el PDF pero no añadirlo al FormData todavía
+      if (this.modo === 'crear' && this.esTrabajador) {
+        contratoFile = await this.pdfService.generarContratoTrabajador({
+          nombre: usuarioData.nombre,
+          apellidos: usuarioData.apellidos,
+          tipoContrato: usuarioData.contrato.tipoContrato,
+          fechaInicioContrato: usuarioData.contrato.fechaInicio,
+          fechaFinContrato: usuarioData.contrato.fechaFin,
+          salario: usuarioData.contrato.salario
+        }).toPromise();
       }
 
-      this.onGuardar.emit(response);
-      this.mostrarExito('Usuario guardado correctamente');
+      if (this.modo === 'crear') {
+        // Solo añadir el contrato al FormData si tenemos el archivo
+        if (this.esTrabajador && contratoFile) {
+          formData.append('documentoContrato', contratoFile);
+        }
+        response = await this.usuarioService.crear(formData).toPromise();
+      } else {
+        response = await this.usuarioService.actualizar(this.usuarioAEditar!.id, formData).toPromise();
+      }
+
+      if (response) {
+        this.mostrarExito(response.mensaje);
+        this.onGuardar.emit({ mensaje: response.mensaje, usuario: response.usuario });
+      }
     } catch (error: any) {
-      this.mostrarError(error.error?.mensaje || 'Error al guardar el usuario');
-      console.error('Error:', error);
+      console.error('Error al guardar usuario:', {
+        error: error,
+        mensaje: error.error?.mensaje,
+        respuesta: error.error
+      });
+
+      // Si hay errores específicos de validación, mostrarlos
+      if (error.error?.errores) {
+        const mensajesError = Object.values(error.error.errores);
+        if (mensajesError.length > 0) {
+          this.mostrarError(mensajesError.join('\n'));
+          return;
+        }
+      }
+
+      // Si no hay errores específicos, mostrar el mensaje general
+      const mensajeError = error.error?.mensaje ||
+                          'Error al guardar el usuario';
+      this.mostrarError(mensajeError);
     }
   }
 
@@ -304,15 +366,15 @@ export class FormUsuarioComponent implements OnInit {
   }
 
   private mostrarExito(mensaje: string): void {
-    this.mensajeError = '';
     this.mensajeExito = mensaje;
+    this.mensajeError = '';
     setTimeout(() => this.mensajeExito = '', 3000);
   }
 
   private mostrarError(mensaje: string): void {
-    this.mensajeExito = '';
     this.mensajeError = mensaje;
-    setTimeout(() => this.mensajeError = '', 3000);
+    this.mensajeExito = '';
+    // No usar timeout para errores de validación para que el usuario pueda leerlos
   }
 
   private limpiarMensajes(): void {

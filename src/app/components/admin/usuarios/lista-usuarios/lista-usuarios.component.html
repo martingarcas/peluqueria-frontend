@@ -13,12 +13,22 @@
     <div class="header">
       <h1>Usuarios</h1>
       <div class="actions">
-        <div class="search-box">
-          <input
-            type="text"
-            [(ngModel)]="searchTerm"
-            (ngModelChange)="onSearchChange()"
-            placeholder="Buscar usuario">
+        <div class="filters">
+          <div class="search-box">
+            <input
+              type="text"
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="onSearchChange()"
+              placeholder="Buscar usuario">
+          </div>
+          <div class="role-filter">
+            <select [(ngModel)]="selectedRole" (ngModelChange)="onRoleChange()">
+              <option value="">TODOS LOS ROLES</option>
+              <option value="cliente">CLIENTE</option>
+              <option value="trabajador">TRABAJADOR</option>
+              <option value="admin">ADMINISTRADOR</option>
+            </select>
+          </div>
         </div>
         <button class="add-button" (click)="mostrarFormularioCrear()">
           + Añadir nuevo usuario
@@ -29,17 +39,20 @@
     <!-- Tabla de usuarios -->
     <div class="table-container">
       <div class="table-header">
-        <div class="column nombre">Nombre</div>
-        <div class="column apellidos">Apellidos</div>
-        <div class="column email">Email</div>
-        <div class="column telefono">Teléfono</div>
-        <div class="column rol">Rol</div>
-        <div class="column estado">Estado</div>
-        <div class="column acciones">Acciones</div>
+        <div class="column foto">FOTO</div>
+        <div class="column nombre">NOMBRE</div>
+        <div class="column apellidos">APELLIDOS</div>
+        <div class="column email">EMAIL</div>
+        <div class="column telefono">TELÉFONO</div>
+        <div class="column rol">ROL</div>
+        <div class="column acciones">ACCIONES</div>
       </div>
 
       <div class="table-body">
         <div class="table-row" *ngFor="let usuario of usuariosFiltrados">
+          <div class="column foto" data-label="Foto:">
+            <img [src]="getImageUrl(usuario.foto)" alt="Foto de perfil">
+          </div>
           <div class="column nombre" data-label="Nombre:">
             {{ usuario.nombre }}
           </div>
@@ -54,9 +67,6 @@
           </div>
           <div class="column rol" data-label="Rol:">
             {{ usuario.role }}
-          </div>
-          <div class="column estado" data-label="Estado:">
-            {{ usuario.contrato?.estado || 'N/A' }}
           </div>
           <div class="column acciones" data-label="Acciones:">
             <button class="edit-button" (click)="mostrarFormularioEditar(usuario)">
@@ -94,7 +104,7 @@
             <p><strong>Teléfono:</strong> {{ usuarioAEliminar.telefono }}</p>
             <p><strong>Rol:</strong> {{ usuarioAEliminar.role }}</p>
             <p *ngIf="usuarioAEliminar.contrato">
-              <strong>Estado:</strong> {{ usuarioAEliminar.contrato.estado }}
+              <strong>Estado:</strong> {{ usuarioAEliminar.contrato.estadoNombre }}
             </p>
           </div>
         </div>

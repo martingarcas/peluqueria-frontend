@@ -1,3 +1,5 @@
+import { ContratoResponse } from './contrato-response';
+
 export interface UsuarioResponse {
   id: number;
   nombre: string;
@@ -11,16 +13,6 @@ export interface UsuarioResponse {
   contrato?: ContratoResponse;
   servicios?: { id: number; nombre: string }[];
   horarios?: { id: number; dia: string; horaInicio: string; horaFin: string }[];
-}
-
-export interface ContratoResponse {
-  id: number;
-  fechaInicio: string;
-  fechaFin?: string;
-  tipoContrato: string;
-  estado: string;
-  salario: number;
-  urlContrato: string;
 }
 
 export interface ServicioResponse {

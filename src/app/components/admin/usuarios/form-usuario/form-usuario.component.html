@@ -47,15 +47,15 @@
     </div>
 
     <!-- Campo Password -->
-    <div class="form-group" *ngIf="modo === 'crear'">
-      <label for="password">CONTRASEÑA</label>
+    <div class="form-group">
+      <label for="password">CONTRASEÑA {{ modo === 'editar' ? '(opcional)' : '' }}</label>
       <input
         type="password"
         id="password"
         formControlName="password"
         [class.invalid]="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched">
       <div class="error-hint" *ngIf="usuarioForm.get('password')?.invalid && usuarioForm.get('password')?.touched">
-        La contraseña debe tener al menos 6 caracteres
+        La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial
       </div>
     </div>
 
@@ -81,21 +81,22 @@
           formControlName="direccion"
           [class.invalid]="usuarioForm.get('direccion')?.invalid && usuarioForm.get('direccion')?.touched">
         <div class="error-hint" *ngIf="usuarioForm.get('direccion')?.invalid && usuarioForm.get('direccion')?.touched">
-          La dirección es requerida y debe tener al menos 5 caracteres
+          La dirección debe tener al menos 5 caracteres
         </div>
       </div>
     </div>
 
-    <div class="form-group">
+    <!-- Campo Rol - Solo visible en modo crear -->
+    <div class="form-group" *ngIf="modo === 'crear'">
       <label for="role">ROL</label>
       <select
         id="role"
         formControlName="role"
         [class.invalid]="usuarioForm.get('role')?.invalid && usuarioForm.get('role')?.touched">
         <option value="">Seleccione un rol</option>
-        <option value="cliente">Cliente</option>
-        <option value="trabajador">Trabajador</option>
-        <option value="admin">Administrador</option>
+        <option value="cliente">CLIENTE</option>
+        <option value="trabajador">TRABAJADOR</option>
+        <option value="admin">ADMINISTRADOR</option>
       </select>
       <div class="error-hint" *ngIf="usuarioForm.get('role')?.invalid && usuarioForm.get('role')?.touched">
         Debe seleccionar un rol

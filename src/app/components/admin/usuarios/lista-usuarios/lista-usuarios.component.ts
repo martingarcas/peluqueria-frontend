@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { SecurityContext } from '@angular/core';
 import { UsuarioResponse } from 'src/app/models/usuarios/usuario-response';
 import { UsuarioService } from 'src/app/services/usuario/usuario.service';
 
@@ -8,12 +10,13 @@ import { UsuarioService } from 'src/app/services/usuario/usuario.service';
   templateUrl: './lista-usuarios.component.html',
   styleUrls: ['./lista-usuarios.component.css']
 })
-export class ListaUsuariosComponent implements OnInit {
+export class ListaUsuariosComponent implements OnInit, OnDestroy {
   usuarios: UsuarioResponse[] = [];
   usuariosFiltrados: UsuarioResponse[] = [];
   mensajeError: string = '';
   mensajeExito: string = '';
   searchTerm: string = '';
+  selectedRole: string = '';
 
   // Propiedades para el modal de eliminación
   mostrarModalConfirmacion = false;
@@ -24,39 +27,85 @@ export class ListaUsuariosComponent implements OnInit {
   modoFormulario: 'crear' | 'editar' = 'crear';
   usuarioEnEdicion: UsuarioResponse | null = null;
 
+  // Cache de imágenes
+  imagenesCache = new Map<string, SafeUrl>();
+
   constructor(
     private usuarioService: UsuarioService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef,
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
     this.cargarUsuarios();
   }
 
+  ngOnDestroy(): void {
+    // Limpiar las URLs de las imágenes cacheadas
+    this.imagenesCache.forEach((safeUrl) => {
+      const url = this.sanitizer.sanitize(SecurityContext.URL, safeUrl);
+      if (url) URL.revokeObjectURL(url);
+    });
+  }
+
+  getImageUrl(fotoPath: string | undefined): SafeUrl {
+    if (!fotoPath) return 'assets/images/no-image.png';
+
+    if (this.imagenesCache.has(fotoPath)) {
+      return this.imagenesCache.get(fotoPath)!;
+    }
+
+    this.usuarioService.obtenerImagen(fotoPath).subscribe({
+      next: (blob: Blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+        const safeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+        this.imagenesCache.set(fotoPath, safeUrl);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error al cargar la imagen:', error);
+        this.imagenesCache.set(fotoPath, 'assets/images/no-image.png');
+      }
+    });
+
+    return 'assets/images/no-image.png';
+  }
+
   cargarUsuarios(): void {
     this.usuarioService.obtenerTodos().subscribe({
       next: (response) => {
         this.usuarios = response.usuarios;
-        this.usuariosFiltrados = this.usuarios;
+        this.aplicarFiltros();
+        this.mostrarExito(response.mensaje);
       },
-      error: (error: any) => {
-        this.mostrarError(error.error?.mensaje || 'Error al cargar los usuarios');
-        console.error('Error:', error);
+      error: (error) => {
+        console.error('Error al cargar usuarios:', error);
+        this.mostrarError('Error al cargar los usuarios');
       }
     });
   }
 
-  filtrarUsuarios(): void {
-    if (!this.searchTerm) {
-      this.usuariosFiltrados = this.usuarios;
-      return;
-    }
+  onSearchChange(): void {
+    this.aplicarFiltros();
+  }
 
-    this.usuariosFiltrados = this.usuarios.filter(usuario =>
-      usuario.nombre.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      usuario.apellidos.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-      usuario.email.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
+  onRoleChange(): void {
+    this.aplicarFiltros();
+  }
+
+  private aplicarFiltros(): void {
+    this.usuariosFiltrados = this.usuarios.filter(usuario => {
+      const cumpleBusqueda = !this.searchTerm ||
+        usuario.nombre.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        usuario.apellidos.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        usuario.email.toLowerCase().includes(this.searchTerm.toLowerCase());
+
+      const cumpleRol = !this.selectedRole ||
+        usuario.role.toLowerCase() === this.selectedRole.toLowerCase();
+
+      return cumpleBusqueda && cumpleRol;
+    });
   }
 
   // Métodos para el formulario
@@ -112,10 +161,6 @@ export class ListaUsuariosComponent implements OnInit {
     } finally {
       this.cancelarEliminacion();
     }
-  }
-
-  onSearchChange(): void {
-    this.filtrarUsuarios();
   }
 
   // Método para descargar el PDF del contrato

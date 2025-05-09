@@ -1,8 +1,12 @@
 export interface ContratoResponse {
     id: number;
-    fechaInicio: string;
-    fechaFin?: string;
+    usuarioId: number;
+    nombreUsuario: string;
+    fechaInicioContrato: string;
+    fechaFinContrato?: string;
     tipoContrato: string;
-    estado: string;
+    estadoId: number;
+    estadoNombre: string;
     urlContrato: string;
+    salario: number;
 }

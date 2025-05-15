@@ -43,9 +43,11 @@ export class ListaCitasComponent implements OnInit {
   cargarCitas(): void {
     this.citaService.obtenerCitasUsuario().subscribe({
       next: (response: any) => {
-        if (response && Array.isArray(response.citas)) {
-          this.citas = response.citas;
+        console.log('Respuesta del servidor:', response);
+        if (response && response.citas && Array.isArray(response.citas.citas)) {
+          this.citas = response.citas.citas;
           this.citasFiltradas = this.citas;
+          console.log('Citas cargadas:', this.citas);
         } else {
           this.citas = [];
           this.citasFiltradas = [];
@@ -53,8 +55,8 @@ export class ListaCitasComponent implements OnInit {
         }
       },
       error: (error) => {
+        console.error('Error completo:', error);
         this.mostrarError('Error al cargar las citas');
-        console.error('Error:', error);
       }
     });
   }

@@ -125,7 +125,7 @@ export class CitaService {
   obtenerDiasDisponibles(servicioId: number, fechaInicio: string, fechaFin: string): Observable<any> {
     const params = new HttpParams()
       .set('servicioId', servicioId.toString())
-      .set('hora', '08:00') // Hora por defecto para verificar disponibilidad general
+      .set('hora', '00:00') // Usamos una hora que nunca tendrá citas
       .set('fechaInicio', fechaInicio)
       .set('fechaFin', fechaFin);
 

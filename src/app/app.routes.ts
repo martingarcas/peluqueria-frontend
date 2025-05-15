@@ -37,6 +37,7 @@ import { ClienteGuard } from './guards/cliente.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { TrabajadorGuard } from './guards/trabajador.guard';
 import { ListaUsuariosComponent } from './components/admin/usuarios/lista-usuarios/lista-usuarios.component';
+import { ListaCitasComponent } from './components/client/citas/lista-citas/lista-citas.component';
 // futuros guards: workerGuard
 
 export const routes: Routes = [
@@ -59,6 +60,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard, ClienteGuard],
     children: [
       { path: '', component: ClientHomeComponent },
+      { path: 'citas', component: ListaCitasComponent },
       //{ path: 'profile', component: ProfileComponent },
       //{ path: 'appointments', component: AppointmentsComponent }
     ]

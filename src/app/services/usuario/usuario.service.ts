@@ -140,8 +140,8 @@ export class UsuarioService {
 
   // Métodos para manejo de imágenes
   obtenerImagen(rutaImagen: string): Observable<Blob> {
-    return this.http.get(`http://localhost:9000${rutaImagen}`, {
-      headers: this.obtenerHeaders(),
+    const url = rutaImagen.startsWith('http') ? rutaImagen : `http://localhost:9000${rutaImagen}`;
+    return this.http.get(url, {
       responseType: 'blob'
     });
   }

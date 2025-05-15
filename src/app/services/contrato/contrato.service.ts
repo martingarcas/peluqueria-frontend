@@ -53,4 +53,11 @@ export class ContratoService {
       }
     );
   }
+
+  verificarContratoActivo(trabajadorId: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.apiUrl}/trabajador/${trabajadorId}/activo`,
+      { headers: this.obtenerHeaders() }
+    );
+  }
 }

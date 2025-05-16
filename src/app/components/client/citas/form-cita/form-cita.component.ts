@@ -4,9 +4,11 @@ import { CitaService } from 'src/app/services/cita/cita.service';
 import { ServicioService } from 'src/app/services/servicio/servicio.service';
 import { UsuarioService } from 'src/app/services/usuario/usuario.service';
 import { CitaRequest, CitasRequest } from 'src/app/models/citas/cita-request';
+import { CitaResponse } from 'src/app/models/citas/cita-response';
 import { forkJoin, Observable, of, Subject } from 'rxjs';
 import { catchError, takeUntil, map, switchMap } from 'rxjs/operators';
 import { ContratoService } from 'src/app/services/contrato/contrato.service';
+import { Router } from '@angular/router';
 
 interface DisponibilidadResponse {
   slots: Array<{
@@ -82,13 +84,26 @@ export class FormCitaComponent implements OnInit, OnDestroy {
     'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'
   ];
 
+  // Array para almacenar las citas en proceso
+  citasEnProceso: Array<{
+    cita: CitaRequest;
+    servicioNombre: string;
+    trabajadorNombre: string;
+  }> = [];
+
+  mostrarModal = false;
+
+  // Array para almacenar las citas del usuario en formato fecha-hora
+  citasUsuario: string[] = [];
+
   constructor(
     private citaService: CitaService,
     private servicioService: ServicioService,
     private usuarioService: UsuarioService,
     private cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
-    private contratoService: ContratoService
+    private contratoService: ContratoService,
+    private router: Router
   ) {
     this.todasLasHoras = [
       ...this.horasPredefinidas.manana.bloque1,
@@ -99,6 +114,7 @@ export class FormCitaComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarDatosIniciales();
+    this.cargarCitasUsuario();
   }
 
   ngOnDestroy(): void {
@@ -156,6 +172,27 @@ export class FormCitaComponent implements OnInit, OnDestroy {
       error: (error) => {
         console.error('Error al cargar datos iniciales:', error);
         this.mostrarError('Error al cargar los datos iniciales');
+      }
+    });
+  }
+
+  private cargarCitasUsuario(): void {
+    this.citaService.obtenerCitasUsuario().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (response: any) => {
+        // La respuesta viene en formato { mensaje: string, citas: { citas: CitaResponse[] } }
+        if (response.citas && response.citas.citas) {
+          // Guardamos solo fecha y hora en formato "YYYY-MM-DD-HH:mm"
+          this.citasUsuario = response.citas.citas.map((cita: CitaResponse) => {
+            const hora = cita.horaInicio.split(':').slice(0, 2).join(':');
+            return `${cita.fecha}-${hora}`;
+          });
+          this.cdr.detectChanges();
+        }
+      },
+      error: (error) => {
+        console.error('Error al cargar citas del usuario:', error);
       }
     });
   }
@@ -694,14 +731,46 @@ export class FormCitaComponent implements OnInit, OnDestroy {
     // Si el día está en la lista de días no disponibles, no está disponible
     if (this.diasNoDisponibles.includes(fecha)) return false;
 
-    // Si no está en la lista de días no disponibles, está disponible
+    // Si hay una hora seleccionada, comprobar si el usuario tiene una cita ese día a esa hora
+    if (this.horaSeleccionada) {
+      const citaBuscar = `${fecha}-${this.horaSeleccionada}`;
+      if (this.citasUsuario.includes(citaBuscar)) return false;
+    }
+
     return true;
+  }
+
+  private esHoraSolapada(hora: string): boolean {
+    if (!this.servicioSeleccionado || !this.fechaSeleccionada) return false;
+
+    const servicio = this.servicios.find(s => s.id === this.servicioSeleccionado);
+    if (!servicio) return false;
+
+    const citaTemporal: CitaRequest = {
+      servicioId: this.servicioSeleccionado,
+      trabajadorId: this.profesionalSeleccionado || 0,
+      fecha: this.fechaSeleccionada,
+      horaInicio: hora + ':00'
+    };
+
+    return this.haySolapamiento(citaTemporal);
   }
 
   esHoraDisponible(hora: string): boolean {
     if (!this.servicioSeleccionado) return false;
     if (this.profesionalesNoDisponibles.length === this.profesionales.length) return false;
-    return this.horasDisponibles.includes(hora);
+    if (!this.horasDisponibles.includes(hora)) return false;
+
+    // Comprobar solapamiento con citas en proceso
+    if (this.esHoraSolapada(hora)) return false;
+
+    // Si hay una fecha seleccionada, comprobar si el usuario tiene una cita ese día a esa hora
+    if (this.fechaSeleccionada) {
+      const citaBuscar = `${this.fechaSeleccionada}-${hora}`;
+      if (this.citasUsuario.includes(citaBuscar)) return false;
+    }
+
+    return true;
   }
 
   private limpiarSelecciones(): void {
@@ -800,7 +869,37 @@ export class FormCitaComponent implements OnInit, OnDestroy {
     this.mensajeExito = '';
   }
 
-  reservarCita(): void {
+  private haySolapamiento(citaNueva: CitaRequest): boolean {
+    if (this.citasEnProceso.length === 0) return false;
+
+    // Obtener la duración del servicio seleccionado
+    const servicio = this.servicios.find(s => s.id === citaNueva.servicioId);
+    if (!servicio) return false;
+
+    // Convertir la hora de inicio a minutos para facilitar comparaciones
+    const [horaInicio, minutoInicio] = citaNueva.horaInicio.split(':').map(Number);
+    const minutosInicio = horaInicio * 60 + minutoInicio;
+    const minutosFin = minutosInicio + servicio.duracion;
+
+    return this.citasEnProceso.some(citaExistente => {
+      // Solo comprobar si es el mismo día
+      if (citaExistente.cita.fecha !== citaNueva.fecha) return false;
+
+      // Obtener la duración del servicio existente
+      const servicioExistente = this.servicios.find(s => s.id === citaExistente.cita.servicioId);
+      if (!servicioExistente) return false;
+
+      // Convertir la hora de inicio de la cita existente a minutos
+      const [horaExistente, minutoExistente] = citaExistente.cita.horaInicio.split(':').map(Number);
+      const minutosInicioExistente = horaExistente * 60 + minutoExistente;
+      const minutosFinExistente = minutosInicioExistente + servicioExistente.duracion;
+
+      // Comprobar si hay solapamiento
+      return (minutosInicio < minutosFinExistente && minutosFin > minutosInicioExistente);
+    });
+  }
+
+  agregarCita(): void {
     if (!this.servicioSeleccionado || !this.profesionalSeleccionado ||
         !this.fechaSeleccionada || !this.horaSeleccionada) {
       this.mostrarError('Por favor, complete todos los campos requeridos');
@@ -817,19 +916,70 @@ export class FormCitaComponent implements OnInit, OnDestroy {
       horaInicio: horaFormateada
     };
 
+    // Verificar solapamiento antes de añadir la cita
+    if (this.haySolapamiento(cita)) {
+      this.mostrarError('No puedes reservar citas que se solapen. Por favor, elige otro horario.');
+      return;
+    }
+
+    // Obtener nombres del servicio y trabajador
+    const servicio = this.servicios.find(s => s.id === this.servicioSeleccionado);
+    const trabajador = this.profesionales.find(p => p.id === this.profesionalSeleccionado);
+
+    if (!servicio || !trabajador) {
+      this.mostrarError('Error al obtener información del servicio o trabajador');
+      return;
+    }
+
+    // Añadir la cita al array
+    this.citasEnProceso.push({
+      cita,
+      servicioNombre: servicio.nombre,
+      trabajadorNombre: `${trabajador.nombre} ${trabajador.apellidos}`
+    });
+
+    // Limpiar selecciones para la siguiente cita
+    this.limpiarSelecciones();
+  }
+
+  eliminarCita(servicioId: number): void {
+    this.citasEnProceso = this.citasEnProceso.filter(c => c.cita.servicioId !== servicioId);
+  }
+
+  mostrarModalConfirmacion(): void {
+    this.mostrarModal = true;
+  }
+
+  cerrarModal(): void {
+    this.mostrarModal = false;
+  }
+
+  reservarCitas(): void {
+    if (this.citasEnProceso.length === 0) {
+      this.mostrarError('Por favor, añada al menos una cita');
+      return;
+    }
+
     const citasRequest: CitasRequest = {
-      citas: [cita]
+      citas: this.citasEnProceso.map(c => c.cita)
     };
 
     this.citaService.crearCita(citasRequest).subscribe({
       next: (response) => {
-        this.mostrarExito('Cita reservada con éxito');
+        this.mostrarExito('Citas reservadas con éxito');
         this.citaGuardada.emit(response.mensaje);
         this.limpiarFormulario();
+        this.citasEnProceso = [];
+        this.cerrarModal();
+
+        // Redirigir a la lista de citas con el mensaje de éxito
+        this.router.navigate(['/citas'], {
+          queryParams: { mensaje: 'Citas reservadas con éxito' }
+        });
       },
       error: (error) => {
-        console.error('Error al reservar la cita:', error);
-        this.mostrarError(error.error?.mensaje || 'Error al reservar la cita');
+        console.error('Error al reservar las citas:', error);
+        this.mostrarError(error.error?.mensaje || 'Error al reservar las citas');
       }
     });
   }

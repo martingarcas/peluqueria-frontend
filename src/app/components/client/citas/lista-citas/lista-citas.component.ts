@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CitaService } from 'src/app/services/cita/cita.service';
 import { CitaResponse } from 'src/app/models/citas/cita-response';
 
@@ -19,7 +19,8 @@ export class ListaCitasComponent implements OnInit {
 
   constructor(
     private citaService: CitaService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     // Obtener el rol del usuario del sessionStorage de forma segura
     try {
@@ -38,6 +39,13 @@ export class ListaCitasComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarCitas();
+
+    // Suscribirse a los parámetros de la URL para obtener mensajes
+    this.route.queryParams.subscribe(params => {
+      if (params['mensaje']) {
+        this.mostrarExito(params['mensaje']);
+      }
+    });
   }
 
   cargarCitas(): void {
@@ -112,19 +120,19 @@ export class ListaCitasComponent implements OnInit {
 
   // Métodos para manejar mensajes
   private mostrarExito(mensaje: string): void {
-    this.limpiarMensajes();
     this.mensajeExito = mensaje;
-    setTimeout(() => this.mensajeExito = '', 3000);
+    this.mensajeError = '';
+    setTimeout(() => this.limpiarMensajes(), 3000);
   }
 
   private mostrarError(mensaje: string): void {
-    this.limpiarMensajes();
     this.mensajeError = mensaje;
-    setTimeout(() => this.mensajeError = '', 3000);
+    this.mensajeExito = '';
+    setTimeout(() => this.limpiarMensajes(), 3000);
   }
 
   private limpiarMensajes(): void {
-    this.mensajeError = '';
     this.mensajeExito = '';
+    this.mensajeError = '';
   }
 }

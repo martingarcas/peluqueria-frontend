@@ -1,4 +1,20 @@
 <div class="cita-container">
+  <div class="introduccion">
+    <h1>Reserva tu Cita</h1>
+    <p>Bienvenido al sistema de reservas. El proceso es muy sencillo:</p>
+    <ol>
+      <li>Primero selecciona el servicio que deseas</li>
+      <li>Después, puedes elegir en el orden que prefieras:
+        <ul>
+          <li>El profesional que realizará el servicio</li>
+          <li>El día que mejor te convenga</li>
+          <li>La hora de tu preferencia</li>
+        </ul>
+      </li>
+    </ol>
+    <p class="nota">El sistema es dinámico y se adapta a tus elecciones. Puedes añadir varios servicios a tu reserva, y una vez seleccionados, aparecerán en la sección inferior donde podrás revisarlos antes de confirmar.</p>
+  </div>
+
   <div class="success-message" *ngIf="mensajeExito">
     {{ mensajeExito }}
   </div>
@@ -139,9 +155,72 @@
     </section>
   </div>
 
-  <button class="boton-reservar"
-          [disabled]="!servicioSeleccionado || !profesionalSeleccionado || !fechaSeleccionada || !horaSeleccionada"
-          (click)="reservarCita()">
-    Reservar Cita
-  </button>
+  <!-- Sección de Citas en Proceso -->
+  <div class="citas-en-proceso" *ngIf="citasEnProceso.length > 0">
+    <h2>Citas Seleccionadas</h2>
+    <div class="citas-grid">
+      <div class="cita-tarjeta" *ngFor="let cita of citasEnProceso">
+        <div class="cita-header">
+          <h3>{{ cita.servicioNombre }}</h3>
+          <button class="btn-eliminar" (click)="eliminarCita(cita.cita.servicioId)">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div class="cita-detalles">
+          <div class="detalle">
+            <i class="fas fa-user"></i>
+            <span>{{ cita.trabajadorNombre }}</span>
+          </div>
+
+          <div class="detalle">
+            <i class="fas fa-calendar"></i>
+            <span>{{ cita.cita.fecha | date:'dd/MM/yyyy' }}</span>
+          </div>
+
+          <div class="detalle">
+            <i class="fas fa-clock"></i>
+            <span>{{ cita.cita.horaInicio }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="botones-container">
+    <button class="boton-agregar"
+            [disabled]="!servicioSeleccionado || !profesionalSeleccionado || !fechaSeleccionada || !horaSeleccionada"
+            (click)="agregarCita()">
+      Añadir Cita
+    </button>
+
+    <button class="boton-reservar"
+            [disabled]="citasEnProceso.length === 0"
+            (click)="mostrarModalConfirmacion()">
+      Reservar Citas
+    </button>
+  </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="modal-overlay" *ngIf="mostrarModal" (click)="cerrarModal()">
+  <div class="modal-contenido" (click)="$event.stopPropagation()">
+    <h2>Confirmar Reserva</h2>
+    <p>¿Estás seguro de que quieres reservar las siguientes citas?</p>
+
+    <div class="modal-citas">
+      <div class="modal-cita" *ngFor="let cita of citasEnProceso">
+        <div class="modal-cita-detalle">
+          <strong>{{ cita.servicioNombre }}</strong>
+          <span>{{ cita.trabajadorNombre }}</span>
+          <span>{{ cita.cita.fecha | date:'dd/MM/yyyy' }} - {{ cita.cita.horaInicio }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-botones">
+      <button class="boton-cancelar" (click)="cerrarModal()">Cancelar</button>
+      <button class="boton-confirmar" (click)="reservarCitas()">Confirmar</button>
+    </div>
+  </div>
 </div>

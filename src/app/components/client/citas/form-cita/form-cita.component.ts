@@ -250,6 +250,94 @@ export class FormCitaComponent implements OnInit, OnDestroy {
         this.fechaSeleccionada
       );
     }
+    // Si solo tenemos profesional seleccionado, obtenemos disponibilidad para todos los días
+    else if (this.profesionalSeleccionado) {
+      const primerDia = new Date(this.mesActual.getFullYear(), this.mesActual.getMonth(), 1);
+      const ultimoDia = new Date(this.mesActual.getFullYear(), this.mesActual.getMonth() + 1, 0);
+      const todosLosDias = this.obtenerTodosLosDiasDelMes(primerDia, ultimoDia);
+
+      // Para cada día, verificamos la disponibilidad del profesional
+      const observablesPorDia = todosLosDias.map(dia => {
+        return this.citaService.obtenerDisponibilidad(
+          this.profesionalSeleccionado!,
+          this.servicioSeleccionado!,
+          dia
+        );
+      });
+
+      forkJoin(observablesPorDia)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (responses) => {
+            // Filtramos los días que no tienen ninguna hora disponible
+            const diasNoDisponibles = todosLosDias.filter((dia, index) => {
+              const response = responses[index];
+              return !response.slots.some((slot: { hora: string; disponible: boolean }) => slot.disponible);
+            });
+
+            this.diasNoDisponibles = diasNoDisponibles;
+
+            // Obtenemos los días disponibles y filtramos los que son anteriores a hoy
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+
+            const diasDisponibles = todosLosDias.filter(dia => {
+              const fechaDia = new Date(dia);
+              fechaDia.setHours(0, 0, 0, 0);
+              return !this.diasNoDisponibles.includes(dia) && fechaDia >= hoy;
+            });
+
+            // Para cada día disponible, comprobamos la disponibilidad del profesional
+            const observablesPorDia = diasDisponibles.map(dia => {
+              console.log(dia);
+
+              return this.citaService.obtenerDisponibilidad(
+                this.profesionalSeleccionado!,
+                this.servicioSeleccionado!,
+                dia
+              );
+            });
+
+            forkJoin(observablesPorDia)
+              .pipe(takeUntil(this.destroy$))
+              .subscribe({
+                next: (responses) => {
+                  // Una hora está disponible si está disponible en al menos un día
+                  const horasDisponibles = new Set<string>();
+
+                  responses.forEach(response => {
+                    response.slots.forEach((slot: { hora: string; disponible: boolean }) => {
+                      if (slot.disponible) {
+                        horasDisponibles.add(slot.hora);
+                      }
+                    });
+                  });
+
+                  this.horasDisponibles = Array.from(horasDisponibles);
+
+                  // Si hay una fecha seleccionada, actualizamos las horas disponibles
+                  if (this.fechaSeleccionada) {
+                    const responseFechaSeleccionada = responses[diasDisponibles.indexOf(this.fechaSeleccionada)];
+                    if (responseFechaSeleccionada) {
+                      this.actualizarHorasDisponibles(responseFechaSeleccionada.slots);
+                    }
+                  }
+
+                  this.cdr.detectChanges();
+                },
+                error: (error) => {
+                  console.error('Error al obtener disponibilidad:', error);
+                  this.mostrarError('Error al actualizar la disponibilidad');
+                }
+              });
+          },
+          error: (error) => {
+            console.error('Error al obtener disponibilidad:', error);
+            this.mostrarError('Error al actualizar la disponibilidad');
+          }
+        });
+      return;
+    }
     // Si tenemos fecha seleccionada (con o sin hora), obtenemos disponibilidad de todos los trabajadores
     else if (this.fechaSeleccionada) {
       // Primero obtenemos los trabajadores disponibles para el servicio
@@ -268,22 +356,34 @@ export class FormCitaComponent implements OnInit, OnDestroy {
               );
             });
 
-            return forkJoin(observablesTrabajadores);
+            return forkJoin(observablesTrabajadores).pipe(
+              map(responses => {
+                // Filtramos los trabajadores que tienen al menos una hora disponible
+                const trabajadoresConDisponibilidad = trabajadoresDisponibles.filter((trabajador, index) => {
+                  const response = responses[index];
+                  return response.slots.some((slot: { hora: string; disponible: boolean }) => slot.disponible);
+                });
+
+                // Actualizamos la lista de profesionales no disponibles
+                this.profesionalesNoDisponibles = this.profesionales
+                  .filter(p => !trabajadoresConDisponibilidad.some(t => t.id === p.id))
+                  .map(p => p.id);
+
+                // Combinamos todos los slots de todos los trabajadores
+                const todosLosSlots = responses.flatMap(response => response.slots);
+
+                // Una hora está disponible si al menos un trabajador la tiene disponible
+                const horasDisponibles = this.todasLasHoras.filter(hora =>
+                  todosLosSlots.some(slot => slot.hora === hora && slot.disponible)
+                );
+
+                this.horasDisponibles = horasDisponibles;
+                this.cdr.detectChanges();
+              })
+            );
           })
         )
         .subscribe({
-          next: (responses) => {
-            // Combinamos todos los slots de todos los trabajadores
-            const todosLosSlots = responses.flatMap(response => response.slots);
-
-            // Una hora está disponible si al menos un trabajador la tiene disponible
-            const horasDisponibles = this.todasLasHoras.filter(hora =>
-              todosLosSlots.some(slot => slot.hora === hora && slot.disponible)
-            );
-
-            this.horasDisponibles = horasDisponibles;
-            this.cdr.detectChanges();
-          },
           error: (error) => {
             console.error('Error al obtener disponibilidad:', error);
             this.mostrarError('Error al actualizar la disponibilidad');
@@ -296,16 +396,11 @@ export class FormCitaComponent implements OnInit, OnDestroy {
       const primerDia = new Date(this.mesActual.getFullYear(), this.mesActual.getMonth(), 1);
       const ultimoDia = new Date(this.mesActual.getFullYear(), this.mesActual.getMonth() + 1, 0);
 
-      console.log('Hora seleccionada:', this.horaSeleccionada);
-      console.log('Primer día:', primerDia.toISOString().split('T')[0]);
-      console.log('Último día:', ultimoDia.toISOString().split('T')[0]);
-
       // Primero obtenemos los trabajadores disponibles para el servicio
       this.citaService.obtenerTrabajadoresDisponibles(this.servicioSeleccionado)
         .pipe(
           takeUntil(this.destroy$),
           switchMap(response => {
-            console.log('Trabajadores disponibles:', response.trabajadores);
             const trabajadoresDisponibles = response.trabajadores as Array<{id: number}>;
 
             // Para cada día del mes, verificamos la disponibilidad de cada trabajador
@@ -335,13 +430,11 @@ export class FormCitaComponent implements OnInit, OnDestroy {
         )
         .subscribe({
           next: (resultados) => {
-            console.log('Resultados por día:', resultados);
             // Filtramos los días que no están disponibles
             const diasNoDisponibles = resultados
               .filter(r => !r.disponible)
               .map(r => r.dia);
 
-            console.log('Días no disponibles:', diasNoDisponibles);
             this.diasNoDisponibles = diasNoDisponibles;
             this.cdr.detectChanges();
           },
@@ -516,12 +609,16 @@ export class FormCitaComponent implements OnInit, OnDestroy {
       if (this.fechaSeleccionada && this.horaSeleccionada) {
         this.actualizarFiltradoMultidireccional();
       } else if (this.fechaSeleccionada) {
-        this.actualizarDominiosHoras();
+        this.actualizarFiltradoMultidireccional();
       } else if (this.horaSeleccionada) {
         this.actualizarFiltradoMultidireccional();
+      } else {
+        // Si no hay nada más seleccionado, actualizamos todo
+        this.actualizarDisponibilidadServicio();
       }
     } else {
       this.profesionalSeleccionado = profesionalId;
+      // Siempre actualizamos la disponibilidad al seleccionar un profesional
       this.actualizarFiltradoMultidireccional();
     }
   }

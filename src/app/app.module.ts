@@ -34,6 +34,7 @@ import { FormUsuarioComponent } from './components/admin/usuarios/form-usuario/f
 import { ListaUsuariosComponent } from './components/admin/usuarios/lista-usuarios/lista-usuarios.component';
 import { ListaCitasComponent } from './components/client/citas/lista-citas/lista-citas.component';
 import { FormCitaComponent } from './components/client/citas/form-cita/form-cita.component';
+import { ListaServiciosComponent as ClientListaServiciosComponent } from './components/client/servicios/lista-servicios/lista-servicios.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +64,8 @@ import { FormCitaComponent } from './components/client/citas/form-cita/form-cita
     FormUsuarioComponent,
     ListaUsuariosComponent,
     ListaCitasComponent,
-    FormCitaComponent
+    FormCitaComponent,
+    ClientListaServiciosComponent
   ],
   imports: [
     BrowserModule,

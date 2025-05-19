@@ -10,6 +10,7 @@ import { AuthContainerComponent } from './components/auth/auth-container/auth-co
 // Cliente
 import { ClientComponent } from './components/client/client.component';
 import { HomeComponent as ClientHomeComponent } from './components/client/home/home.component';
+import { ListaServiciosComponent as ClientListaServiciosComponent } from './components/client/servicios/lista-servicios/lista-servicios.component';
 //import { ProfileComponent } from './components/client/profile/profile.component';
 //import { AppointmentsComponent } from './components/client/appointments/appointments.component';
 
@@ -61,6 +62,7 @@ export const routes: Routes = [
     children: [
       { path: '', component: ClientHomeComponent },
       { path: 'citas', component: ListaCitasComponent },
+      { path: 'servicios', component: ClientListaServiciosComponent },
       //{ path: 'profile', component: ProfileComponent },
       //{ path: 'appointments', component: AppointmentsComponent }
     ]

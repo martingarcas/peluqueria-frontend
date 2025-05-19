@@ -1,0 +1,23 @@
+<div class="servicios-container">
+  <h1 class="titulo">Nuestros Servicios</h1>
+  <p class="subtitulo">Una selección profesional pensada para ti.</p>
+
+  <div class="acciones-servicios">
+    <button class="boton-reservar" routerLink="/client/citas">
+      Reservar una cita
+    </button>
+  </div>
+
+  <div *ngIf="mensajeError" class="mensaje-error">{{ mensajeError }}</div>
+
+  <div class="servicios-grid">
+    <div class="servicio-card" *ngFor="let servicio of servicios">
+      <div class="icono-servicio">
+        <img [src]="getIcono(servicio)" [alt]="servicio.nombre" />
+      </div>
+      <div class="servicio-nombre">{{ servicio.nombre }}</div>
+      <div class="servicio-descripcion">{{ servicio.descripcion }}</div>
+      <div class="servicio-precio">{{ servicio.precio }} €</div>
+    </div>
+  </div>
+</div>

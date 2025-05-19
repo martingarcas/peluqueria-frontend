@@ -1,7 +1,5 @@
 .cita-container {
-  padding: var(--spacing-xl);
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 2rem;
   background-color: var(--background-dark);
   color: var(--text-light);
   min-height: 100vh;
@@ -9,18 +7,26 @@
 
 /* Grid principal */
 .cita-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-xl);
-  margin-top: var(--spacing-xl);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4rem;
+  margin-top: 2rem;
+}
+
+.section-group {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4rem;
 }
 
 /* Mensajes de éxito y error */
 .success-message,
 .internal-error {
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
-  border-radius: var(--border-radius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
   text-align: center;
 }
 
@@ -36,7 +42,9 @@
 
 /* Estilos comunes para todas las secciones */
 section {
-  margin-bottom: var(--spacing-xl);
+  flex: 1;
+  min-width: 300px;
+  margin-bottom: 2rem;
   transition: opacity 0.3s ease;
 }
 
@@ -47,9 +55,9 @@ section.disabled {
 
 h2 {
   font-family: 'Gilda Display', serif;
-  font-size: var(--font-size-2xl);
+  font-size: 1.5rem;
   color: var(--primary-color);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: 1rem;
   text-align: center;
   font-weight: normal;
 }
@@ -58,16 +66,16 @@ h2 {
 .servicios-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--spacing-md);
+  gap: 1rem;
 }
 
 .servicio-item {
-  padding: var(--spacing-lg);
+  padding: 1rem;
   background-color: rgba(206, 161, 72, 0.1);
   border: 1px solid rgba(206, 161, 72, 0.2);
-  border-radius: var(--border-radius);
+  border-radius: 4px;
   cursor: pointer;
-  transition: all var(--transition-duration) ease;
+  transition: all 0.3s ease;
   text-align: center;
   font-family: var(--font-secondary);
 }
@@ -85,8 +93,8 @@ h2 {
 .profesionales-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: var(--spacing-lg);
-  margin-top: var(--spacing-lg);
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .profesional-card {
@@ -95,7 +103,7 @@ h2 {
   align-items: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  padding: var(--spacing-sm);
+  padding: 0.5rem;
   border-radius: 8px;
   background-color: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(206, 161, 72, 0.3);
@@ -124,7 +132,7 @@ h2 {
   height: 100px;
   border-radius: 8px;
   overflow: hidden;
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 0.5rem;
   border: 1px solid rgba(206, 161, 72, 0.2);
 }
 
@@ -139,31 +147,21 @@ h2 {
   font-family: var(--font-secondary);
   font-size: 0.9em;
   text-align: center;
-  margin-top: var(--spacing-sm);
-}
-
-.profesional-card:hover:not(.disabled) .profesional-nombre {
-  color: var(--primary-color);
-}
-
-.profesional-card.selected .profesional-nombre {
-  color: var(--primary-color);
+  margin-top: 0.5rem;
 }
 
 /* Sección de Calendario */
 .calendario {
-  max-width: 400px;
-  margin: 0 auto;
   background-color: rgba(206, 161, 72, 0.1);
-  border-radius: var(--border-radius);
-  padding: var(--spacing-lg);
+  border-radius: 4px;
+  padding: 1rem;
 }
 
 .calendario-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: 1rem;
 }
 
 .calendario-header button {
@@ -171,33 +169,33 @@ h2 {
   border: none;
   color: var(--primary-color);
   cursor: pointer;
-  padding: var(--spacing-sm);
+  padding: 0.5rem;
 }
 
 .calendario-header span {
   font-family: var(--font-secondary);
   color: var(--primary-color);
-  font-size: var(--font-size-lg);
+  font-size: 1.2rem;
 }
 
 .calendario-dias {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: var(--spacing-sm);
+  gap: 0.5rem;
   text-align: center;
 }
 
 .dia-header {
   color: var(--primary-color);
   font-weight: bold;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 0.5rem;
 }
 
 .dia {
-  padding: var(--spacing-sm);
+  padding: 0.5rem;
   cursor: pointer;
-  border-radius: var(--border-radius-sm);
-  transition: all var(--transition-duration) ease;
+  border-radius: 4px;
+  transition: all 0.3s ease;
 }
 
 .dia:hover:not(.disabled) {
@@ -221,24 +219,22 @@ h2 {
 
 /* Sección de Horas */
 .horas-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: var(--spacing-lg);
+  padding: 1rem;
   background-color: var(--background-dark);
 }
 
 .horas-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-xl);
-  margin-top: var(--spacing-lg);
+  gap: 2rem;
+  margin-top: 1rem;
 }
 
 .columna-hora {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: 1rem;
 }
 
 .icono-hora {
@@ -251,24 +247,25 @@ h2 {
   border-radius: 50%;
   color: var(--primary-color);
   font-size: 1.2em;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 0.5rem;
 }
 
 .horas-lista {
   display: flex;
-  gap: var(--spacing-lg);
+  justify-content: center;
+  gap: 1rem;
   width: 100%;
 }
 
 .bloque-horas {
   background-color: rgba(0, 0, 0, 0.2);
-  padding: var(--spacing-md);
-  border-radius: var(--border-radius);
+  padding: 0.5rem;
+  border-radius: 4px;
   border: 1px solid rgba(206, 161, 72, 0.1);
 }
 
 .hora-item {
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 0.5rem 1rem;
   text-align: center;
   cursor: pointer;
   border-radius: 4px;
@@ -277,7 +274,7 @@ h2 {
   background-color: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(206, 161, 72, 0.3);
   color: var(--text-color);
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
 }
 
 .hora-item:hover:not(.disabled) {
@@ -299,62 +296,23 @@ h2 {
   border-color: rgba(206, 161, 72, 0.1);
 }
 
-/* Responsive */
+@media (max-width: 1199px) {
+  section {
+    flex: 1 1 calc(50% - 2rem);
+  }
+}
+
 @media (max-width: 768px) {
+  section {
+    flex: 1 1 100%;
+  }
+
   .horas-grid {
     grid-template-columns: 1fr;
-    gap: var(--spacing-xl);
-  }
-
-  .columna-hora {
-    padding: var(--spacing-md);
   }
 }
 
-/* Botón de Reservar */
-.boton-reservar {
-  width: 100%;
-  padding: var(--spacing-lg);
-  margin-top: var(--spacing-xl);
-  background-color: var(--primary-color);
-  color: var(--background-dark);
-  border: none;
-  border-radius: var(--border-radius);
-  font-family: var(--font-secondary);
-  font-size: var(--font-size-lg);
-  cursor: pointer;
-  transition: all var(--transition-duration) ease;
-}
-
-.boton-reservar:hover:not(:disabled) {
-  background-color: var(--primary-color-dark);
-}
-
-.boton-reservar:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.citas-en-proceso {
-  margin-top: 2rem;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.citas-en-proceso h2 {
-  color: #333;
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
-}
-
-.citas-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
+/* Botones y acciones */
 .botones-container {
   display: flex;
   gap: 1rem;
@@ -362,50 +320,60 @@ h2 {
   margin-top: 1rem;
 }
 
-.boton-agregar {
-  background-color: #28a745;
-  color: white;
-  border: none;
+.boton-agregar,
+.boton-reservar {
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s;
+  border: none;
 }
 
-.boton-agregar:hover {
+.boton-agregar {
+  background-color: #28a745;
+  color: white;
+}
+
+.boton-agregar:hover:not(:disabled) {
   background-color: #218838;
-}
-
-.boton-agregar:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
 }
 
 .boton-reservar {
   background-color: #007bff;
   color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.2s;
 }
 
-.boton-reservar:hover {
+.boton-reservar:hover:not(:disabled) {
   background-color: #0056b3;
 }
 
+.boton-agregar:disabled,
 .boton-reservar:disabled {
   background-color: #6c757d;
   cursor: not-allowed;
 }
 
-/* Estilos para las tarjetas de cita */
+/* Citas en proceso */
+.citas-en-proceso {
+  padding: 1rem;
+  background: var(--background-dark);
+  border-radius: 8px;
+}
+
+.citas-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 .cita-tarjeta {
   background: var(--background-dark);
-  border-radius: var(--border-radius);
+  border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  padding: var(--spacing-lg);
+  padding: 1rem;
   margin: 0.5rem;
   transition: transform 0.2s ease;
   color: var(--text-light);
@@ -422,7 +390,7 @@ h2 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 0.5rem;
 }
 
 .cita-header h3 {
@@ -448,13 +416,13 @@ h2 {
 .cita-detalles {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: 0.5rem;
 }
 
 .detalle {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: 0.5rem;
   color: var(--text-light);
 }
 
@@ -463,7 +431,7 @@ h2 {
   color: var(--primary-color);
 }
 
-/* Estilos para la modal */
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -478,10 +446,10 @@ h2 {
 }
 
 .modal-contenido {
+  max-width: 600px;
   background: var(--background-dark);
-  padding: var(--spacing-xl);
-  border-radius: var(--border-radius);
-  max-width: 500px;
+  padding: 2rem;
+  border-radius: 4px;
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
@@ -489,21 +457,14 @@ h2 {
   border: 1px solid rgba(206, 161, 72, 0.3);
 }
 
-.modal-contenido h2 {
-  color: var(--primary-color);
-  margin-bottom: var(--spacing-md);
-  text-align: center;
-  font-family: 'Gilda Display', serif;
-}
-
 .modal-citas {
-  margin: var(--spacing-lg) 0;
+  margin: 1rem 0;
   max-height: 300px;
   overflow-y: auto;
 }
 
 .modal-cita {
-  padding: var(--spacing-md);
+  padding: 0.5rem;
   border-bottom: 1px solid rgba(206, 161, 72, 0.2);
 }
 
@@ -514,7 +475,7 @@ h2 {
 .modal-cita-detalle {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: 0.5rem;
 }
 
 .modal-cita-detalle strong {
@@ -525,18 +486,22 @@ h2 {
 .modal-botones {
   display: flex;
   justify-content: flex-end;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.boton-cancelar,
+.boton-confirmar {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .boton-cancelar {
   background-color: rgba(108, 117, 125, 0.3);
   color: var(--text-light);
   border: 1px solid rgba(206, 161, 72, 0.3);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .boton-cancelar:hover {
@@ -548,55 +513,97 @@ h2 {
   background-color: var(--primary-color);
   color: var(--background-dark);
   border: none;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .boton-confirmar:hover {
   background-color: var(--primary-color-dark);
 }
 
+/* Introducción */
 .introduccion {
+  max-width: 1200px;
   text-align: center;
-  margin-bottom: var(--spacing-xl);
-  padding: var(--spacing-lg);
+  margin: 0 auto 2rem;
+  padding: 2rem;
   background-color: rgba(206, 161, 72, 0.1);
-  border-radius: var(--border-radius);
+  border-radius: 4px;
   border: 1px solid rgba(206, 161, 72, 0.2);
 }
 
 .introduccion h1 {
   color: var(--primary-color);
   font-family: 'Gilda Display', serif;
-  font-size: var(--font-size-3xl);
-  margin-bottom: var(--spacing-md);
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 .introduccion p {
   color: var(--text-light);
   font-family: var(--font-secondary);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 0.5rem;
   line-height: 1.6;
 }
 
 .introduccion ol {
   text-align: left;
   max-width: 400px;
-  margin: var(--spacing-md) auto;
+  margin: 0.5rem auto;
   color: var(--text-light);
   font-family: var(--font-secondary);
 }
 
 .introduccion li {
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 0.5rem;
   line-height: 1.4;
 }
 
 .introduccion .nota {
   font-style: italic;
   color: var(--primary-color);
-  margin-top: var(--spacing-lg);
+  margin-top: 1rem;
   font-size: 0.9em;
+}
+
+.header-formulario {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  gap: var(--spacing-lg);
+}
+
+.volver-button {
+  background: transparent;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-family: var(--font-secondary);
+  padding: var(--spacing-md);
+  transition: all var(--transition-speed) ease;
+}
+
+.volver-button:hover {
+  color: var(--text-color);
+}
+
+.header-formulario h1 {
+  font-family: 'Gilda Display', serif;
+  color: var(--primary-color);
+  font-size: var(--font-size-4xl);
+  margin: 0;
+  font-weight: normal;
+}
+
+@media (max-width: 768px) {
+  .header-formulario {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .volver-button {
+    width: 100%;
+    justify-content: center;
+  }
 }

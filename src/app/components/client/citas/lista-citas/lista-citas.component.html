@@ -1,85 +1,88 @@
 <div class="citas-container">
-  <div class="success-message" *ngIf="mensajeExito">
-    {{ mensajeExito }}
-  </div>
 
-  <div class="error-message" *ngIf="mensajeError">
-    {{ mensajeError }}
-  </div>
-
-  <!-- Vista de lista -->
-  <div *ngIf="!mostrarFormulario">
-    <div class="header">
-      <h1>Mis Citas</h1>
-      <div class="actions">
-        <div class="search-box">
-          <input
-            type="text"
-            [(ngModel)]="searchTerm"
-            (ngModelChange)="onSearchChange()"
-            placeholder="Buscar cita">
-        </div>
-        <button class="add-button" (click)="crearCita()">
-          + Reservar nueva cita
-        </button>
-      </div>
+    <div class="success-message" *ngIf="mensajeExito">
+      {{ mensajeExito }}
     </div>
 
-    <div class="table-container">
-      <div class="table-header">
-        <div class="column servicio">Servicio</div>
-        <div class="column profesional">Profesional</div>
-        <div class="column fecha">Fecha</div>
-        <div class="column hora">Hora</div>
-        <div class="column estado">Estado</div>
-        <div class="column acciones" *ngIf="esAdminOTrabajador">Acciones</div>
-      </div>
+    <div class="error-message" *ngIf="mensajeError">
+      {{ mensajeError }}
+    </div>
 
-      <div class="table-body">
-        <div class="table-row" *ngFor="let cita of citasFiltradas">
-          <div class="column servicio" data-label="Servicio:">
-            {{ cita.servicioNombre }}
-          </div>
-          <div class="column profesional" data-label="Profesional:">
-            {{ cita.trabajadorNombre }}
-          </div>
-          <div class="column fecha" data-label="Fecha:">
-            {{ cita.fecha | date:'dd/MM/yyyy' }}
-          </div>
-          <div class="column hora" data-label="Hora:">
-            {{ cita.horaInicio }}
-          </div>
-          <div class="column estado" data-label="Estado:">
-            <span [class]="'estado-' + cita.estado.toLowerCase()">
-              {{ cita.estado }}
-            </span>
-          </div>
-          <div class="column acciones" *ngIf="esAdminOTrabajador" data-label="Acciones:">
-            <button class="action-button completar"
-                    *ngIf="cita.estado === 'PROGRAMADA'"
-                    (click)="actualizarEstado(cita.id, 'COMPLETADA')">
-              Completar
-            </button>
-            <button class="action-button cancelar"
-                    *ngIf="cita.estado === 'PROGRAMADA'"
-                    (click)="actualizarEstado(cita.id, 'CANCELADA')">
-              Cancelar
+    <!-- Vista de lista -->
+    <div class="list-citas">
+      <div *ngIf="!mostrarFormulario">
+        <div class="header">
+          <h1>Mis Citas</h1>
+          <div class="actions">
+            <div class="search-box">
+              <input
+                type="text"
+                [(ngModel)]="searchTerm"
+                (ngModelChange)="onSearchChange()"
+                placeholder="Buscar cita">
+            </div>
+            <button class="add-button" (click)="crearCita()">
+              + Reservar nueva cita
             </button>
           </div>
         </div>
 
-        <!-- Mensaje cuando no hay citas -->
-        <div class="no-citas" *ngIf="citasFiltradas.length === 0">
-          <p>No tienes citas programadas</p>
+        <div class="table-container">
+          <div class="table-header">
+            <div class="column servicio">Servicio</div>
+            <div class="column profesional">Profesional</div>
+            <div class="column fecha">Fecha</div>
+            <div class="column hora">Hora</div>
+            <div class="column estado">Estado</div>
+            <div class="column acciones" *ngIf="esAdminOTrabajador">Acciones</div>
+          </div>
+
+          <div class="table-body">
+            <div class="table-row" *ngFor="let cita of citasFiltradas">
+              <div class="column servicio" data-label="Servicio:">
+                {{ cita.servicioNombre }}
+              </div>
+              <div class="column profesional" data-label="Profesional:">
+                {{ cita.trabajadorNombre }}
+              </div>
+              <div class="column fecha" data-label="Fecha:">
+                {{ cita.fecha | date:'dd/MM/yyyy' }}
+              </div>
+              <div class="column hora" data-label="Hora:">
+                {{ cita.horaInicio }}
+              </div>
+              <div class="column estado" data-label="Estado:">
+                <span [class]="'estado-' + cita.estado.toLowerCase()">
+                  {{ cita.estado }}
+                </span>
+              </div>
+              <div class="column acciones" *ngIf="esAdminOTrabajador" data-label="Acciones:">
+                <button class="action-button completar"
+                        *ngIf="cita.estado === 'PROGRAMADA'"
+                        (click)="actualizarEstado(cita.id, 'COMPLETADA')">
+                  Completar
+                </button>
+                <button class="action-button cancelar"
+                        *ngIf="cita.estado === 'PROGRAMADA'"
+                        (click)="actualizarEstado(cita.id, 'CANCELADA')">
+                  Cancelar
+                </button>
+              </div>
+            </div>
+
+            <!-- Mensaje cuando no hay citas -->
+            <div class="no-citas" *ngIf="citasFiltradas.length === 0">
+              <p>No tienes citas programadas</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+    <!-- Vista de formulario -->
+    <app-form-cita
+      *ngIf="mostrarFormulario"
+      (formularioCerrado)="onFormularioCerrado()"
+      (citaGuardada)="onCitaGuardada($event)">
+    </app-form-cita>
 
-  <!-- Vista de formulario -->
-  <app-form-cita
-    *ngIf="mostrarFormulario"
-    (formularioCerrado)="onFormularioCerrado()"
-    (citaGuardada)="onCitaGuardada($event)">
-  </app-form-cita>
 </div>

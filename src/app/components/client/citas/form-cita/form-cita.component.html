@@ -1,6 +1,12 @@
 <div class="cita-container">
-  <div class="introduccion">
+  <div class="header-formulario">
+    <button class="volver-button" (click)="formularioCerrado.emit()">
+      <i class="fas fa-arrow-left"></i> Volver a la lista
+    </button>
     <h1>Reserva tu Cita</h1>
+  </div>
+
+  <div class="introduccion">
     <p>Bienvenido al sistema de reservas. El proceso es muy sencillo:</p>
     <ol>
       <li>Primero selecciona el servicio que deseas</li>
@@ -24,135 +30,141 @@
   </div>
 
   <div class="cita-grid">
-    <!-- Sección de Servicios -->
-    <section [class.disabled]="!servicios.length">
-      <h2>
-        Servicios
-      </h2>
-      <div class="servicios-grid">
-        <div *ngFor="let servicio of servicios"
-             class="servicio-item"
-             [class.selected]="servicio.id === servicioSeleccionado"
-             (click)="seleccionarServicio(servicio.id)">
-          {{ servicio.nombre }}
-        </div>
-      </div>
-    </section>
 
-    <!-- Sección de Profesionales -->
-    <section>
-      <h2>
-        Profesionales
-      </h2>
-      <div class="profesionales-grid">
-        <div *ngFor="let profesional of profesionales"
-             class="profesional-card"
-             [class.selected]="profesional.id === profesionalSeleccionado"
-             [class.disabled]="!esProfesionalDisponible(profesional.id)"
-             (click)="esProfesionalDisponible(profesional.id) && seleccionarProfesional(profesional.id)">
-          <div class="profesional-foto">
-            <img [src]="getImageUrl(profesional.foto)" [alt]="profesional.nombre">
-          </div>
-          <div class="profesional-nombre">
-            {{ profesional.nombre }} {{ profesional.apellidos }}
+    <div class="section-group">
+      <!-- Sección de Servicios -->
+      <section [class.disabled]="!servicios.length">
+        <h2>
+          Servicios
+        </h2>
+        <div class="servicios-grid">
+          <div *ngFor="let servicio of servicios"
+              class="servicio-item"
+              [class.selected]="servicio.id === servicioSeleccionado"
+              (click)="seleccionarServicio(servicio.id)">
+            {{ servicio.nombre }}
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Sección de Calendario -->
-    <section>
-      <h2>
-        Fecha
-      </h2>
-      <div class="calendario">
-        <div class="calendario-header">
-          <button (click)="cambiarMes(-1)">
-            <i class="fas fa-chevron-left"></i>
-          </button>
-          <span>{{ nombreMes }}</span>
-          <button (click)="cambiarMes(1)">
-            <i class="fas fa-chevron-right"></i>
-          </button>
-        </div>
-        <div class="calendario-dias">
-          <div class="dia-header">Lu</div>
-          <div class="dia-header">Ma</div>
-          <div class="dia-header">Mi</div>
-          <div class="dia-header">Ju</div>
-          <div class="dia-header">Vi</div>
-          <div class="dia-header">Sa</div>
-          <div class="dia-header">Do</div>
-
-          <ng-container *ngFor="let dia of obtenerDiasDelMes()">
-            <div class="dia"
-                 [class.empty]="dia === null"
-                 [class.selected]="dia !== null && obtenerFechaFormateada(dia) === fechaSeleccionada"
-                 [class.disabled]="dia !== null && !esDiaDisponible(obtenerFechaFormateada(dia))"
-                 (click)="dia !== null && esDiaDisponible(obtenerFechaFormateada(dia)) && seleccionarFecha(obtenerFechaFormateada(dia))">
-              {{ dia }}
+      <!-- Sección de Profesionales -->
+      <section>
+        <h2>
+          Profesionales
+        </h2>
+        <div class="profesionales-grid">
+          <div *ngFor="let profesional of profesionales"
+              class="profesional-card"
+              [class.selected]="profesional.id === profesionalSeleccionado"
+              [class.disabled]="!esProfesionalDisponible(profesional.id)"
+              (click)="esProfesionalDisponible(profesional.id) && seleccionarProfesional(profesional.id)">
+            <div class="profesional-foto">
+              <img [src]="getImageUrl(profesional.foto)" [alt]="profesional.nombre">
             </div>
-          </ng-container>
-        </div>
-      </div>
-    </section>
-
-    <!-- Sección de Horas -->
-    <section>
-      <h2>
-        SELECCIONA UNA HORA
-      </h2>
-      <div class="horas-container">
-        <div class="horas-grid">
-          <!-- Columna Mañana -->
-          <div class="columna-hora">
-            <div class="icono-hora">
-              <i class="fas fa-sun"></i>
+            <div class="profesional-nombre">
+              {{ profesional.nombre }} {{ profesional.apellidos }}
             </div>
-            <div class="horas-lista">
-              <!-- Primer bloque de la mañana -->
-              <div class="bloque-horas">
-                <div class="hora-item"
-                     *ngFor="let hora of horasPredefinidas.manana.bloque1"
-                     [class.selected]="hora === horaSeleccionada"
-                     [class.disabled]="!esHoraDisponible(hora)"
-                     (click)="esHoraDisponible(hora) && seleccionarHora(hora)">
-                  {{ hora }}
-                </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="section-group">
+      <!-- Sección de Calendario -->
+      <section>
+        <h2>
+          Fecha
+        </h2>
+        <div class="calendario">
+          <div class="calendario-header">
+            <button (click)="cambiarMes(-1)">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <span>{{ nombreMes }}</span>
+            <button (click)="cambiarMes(1)">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+          <div class="calendario-dias">
+            <div class="dia-header">Lu</div>
+            <div class="dia-header">Ma</div>
+            <div class="dia-header">Mi</div>
+            <div class="dia-header">Ju</div>
+            <div class="dia-header">Vi</div>
+            <div class="dia-header">Sa</div>
+            <div class="dia-header">Do</div>
+
+            <ng-container *ngFor="let dia of obtenerDiasDelMes()">
+              <div class="dia"
+                  [class.empty]="dia === null"
+                  [class.selected]="dia !== null && obtenerFechaFormateada(dia) === fechaSeleccionada"
+                  [class.disabled]="dia !== null && !esDiaDisponible(obtenerFechaFormateada(dia))"
+                  (click)="dia !== null && esDiaDisponible(obtenerFechaFormateada(dia)) && seleccionarFecha(obtenerFechaFormateada(dia))">
+                {{ dia }}
               </div>
-              <!-- Segundo bloque de la mañana -->
-              <div class="bloque-horas">
-                <div class="hora-item"
-                     *ngFor="let hora of horasPredefinidas.manana.bloque2"
-                     [class.selected]="hora === horaSeleccionada"
-                     [class.disabled]="!esHoraDisponible(hora)"
-                     (click)="esHoraDisponible(hora) && seleccionarHora(hora)">
-                  {{ hora }}
-                </div>
-              </div>
-            </div>
+            </ng-container>
           </div>
+        </div>
+      </section>
 
-          <!-- Columna Tarde -->
-          <div class="columna-hora">
-            <div class="icono-hora">
-              <i class="fas fa-moon"></i>
-            </div>
-            <div class="horas-lista">
-              <div class="bloque-horas">
-                <div class="hora-item"
-                     *ngFor="let hora of horasPredefinidas.tarde"
-                     [class.selected]="hora === horaSeleccionada"
-                     [class.disabled]="!esHoraDisponible(hora)"
-                     (click)="esHoraDisponible(hora) && seleccionarHora(hora)">
-                  {{ hora }}
+      <!-- Sección de Horas -->
+      <section>
+        <h2>
+          SELECCIONA UNA HORA
+        </h2>
+        <div class="horas-container">
+          <div class="horas-grid">
+            <!-- Columna Mañana -->
+            <div class="columna-hora">
+              <div class="icono-hora">
+                <i class="fas fa-sun"></i>
+              </div>
+              <div class="horas-lista">
+                <!-- Primer bloque de la mañana -->
+                <div class="bloque-horas">
+                  <div class="hora-item"
+                      *ngFor="let hora of horasPredefinidas.manana.bloque1"
+                      [class.selected]="hora === horaSeleccionada"
+                      [class.disabled]="!esHoraDisponible(hora)"
+                      (click)="esHoraDisponible(hora) && seleccionarHora(hora)">
+                    {{ hora }}
+                  </div>
+                </div>
+                <!-- Segundo bloque de la mañana -->
+                <div class="bloque-horas">
+                  <div class="hora-item"
+                      *ngFor="let hora of horasPredefinidas.manana.bloque2"
+                      [class.selected]="hora === horaSeleccionada"
+                      [class.disabled]="!esHoraDisponible(hora)"
+                      (click)="esHoraDisponible(hora) && seleccionarHora(hora)">
+                    {{ hora }}
+                  </div>
                 </div>
               </div>
             </div>
+
+            <!-- Columna Tarde -->
+            <div class="columna-hora">
+              <div class="icono-hora">
+                <i class="fas fa-moon"></i>
+              </div>
+              <div class="horas-lista">
+                <div class="bloque-horas">
+                  <div class="hora-item"
+                      *ngFor="let hora of horasPredefinidas.tarde"
+                      [class.selected]="hora === horaSeleccionada"
+                      [class.disabled]="!esHoraDisponible(hora)"
+                      (click)="esHoraDisponible(hora) && seleccionarHora(hora)">
+                    {{ hora }}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </div>
 
   <!-- Sección de Citas en Proceso -->

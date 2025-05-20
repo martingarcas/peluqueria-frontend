@@ -6,7 +6,7 @@
   <div class="carrito-lista-productos">
     <div class="carrito-producto" *ngFor="let item of productosCarrito">
       <div class="carrito-producto-img">
-        <img [src]="item.imagen" [alt]="item.nombre" />
+        <img [src]="getImageUrl(item.foto)" [alt]="item.nombre" />
       </div>
       <div class="carrito-producto-nombre">{{ item.nombre }}</div>
       <div class="carrito-producto-cantidad">

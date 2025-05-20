@@ -5,6 +5,8 @@ import { CarritoResponse } from 'src/app/models/carrito/carrito-response';
 import { UsuarioResponse } from 'src/app/models/usuarios/usuario-response';
 import { ProductoService } from 'src/app/services/producto/producto.service';
 import { ProductoResponse } from 'src/app/models/productos/producto-response';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ChangeDetectorRef, SecurityContext } from '@angular/core';
 
 @Component({
   selector: 'app-carrito',
@@ -23,11 +25,14 @@ export class CarritoComponent implements OnInit {
     email: ''
   };
   mensajeVacio: string = '';
+  imagenesCache = new Map<string, SafeUrl>();
 
   constructor(
     private carritoService: CarritoService,
     private usuarioService: UsuarioService,
-    private productoService: ProductoService
+    private productoService: ProductoService,
+    private cdr: ChangeDetectorRef,
+    private sanitizer: DomSanitizer
   ) { }
 
   ngOnInit(): void {
@@ -64,7 +69,7 @@ export class CarritoComponent implements OnInit {
       return {
         ...item,
         nombre: producto?.nombre || 'Producto',
-        imagen: producto?.foto || 'assets/images/no-image.png',
+        foto: producto?.foto,
         precio: producto?.precio || 0
       };
     });
@@ -111,5 +116,27 @@ export class CarritoComponent implements OnInit {
   finalizarCompra() {
     // Aquí irá la lógica para finalizar la compra
     alert('Compra finalizada (demo)');
+  }
+
+  getImageUrl(fotoPath: string | undefined): SafeUrl {
+    if (!fotoPath) return 'assets/images/no-image.png';
+
+    if (this.imagenesCache.has(fotoPath)) {
+      return this.imagenesCache.get(fotoPath)!;
+    }
+
+    this.productoService.obtenerImagen(fotoPath).subscribe({
+      next: (blob: Blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+        const safeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+        this.imagenesCache.set(fotoPath, safeUrl);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        this.imagenesCache.set(fotoPath, 'assets/images/no-image.png');
+      }
+    });
+
+    return 'assets/images/no-image.png';
   }
 }

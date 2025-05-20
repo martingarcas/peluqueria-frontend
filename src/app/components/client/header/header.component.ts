@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit {
   }
 
   onCartClick(): void {
-    this.router.navigate(['/cart']);
+    this.router.navigate(['/client/carrito']);
     this.isMenuActive = false;
   }
 

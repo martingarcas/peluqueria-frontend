@@ -178,4 +178,15 @@ export class UsuarioService {
       }
     );
   }
+
+  obtenerPorId(id: number): Observable<{ mensaje: string, usuario: UsuarioResponse }> {
+    return this.http.get<{ mensaje: string, usuario: UsuarioResponse }>(
+      `${this.apiUrl}/${id}`,
+      {
+        headers: this.obtenerHeaders(),
+        observe: 'body',
+        responseType: 'json'
+      }
+    );
+  }
 }

@@ -1,0 +1,38 @@
+<div class="tienda-container">
+  <h1 class="titulo">Nuestros Productos</h1>
+  <p class="subtitulo">Descubre los mejores productos para el cuidado de tu cabello.<br>Calidad profesional a tu alcance.</p>
+
+  <div class="filtros-bar">
+    <div class="filters">
+      <div class="search-box">
+        <input
+          type="text"
+          [(ngModel)]="textoBusqueda"
+          (ngModelChange)="onBuscarChange(textoBusqueda)"
+          placeholder="Buscar producto">
+      </div>
+      <div class="role-filter">
+        <select [(ngModel)]="categoriaSeleccionada" (ngModelChange)="onCategoriaChange($event)">
+          <option [ngValue]="null">TODAS LAS CATEGORÍAS</option>
+          <option *ngFor="let cat of categorias" [ngValue]="cat.id">
+            {{ cat.nombre | uppercase }}
+      </option>
+    </select>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="mensajeError" class="mensaje-error">{{ mensajeError }}</div>
+  <div *ngIf="mensajeExito" class="mensaje-exito">{{ mensajeExito }}</div>
+
+  <div class="productos-grid">
+    <div class="producto-card" *ngFor="let producto of productosFiltrados">
+      <div class="producto-img">
+        <img [src]="getImageUrl(producto.foto)" [alt]="producto.nombre">
+      </div>
+      <div class="producto-nombre">{{ producto.nombre }}</div>
+      <div class="producto-precio">{{ producto.precio | number:'1.2-2' }} €</div>
+      <button class="btn-anadir" (click)="addToCart(producto)">+ Añadir</button>
+    </div>
+  </div>
+</div>

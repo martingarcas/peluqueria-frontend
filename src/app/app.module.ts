@@ -35,6 +35,8 @@ import { ListaUsuariosComponent } from './components/admin/usuarios/lista-usuari
 import { ListaCitasComponent } from './components/client/citas/lista-citas/lista-citas.component';
 import { FormCitaComponent } from './components/client/citas/form-cita/form-cita.component';
 import { ListaServiciosComponent as ClientListaServiciosComponent } from './components/client/servicios/lista-servicios/lista-servicios.component';
+import { ListaProductosComponent as ClientListaProductosComponent } from './components/client/tienda/lista-productos/lista-productos.component';
+import { CarritoComponent } from './components/client/tienda/carrito/carrito.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +67,9 @@ import { ListaServiciosComponent as ClientListaServiciosComponent } from './comp
     ListaUsuariosComponent,
     ListaCitasComponent,
     FormCitaComponent,
-    ClientListaServiciosComponent
+    ClientListaServiciosComponent,
+    ClientListaProductosComponent,
+    CarritoComponent
   ],
   imports: [
     BrowserModule,

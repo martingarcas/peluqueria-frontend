@@ -26,6 +26,8 @@ export class CarritoComponent implements OnInit {
   };
   mensajeVacio: string = '';
   imagenesCache = new Map<string, SafeUrl>();
+  mensajeError: string = '';
+  mensajeExito: string = '';
 
   constructor(
     private carritoService: CarritoService,
@@ -101,21 +103,83 @@ export class CarritoComponent implements OnInit {
     return this.subtotal; // Envío gratis
   }
 
+  actualizarCantidad(item: any, nuevaCantidad: number) {
+    const diferencia = nuevaCantidad - item.cantidad;
+    // Si la nueva cantidad es 0, eliminamos el producto
+    if (nuevaCantidad === 0) {
+      console.log('Enviando al backend:', [{ productoId: item.productoId, cantidad: 0 }]);
+      this.carritoService.updateCarrito([{ productoId: item.productoId, cantidad: 0 }]).subscribe({
+        next: () => this.cargarCarrito(),
+        error: (error) => {
+          console.error('Error al actualizar carrito:', error);
+          if (error.error && error.error.mensaje) {
+            alert(error.error.mensaje);
+          } else {
+            alert('Error al actualizar el carrito');
+          }
+          this.cargarCarrito();
+        }
+      });
+      return;
+    }
+    // Si la diferencia es 0, no hacemos nada
+    if (diferencia === 0) return;
+    // Si la diferencia es positiva o negativa, enviamos solo el producto modificado
+    console.log('Enviando al backend:', [{ productoId: item.productoId, cantidad: diferencia }]);
+    this.carritoService.updateCarrito([{ productoId: item.productoId, cantidad: diferencia }]).subscribe({
+      next: () => this.cargarCarrito(),
+      error: (error) => {
+        console.error('Error al actualizar carrito:', error);
+        if (error.error && error.error.mensaje) {
+          alert(error.error.mensaje);
+        } else {
+          alert('Error al actualizar el carrito');
+        }
+        this.cargarCarrito();
+      }
+    });
+  }
+
   sumarCantidad(item: any) {
-    item.cantidad++;
-    // Aquí puedes llamar a updateCarrito si quieres persistir el cambio
+    const nuevaCantidad = item.cantidad + 1;
+    this.actualizarCantidad(item, nuevaCantidad);
   }
 
   restarCantidad(item: any) {
     if (item.cantidad > 1) {
-      item.cantidad--;
-      // Aquí puedes llamar a updateCarrito si quieres persistir el cambio
+      const nuevaCantidad = item.cantidad - 1;
+      this.actualizarCantidad(item, nuevaCantidad);
+    } else {
+      this.eliminarProducto(item);
     }
   }
 
   finalizarCompra() {
-    // Aquí irá la lógica para finalizar la compra
-    alert('Compra finalizada (demo)');
+    // Validar datos de contacto obligatorios
+    if (!this.contacto.nombre || !this.contacto.apellidos || !this.contacto.telefono || !this.contacto.direccion || !this.contacto.email) {
+      this.mensajeError = 'Debes completar todos los datos de contacto para finalizar el pedido.';
+      this.mensajeExito = '';
+      return;
+    }
+    // Limpiar mensajes previos
+    this.mensajeError = '';
+    this.mensajeExito = '';
+    // Llamar al endpoint de crear pedido
+    this.carritoService.finalizarPedido().subscribe({
+      next: (resp) => {
+        this.mensajeExito = resp.mensaje || '¡Pedido realizado con éxito!';
+        this.mensajeError = '';
+        this.cargarCarrito(); // Vacía el carrito en el frontend
+      },
+      error: (error) => {
+        if (error.error && error.error.mensaje) {
+          this.mensajeError = error.error.mensaje;
+        } else {
+          this.mensajeError = 'Error al finalizar el pedido';
+        }
+        this.mensajeExito = '';
+      }
+    });
   }
 
   getImageUrl(fotoPath: string | undefined): SafeUrl {
@@ -138,5 +202,21 @@ export class CarritoComponent implements OnInit {
     });
 
     return 'assets/images/no-image.png';
+  }
+
+  eliminarProducto(item: any) {
+    console.log('Enviando al backend para eliminar:', [{ productoId: item.productoId, cantidad: 0 }]);
+    this.carritoService.updateCarrito([{ productoId: item.productoId, cantidad: 0 }]).subscribe({
+      next: () => this.cargarCarrito(),
+      error: (error) => {
+        console.error('Error al eliminar producto:', error);
+        if (error.error && error.error.mensaje) {
+          alert(error.error.mensaje);
+        } else {
+          alert('Error al eliminar el producto');
+        }
+        this.cargarCarrito();
+      }
+    });
   }
 }

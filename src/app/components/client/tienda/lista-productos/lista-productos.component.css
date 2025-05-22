@@ -193,6 +193,37 @@
   text-align: center;
 }
 
+.success-message {
+  background-color: #4CAF50;
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+  animation: slideIn 0.3s ease;
+}
+
+.internal-error {
+  background-color: #ff4444;
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 @media (max-width: 768px) {
   .filtros-bar {
     max-width: 100%;
@@ -208,4 +239,28 @@
   .role-filter select {
     width: 100%;
   }
+}
+
+.producto-cantidad-input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.7em;
+}
+.producto-cantidad-input input[type="number"] {
+  width: 60px;
+  padding: 0.5em 0.7em;
+  border: 1.5px solid #ffe082;
+  border-radius: 8px;
+  background: #181818;
+  color: #ffe082;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  text-align: center;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.producto-cantidad-input input[type="number"]:focus {
+  border-color: #e6b24a;
+  box-shadow: 0 0 0 2px rgba(230, 178, 74, 0.15);
 }

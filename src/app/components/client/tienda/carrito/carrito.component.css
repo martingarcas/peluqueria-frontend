@@ -1,11 +1,36 @@
 .carrito-container {
-  background: #0a0a0a;
   color: #fff;
   min-height: 100vh;
-  max-width: 520px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 48px 0 32px 0;
+  padding: 3rem;
   font-family: 'Playfair Display', serif;
+}
+
+.carrito-flex-l {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.carrito-col.izq {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  flex: 2 1 480px;
+  min-width: 340px;
+}
+
+.carrito-col.der {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex: 1 1 320px;
+  min-width: 280px;
+  max-width: 400px;
 }
 
 .carrito-titulo {
@@ -18,7 +43,7 @@
 
 .carrito-separador {
   border: none;
-  border-top: 1px solid #222;
+  border-top: 1px solid rgb(71, 58, 30);
   margin: 24px 0;
 }
 
@@ -79,7 +104,7 @@
   font-size: 1.1rem;
   color: #ffe082;
   min-width: 80px;
-  text-align: right;
+  text-align: center;
 }
 
 .carrito-contacto {
@@ -94,9 +119,15 @@
 }
 .carrito-contacto-form {
   display: flex;
+  flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 12px;
 }
+
+.carrito-contacto-form input {
+  max-width: 213px;
+}
+
 .carrito-contacto input {
   background: #181818;
   border: none;
@@ -152,17 +183,55 @@
   border: 1.5px solid #ffe082;
 }
 
-@media (max-width: 600px) {
-  .carrito-container {
-    padding: 24px 0 16px 0;
+@media (max-width: 900px) {
+  .carrito-flex-l {
+    gap: 18px;
     max-width: 100vw;
   }
+  .carrito-col.izq, .carrito-col.der {
+    min-width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
   .carrito-producto {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 10px;
   }
   .carrito-resumen {
     padding: 16px 8px;
+  }
+}
+
+.success-message {
+  background-color: #4CAF50;
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+  animation: slideIn 0.3s ease;
+}
+
+.internal-error {
+  background-color: #ff4444;
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }

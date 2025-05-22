@@ -1,52 +1,59 @@
 <div class="carrito-container">
   <h1 class="carrito-titulo">Tu carrito</h1>
+  <div *ngIf="mensajeError" class="internal-error">{{ mensajeError }}</div>
+  <div *ngIf="mensajeExito" class="success-message">{{ mensajeExito }}</div>
   <hr class="carrito-separador" />
 
-  <!-- Lista de productos en el carrito -->
-  <div class="carrito-lista-productos">
-    <div class="carrito-producto" *ngFor="let item of productosCarrito">
-      <div class="carrito-producto-img">
-        <img [src]="getImageUrl(item.foto)" [alt]="item.nombre" />
+  <div class="carrito-flex-l">
+    <div class="carrito-col izq">
+      <!-- Lista de productos en el carrito -->
+      <div class="carrito-lista-productos">
+        <div class="carrito-producto" *ngFor="let item of productosCarrito">
+          <div class="carrito-producto-img">
+            <img [src]="getImageUrl(item.foto)" [alt]="item.nombre" />
+          </div>
+          <div class="carrito-producto-nombre">{{ item.nombre }}</div>
+          <div class="carrito-producto-cantidad">
+            <button (click)="restarCantidad(item)">-</button>
+            <span>{{ item.cantidad }}</span>
+            <button (click)="sumarCantidad(item)">+</button>
+            <button class="carrito-eliminar" (click)="eliminarProducto(item)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          <div class="carrito-producto-precio">{{ item.precio | currency:'EUR':'symbol':'1.2-2' }}</div>
+        </div>
       </div>
-      <div class="carrito-producto-nombre">{{ item.nombre }}</div>
-      <div class="carrito-producto-cantidad">
-        <button (click)="restarCantidad(item)">-</button>
-        <span>{{ item.cantidad }}</span>
-        <button (click)="sumarCantidad(item)">+</button>
+      <!-- Formulario de datos de contacto -->
+      <div class="carrito-contacto">
+        <h2>Datos de contacto</h2>
+        <div class="carrito-contacto-form">
+          <input type="text" placeholder="Nombre" [(ngModel)]="contacto.nombre" />
+          <input type="text" placeholder="Apellidos" [(ngModel)]="contacto.apellidos" />
+          <input type="text" placeholder="Teléfono" [(ngModel)]="contacto.telefono" />
+        </div>
+        <input type="text" placeholder="Dirección" [(ngModel)]="contacto.direccion" />
+        <input type="email" placeholder="Email" [(ngModel)]="contacto.email" />
       </div>
-      <div class="carrito-producto-precio">{{ item.precio | currency:'EUR':'symbol':'1.2-2' }}</div>
+    </div>
+    <div class="carrito-col der">
+      <div class="carrito-resumen">
+        <div class="carrito-resumen-row">
+          <span>Subtotal</span>
+          <span>{{ subtotal | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="carrito-resumen-row">
+          <span>Envío</span>
+          <span>Gratis</span>
+        </div>
+        <div class="carrito-resumen-row total">
+          <span>Total</span>
+          <span>{{ total | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+      <button class="carrito-finalizar" (click)="finalizarCompra()">Finalizar compra</button>
     </div>
   </div>
 
   <hr class="carrito-separador" />
-
-  <!-- Formulario de datos de contacto -->
-  <div class="carrito-contacto">
-    <h2>Datos de contacto</h2>
-    <div class="carrito-contacto-form">
-      <input type="text" placeholder="Nombre" [(ngModel)]="contacto.nombre" />
-      <input type="text" placeholder="Apellidos" [(ngModel)]="contacto.apellidos" />
-      <input type="text" placeholder="Teléfono" [(ngModel)]="contacto.telefono" />
-    </div>
-    <input type="text" placeholder="Dirección" [(ngModel)]="contacto.direccion" />
-    <input type="email" placeholder="Email" [(ngModel)]="contacto.email" />
-  </div>
-
-  <!-- Resumen de compra -->
-  <div class="carrito-resumen">
-    <div class="carrito-resumen-row">
-      <span>Subtotal</span>
-      <span>{{ subtotal | currency:'EUR':'symbol':'1.2-2' }}</span>
-    </div>
-    <div class="carrito-resumen-row">
-      <span>Envío</span>
-      <span>Gratis</span>
-    </div>
-    <div class="carrito-resumen-row total">
-      <span>Total</span>
-      <span>{{ total | currency:'EUR':'symbol':'1.2-2' }}</span>
-    </div>
-  </div>
-
-  <button class="carrito-finalizar" (click)="finalizarCompra()">Finalizar compra</button>
 </div>

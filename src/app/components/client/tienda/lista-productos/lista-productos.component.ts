@@ -24,6 +24,8 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
   // Cache de imágenes
   imagenesCache = new Map<string, SafeUrl>();
 
+  cantidades: { [productoId: number]: number } = {};
+
   constructor(
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
@@ -111,7 +113,9 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
     this.filtrarProductos();
   }
 
-  addToCart(producto: ProductoResponse): void {
+  addToCart(producto: ProductoResponse, cantidad?: number): void {
+    const cantidadFinal = cantidad ?? this.cantidades[producto.id] ?? 1;
+    if (cantidadFinal < 1) return;
     this.carritoService.getCarrito().subscribe({
       next: (carrito) => {
         const carritoArray = Array.isArray(carrito) ? carrito : [];
@@ -120,7 +124,7 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
         if (existe) {
           productosActualizados = carritoArray.map((p: any) =>
             p.productoId === producto.id
-              ? { productoId: p.productoId, cantidad: p.cantidad + 1 }
+              ? { productoId: p.productoId, cantidad: p.cantidad + cantidadFinal }
               : { productoId: p.productoId, cantidad: p.cantidad }
           );
         } else {
@@ -128,14 +132,15 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
             ...carritoArray.map((p: any) => ({ productoId: p.productoId, cantidad: p.cantidad })),
             {
               productoId: producto.id,
-              cantidad: 1
+              cantidad: cantidadFinal
             }
           ];
         }
         this.carritoService.updateCarrito(productosActualizados).subscribe({
           next: () => {
-            this.mensajeExito = 'Producto añadido al carrito';
+            this.mensajeExito = `Añadido${cantidadFinal > 1 ? ' (' + cantidadFinal + ' uds.)' : ''} al carrito`;
             setTimeout(() => this.mensajeExito = '', 2000);
+            this.cantidades[producto.id] = 1; // Resetear a 1 tras añadir
           },
           error: () => {
             // Manejar error

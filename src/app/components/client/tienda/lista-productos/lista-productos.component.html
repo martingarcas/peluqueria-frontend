@@ -22,8 +22,8 @@
     </div>
   </div>
 
-  <div *ngIf="mensajeError" class="mensaje-error">{{ mensajeError }}</div>
-  <div *ngIf="mensajeExito" class="mensaje-exito">{{ mensajeExito }}</div>
+  <div *ngIf="mensajeError" class="internal-error">{{ mensajeError }}</div>
+  <div *ngIf="mensajeExito" class="success-message">{{ mensajeExito }}</div>
 
   <div class="productos-grid">
     <div class="producto-card" *ngFor="let producto of productosFiltrados">
@@ -32,7 +32,10 @@
       </div>
       <div class="producto-nombre">{{ producto.nombre }}</div>
       <div class="producto-precio">{{ producto.precio | number:'1.2-2' }} €</div>
-      <button class="btn-anadir" (click)="addToCart(producto)">+ Añadir</button>
+      <div class="producto-cantidad-input">
+        <input type="number" min="1" [(ngModel)]="cantidades[producto.id]" [value]="cantidades[producto.id] || 1" />
+      </div>
+      <button class="btn-anadir" (click)="addToCart(producto, cantidades[producto.id])">+ Añadir</button>
     </div>
   </div>
 </div>

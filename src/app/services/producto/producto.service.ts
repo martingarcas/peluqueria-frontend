@@ -105,4 +105,11 @@ export class ProductoService {
       responseType: 'blob'
     });
   }
+
+  obtenerPorId(id: number): Observable<{ mensaje: string, producto: ProductoResponse }> {
+    return this.http.get<{ mensaje: string, producto: ProductoResponse }>(
+      `${this.apiUrl}/${id}`,
+      { headers: this.obtenerHeaders() }
+    );
+  }
 }

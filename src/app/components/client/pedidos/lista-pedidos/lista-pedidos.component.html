@@ -1,0 +1,77 @@
+<div class="pedidos-container">
+  <!-- Mensajes siempre visibles -->
+  <div class="success-message" *ngIf="mensajeExito">
+    {{ mensajeExito }}
+  </div>
+  <div class="internal-error" *ngIf="mensajeError">
+    {{ mensajeError }}
+  </div>
+
+  <div class="header">
+    <h1>Mis Pedidos</h1>
+    <div class="actions">
+      <div class="search-box">
+        <select [(ngModel)]="estadoSeleccionado" (ngModelChange)="onEstadoChange()">
+          <option value="">Todos los estados</option>
+          <option value="PENDIENTE">Pendiente</option>
+          <option value="ACEPTADO">Aceptado</option>
+          <option value="ENVIADO">Enviado</option>
+          <option value="COMPLETADO">Completado</option>
+          <option value="CANCELADO">Cancelado</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-container">
+    <div class="table-header">
+      <div class="column pedido">Pedido</div>
+      <div class="column fecha">Fecha</div>
+      <div class="column total">Total</div>
+      <div class="column estado">Estado</div>
+      <div class="column acciones">Acciones</div>
+    </div>
+    <div class="table-body">
+      <ng-container *ngFor="let pedido of pedidosFiltrados; let i = index">
+        <div class="table-row" [class.expanded]="pedido.expanded">
+          <div class="column pedido" data-label="Pedido:">
+            Pedido #{{ pedido.id || (i + 1) }}
+          </div>
+          <div class="column fecha" data-label="Fecha:">
+            {{ pedido.fechaPedido | date:'dd/MM/yyyy HH:mm' }}
+          </div>
+          <div class="column total" data-label="Total:">
+            {{ pedido.total | currency:'EUR':'symbol':'1.2-2' }}
+          </div>
+          <div class="column estado" data-label="Estado:">
+            {{ pedido.estado || 'Desconocido' }}
+          </div>
+          <div class="column acciones" data-label="Acciones:">
+            <button class="detalles-button" (click)="toggleDetalles(pedido); $event.stopPropagation()">
+              {{ pedido.expanded ? 'Ocultar' : 'Ver detalles' }}
+            </button>
+          </div>
+        </div>
+        <!-- Fila de detalles expandible -->
+        <div class="details-row" *ngIf="pedido.expanded">
+          <div class="details-content">
+            <h3>Detalle del pedido</h3>
+            <div class="lineas-pedido-list">
+              <div class="linea-pedido-item" *ngFor="let linea of pedido.lineasPedido">
+                <img [src]="getProductoImage(linea.productoId)" alt="Foto producto" />
+                <div class="linea-info">
+                  <div class="nombre">{{ linea.nombreProducto }}</div>
+                  <div class="cantidad">Cantidad: {{ linea.cantidad }}</div>
+                  <div class="precio">Precio: {{ linea.precioUnitario | currency:'EUR':'symbol':'1.2-2' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <div class="no-pedidos" *ngIf="pedidosFiltrados.length === 0">
+        <p>No tienes pedidos realizados</p>
+      </div>
+    </div>
+  </div>
+</div>

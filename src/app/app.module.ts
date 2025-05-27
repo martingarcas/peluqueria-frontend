@@ -37,6 +37,8 @@ import { FormCitaComponent } from './components/client/citas/form-cita/form-cita
 import { ListaServiciosComponent as ClientListaServiciosComponent } from './components/client/servicios/lista-servicios/lista-servicios.component';
 import { ListaProductosComponent as ClientListaProductosComponent } from './components/client/tienda/lista-productos/lista-productos.component';
 import { CarritoComponent } from './components/client/tienda/carrito/carrito.component';
+import { PerfilComponent as ClientPerfilComponent } from './components/client/perfil/perfil.component';
+import { ListaPedidosComponent as ClientListaPedidosComponent } from './components/client/pedidos/lista-pedidos/lista-pedidos.component';
 
 @NgModule({
   declarations: [
@@ -69,7 +71,9 @@ import { CarritoComponent } from './components/client/tienda/carrito/carrito.com
     FormCitaComponent,
     ClientListaServiciosComponent,
     ClientListaProductosComponent,
-    CarritoComponent
+    CarritoComponent,
+    ClientPerfilComponent,
+    ClientListaPedidosComponent
   ],
   imports: [
     BrowserModule,

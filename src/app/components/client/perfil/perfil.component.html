@@ -1,0 +1,51 @@
+<div class="perfil-container">
+  <div class="perfil-card">
+    <div class="perfil-foto">
+      <img [src]="imagenPerfil" alt="Foto de perfil" />
+      <label *ngIf="editMode" class="cambiar-foto-btn">
+        Cambiar foto
+        <input type="file" accept="image/*" (change)="onFotoSeleccionada($event)" hidden>
+      </label>
+    </div>
+    <div class="perfil-datos">
+      <div class="perfil-campo">
+        <span class="perfil-label">Nombre:</span>
+        <input *ngIf="editMode" [(ngModel)]="editUsuario.nombre" />
+        <span *ngIf="!editMode">{{ usuario?.nombre }}</span>
+      </div>
+      <div class="perfil-campo">
+        <span class="perfil-label">Apellidos:</span>
+        <input *ngIf="editMode" [(ngModel)]="editUsuario.apellidos" />
+        <span *ngIf="!editMode">{{ usuario?.apellidos }}</span>
+      </div>
+      <div class="perfil-campo">
+        <span class="perfil-label">Email:</span>
+        <input *ngIf="editMode" [(ngModel)]="editUsuario.email" />
+        <span *ngIf="!editMode">{{ usuario?.email }}</span>
+      </div>
+      <div class="perfil-campo">
+        <span class="perfil-label">Teléfono:</span>
+        <input *ngIf="editMode" [(ngModel)]="editUsuario.telefono" />
+        <span *ngIf="!editMode">{{ usuario?.telefono }}</span>
+      </div>
+      <div class="perfil-campo">
+        <span class="perfil-label">Dirección:</span>
+        <input *ngIf="editMode" [(ngModel)]="editUsuario.direccion" />
+        <span *ngIf="!editMode">{{ usuario?.direccion }}</span>
+      </div>
+    </div>
+    <div class="perfil-acciones">
+      <button *ngIf="!editMode" class="btn-editar" (click)="activarEdicion()">Editar perfil</button>
+      <div *ngIf="editMode" class="acciones-edicion">
+        <button class="btn-guardar" (click)="guardarCambios()">Guardar</button>
+        <button class="btn-cancelar" (click)="cancelarEdicion()">Cancelar</button>
+      </div>
+    </div>
+    <div class="perfil-links">
+      <button class="btn-link" (click)="irAMisCitas()">Ver mis citas</button>
+      <button class="btn-link" (click)="irAMisPedidos()">Ver mis pedidos</button>
+    </div>
+    <div *ngIf="mensajeExito" class="success-message">{{ mensajeExito }}</div>
+    <div *ngIf="mensajeError" class="error-message">{{ mensajeError }}</div>
+  </div>
+</div>

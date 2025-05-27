@@ -1,0 +1,177 @@
+.perfil-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.perfil-card {
+  background: #181818;
+  border: 1.5px solid #ffe082;
+  border-radius: 18px;
+  padding: 2.5em 2em 2em 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10);
+  width: 100%;
+  max-width: 420px;
+}
+
+.perfil-foto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5em;
+}
+.perfil-foto img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid #ffe082;
+  margin-bottom: 0.7em;
+}
+.cambiar-foto-btn {
+  color: #ffe082;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1em;
+  margin-top: 0.5em;
+  transition: color 0.2s;
+}
+.cambiar-foto-btn:hover {
+  color: #e6b24a;
+}
+
+.perfil-datos {
+  width: 100%;
+  margin-bottom: 1.5em;
+}
+.perfil-campo {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em;
+}
+.perfil-label {
+  width: 100px;
+  color: #ffe082;
+  font-weight: 600;
+  font-family: 'Playfair Display', serif;
+  margin-right: 0.7em;
+}
+.perfil-campo input {
+  flex: 1;
+  padding: 0.5em 0.7em;
+  border: 1.5px solid #ffe082;
+  border-radius: 8px;
+  background: #181818;
+  color: #ffe082;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  outline: none;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+.perfil-campo input:focus {
+  border-color: #e6b24a;
+  box-shadow: 0 0 0 2px rgba(230, 178, 74, 0.15);
+}
+
+.perfil-acciones {
+  margin-bottom: 1.5em;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.btn-editar, .btn-guardar, .btn-cancelar {
+  background: #ffe082;
+  color: #181818;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7em 2em;
+  font-size: 1.1rem;
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 0 0.5em;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px 0 rgba(255, 215, 0, 0.07);
+}
+.btn-editar:hover, .btn-guardar:hover {
+  background: #181818;
+  color: #ffe082;
+  border: 1.5px solid #ffe082;
+}
+.btn-cancelar {
+  background: #ff6b6b;
+  color: #fff;
+}
+.btn-cancelar:hover {
+  background: #181818;
+  color: #ff6b6b;
+  border: 1.5px solid #ff6b6b;
+}
+
+.perfil-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  width: 100%;
+  margin-bottom: 1.5em;
+}
+.btn-link {
+  background: #181818;
+  color: #ffe082;
+  border: 1.5px solid #ffe082;
+  border-radius: 8px;
+  padding: 0.7em 2em;
+  font-size: 1.1rem;
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.btn-link:hover {
+  background: #ffe082;
+  color: #181818;
+}
+
+.success-message {
+  background-color: #4CAF50;
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+  animation: slideIn 0.3s ease;
+}
+.error-message {
+  background-color: #ff4444;
+  color: white;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+  animation: slideIn 0.3s ease;
+}
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .perfil-card {
+    padding: 1.2em 0.5em;
+    max-width: 98vw;
+  }
+  .perfil-label {
+    width: 80px;
+    font-size: 0.95em;
+  }
+}

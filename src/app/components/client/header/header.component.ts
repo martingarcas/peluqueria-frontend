@@ -42,7 +42,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onUserAccessClick(): void {
-    this.router.navigate(['/client/profile']);
+    this.router.navigate(['/client/perfil']);
     this.isMenuActive = false;
   }
 

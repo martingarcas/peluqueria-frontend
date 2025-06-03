@@ -73,7 +73,7 @@
 
 .table-header {
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 2fr 1fr 1fr 1fr 1fr;
   padding: var(--spacing-lg);
   background-color: rgba(206, 161, 72, 0.05);
   border-bottom: 1px solid rgba(206, 161, 72, 0.2);
@@ -95,7 +95,7 @@
 
 .table-row {
   display: grid;
-  grid-template-columns: 2fr 2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 2fr 1fr 1fr 1fr 1fr;
   padding: var(--spacing-lg);
   border-bottom: 1px solid rgba(206, 161, 72, 0.1);
   transition: background-color var(--transition-speed) ease;
@@ -161,25 +161,34 @@
   color: var(--error-color);
 }
 
-.success-message {
-  background-color: rgba(var(--success-rgb), 0.1);
-  color: var(--success-color);
+.success-message,
+.error-message {
   padding: var(--spacing-md);
-  border-radius: var(--border-radius-md);
+  border-radius: 8px;
   margin-bottom: var(--spacing-lg);
-  font-family: var(--font-secondary);
-  max-width: 360px;
-  margin: 0 auto;
   text-align: center;
+  animation: slideIn 0.3s ease;
+}
+
+.success-message {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: #4CAF50;
 }
 
 .error-message {
-  background-color: rgba(var(--error-rgb), 0.1);
+  background-color: rgba(255, 68, 68, 0.1);
   color: var(--error-color);
-  padding: var(--spacing-md);
-  border-radius: var(--border-radius-md);
-  margin-bottom: var(--spacing-lg);
-  font-family: var(--font-secondary);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .no-results {
@@ -263,4 +272,47 @@
     display: flex;
     align-items: center;
   }
+}
+
+.column.estado select {
+  width: 100%;
+  padding: var(--spacing-md);
+  border: 1px solid rgba(206, 161, 72, 0.2);
+  border-radius: 8px;
+  background-color: rgba(206, 161, 72, 0.05);
+  color: var(--text-color);
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-base);
+  transition: all var(--transition-speed) ease;
+}
+
+.column.estado select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background-color: rgba(206, 161, 72, 0.1);
+}
+
+.column.estado select.invalid {
+  border-color: var(--error-color);
+  background-color: rgba(255, 68, 68, 0.05);
+}
+
+.column.estado select {
+  cursor: pointer;
+}
+
+.column.estado select option {
+  background-color: var(--background-dark);
+  color: var(--primary-color);
+  border: none;
+  cursor: pointer;
+}
+
+.column.estado select option:focus {
+  background-color: rgba(206, 161, 72, 0.9);
+}
+
+.column.estado select option:hover,
+.column.estado select option:checked {
+  background-color: rgba(206, 161, 72, 1);
 }

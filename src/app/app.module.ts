@@ -32,7 +32,8 @@ import { ListaHorariosComponent } from './components/admin/horarios/lista-horari
 import { FormHorarioComponent } from './components/admin/horarios/form-horario/form-horario.component';
 import { FormUsuarioComponent } from './components/admin/usuarios/form-usuario/form-usuario.component';
 import { ListaUsuariosComponent } from './components/admin/usuarios/lista-usuarios/lista-usuarios.component';
-import { ListaCitasComponent } from './components/client/citas/lista-citas/lista-citas.component';
+import { ListaCitasComponent as ClientListaCitasComponent } from './components/client/citas/lista-citas/lista-citas.component';
+import { ListaCitasComponent } from './components/admin/citas/lista-citas/lista-citas.component';
 import { FormCitaComponent } from './components/client/citas/form-cita/form-cita.component';
 import { ListaServiciosComponent as ClientListaServiciosComponent } from './components/client/servicios/lista-servicios/lista-servicios.component';
 import { ListaProductosComponent as ClientListaProductosComponent } from './components/client/tienda/lista-productos/lista-productos.component';
@@ -68,6 +69,7 @@ import { ListaPedidosComponent as ClientListaPedidosComponent } from './componen
     FormUsuarioComponent,
     ListaUsuariosComponent,
     ListaCitasComponent,
+    ClientListaCitasComponent,
     FormCitaComponent,
     ClientListaServiciosComponent,
     ClientListaProductosComponent,

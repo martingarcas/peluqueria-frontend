@@ -1,0 +1,63 @@
+<div class="citas-container">
+
+  <div class="success-message" *ngIf="mensajeExito">
+    {{ mensajeExito }}
+  </div>
+  <div class="error-message" *ngIf="mensajeError">
+    {{ mensajeError }}
+  </div>
+
+  <div class="list-citas">
+    <div class="header">
+      <h1>Todas las Citas</h1>
+      <div class="actions">
+        <div class="search-box">
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            placeholder="Buscar cita, cliente, profesional...">
+        </div>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <div class="table-header">
+        <div class="column cliente">Cliente</div>
+        <div class="column servicio">Servicio</div>
+        <div class="column profesional">Profesional</div>
+        <div class="column fecha">Fecha</div>
+        <div class="column hora">Hora</div>
+        <div class="column estado">Estado</div>
+      </div>
+
+      <div class="table-body">
+        <div class="table-row" *ngFor="let cita of citasFiltradas">
+          <div class="column cliente" data-label="Cliente:">
+            {{ cita.usuarioNombre }}
+          </div>
+          <div class="column servicio" data-label="Servicio:">
+            {{ cita.servicioNombre }}
+          </div>
+          <div class="column profesional" data-label="Profesional:">
+            {{ cita.trabajadorNombre }}
+          </div>
+          <div class="column fecha" data-label="Fecha:">
+            {{ cita.fecha | date:'dd/MM/yyyy' }}
+          </div>
+          <div class="column hora" data-label="Hora:">
+            {{ cita.horaInicio }}
+          </div>
+          <div class="column estado" data-label="Estado:">
+            <select [ngModel]="cita.estado" (ngModelChange)="actualizarEstado(cita.id, $event)">
+              <option *ngFor="let estado of estadosPosibles" [value]="estado">{{ estado }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="no-citas" *ngIf="citasFiltradas.length === 0">
+          <p>No hay citas registradas</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

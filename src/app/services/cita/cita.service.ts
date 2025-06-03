@@ -28,6 +28,13 @@ export class CitaService {
     });
   }
 
+  obtenerCitas(): Observable<{ mensaje: string, citas: any }> {
+    return this.http.get<{ mensaje: string, citas: any }>(
+      `${this.apiUrl}/todas`,
+      { headers: this.obtenerHeaders() }
+    );
+  }
+
   obtenerCitasUsuario(): Observable<{ mensaje: string, citas: CitaResponse[] }> {
     return this.http.get<{ mensaje: string, citas: CitaResponse[] }>(
       this.apiUrl,

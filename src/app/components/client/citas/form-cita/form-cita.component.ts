@@ -183,11 +183,13 @@ export class FormCitaComponent implements OnInit, OnDestroy {
       next: (response: any) => {
         // La respuesta viene en formato { mensaje: string, citas: { citas: CitaResponse[] } }
         if (response.citas && response.citas.citas) {
-          // Guardamos solo fecha y hora en formato "YYYY-MM-DD-HH:mm"
-          this.citasUsuario = response.citas.citas.map((cita: CitaResponse) => {
-            const hora = cita.horaInicio.split(':').slice(0, 2).join(':');
-            return `${cita.fecha}-${hora}`;
-          });
+          // Guardamos solo fecha y hora en formato "YYYY-MM-DD-HH:mm" de citas que no estén canceladas
+          this.citasUsuario = response.citas.citas
+            .filter((cita: CitaResponse) => cita.estado !== 'CANCELADA')
+            .map((cita: CitaResponse) => {
+              const hora = cita.horaInicio.split(':').slice(0, 2).join(':');
+              return `${cita.fecha}-${hora}`;
+            });
           this.cdr.detectChanges();
         }
       },
@@ -973,7 +975,7 @@ export class FormCitaComponent implements OnInit, OnDestroy {
         this.cerrarModal();
 
         // Redirigir a la lista de citas con el mensaje de éxito
-        this.router.navigate(['/citas'], {
+        this.router.navigate(['/client/citas'], {
           queryParams: { mensaje: 'Citas reservadas con éxito' }
         });
       },

@@ -10,6 +10,14 @@
   --card-background: rgba(18, 18, 18, 0.4);
   --border-color: rgba(255, 215, 0, 0.1);
   --error-color: #ff4444;
+  --success-rgb: 75, 181, 67;
+  --success-color: #4BB543;
+  --error-rgb: 255, 0, 0;
+  --error-color: #FF0000;
+  --spacing-md: 1rem;
+  --border-radius-md: 4px;
+  --spacing-lg: 2rem;
+  --font-secondary: 'Roboto', Arial, sans-serif;
 
   /* Tipografía */
   --font-primary: 'Marcellus', serif;      /* Para títulos y elementos destacados */

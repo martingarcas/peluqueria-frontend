@@ -42,6 +42,7 @@ import { PerfilComponent as ClientPerfilComponent } from './components/client/pe
 import { ListaPedidosComponent as ClientListaPedidosComponent } from './components/client/pedidos/lista-pedidos/lista-pedidos.component';
 import { PerfilComponent as PerfilAdminComponent } from './components/admin/perfil/perfil.component';
 import { PerfilComponent } from './components/admin/perfil/perfil.component';
+import { ListaPedidosComponent } from './components/admin/pedidos/lista-pedidos/lista-pedidos.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -78,7 +79,8 @@ import { PerfilComponent } from './components/admin/perfil/perfil.component';
     CarritoComponent,
     ClientPerfilComponent,
     ClientListaPedidosComponent,
-    PerfilComponent
+    PerfilComponent,
+    ListaPedidosComponent
   ],
   imports: [
     BrowserModule,

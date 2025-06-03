@@ -38,4 +38,21 @@ export class PedidoService {
       { headers: this.obtenerHeaders() }
     );
   }
+
+  // Obtener todos los pedidos (admin)
+  obtenerTodosPedidos(): Observable<{ mensaje: string, pedidos: any[] }> {
+    return this.http.get<{ mensaje: string, pedidos: any[] }>(
+      `${this.apiUrl}`,
+      { headers: this.obtenerHeaders() }
+    );
+  }
+
+  // Actualizar el estado de un pedido (admin)
+  actualizarEstadoPedido(id: number, estado: string): Observable<any> {
+    return this.http.put<any>(
+      `${this.apiUrl}/${id}/estado`,
+      { estado },
+      { headers: this.obtenerHeaders() }
+    );
+  }
 }

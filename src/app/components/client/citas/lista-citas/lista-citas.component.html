@@ -21,6 +21,14 @@
                 (ngModelChange)="onSearchChange()"
                 placeholder="Buscar cita">
             </div>
+            <div class="state-filter">
+              <select [(ngModel)]="selectedEstado" (ngModelChange)="onEstadoChange()">
+                <option value="">TODOS LOS ESTADOS</option>
+                <option value="PROGRAMADA">PROGRAMADA</option>
+                <option value="COMPLETADA">COMPLETADA</option>
+                <option value="CANCELADA">CANCELADA</option>
+              </select>
+            </div>
             <button class="add-button" (click)="crearCita()">
               + Reservar nueva cita
             </button>

@@ -16,6 +16,7 @@ export class ListaCitasComponent implements OnInit {
   mensajeExito: string = '';
   esAdminOTrabajador: boolean = false;
   mostrarFormulario: boolean = false;
+  selectedEstado: string = '';
 
   constructor(
     private citaService: CitaService,
@@ -70,18 +71,23 @@ export class ListaCitasComponent implements OnInit {
   }
 
   onSearchChange(): void {
-    if (!this.searchTerm) {
+    if (!this.searchTerm && !this.selectedEstado) {
       this.citasFiltradas = this.citas;
       return;
     }
 
     const termino = this.searchTerm.toLowerCase();
     this.citasFiltradas = this.citas.filter(cita =>
-      (cita.servicioNombre?.toLowerCase() || '').includes(termino) ||
+      ((!this.selectedEstado || cita.estado === this.selectedEstado)) &&
+      ((cita.servicioNombre?.toLowerCase() || '').includes(termino) ||
       (cita.trabajadorNombre?.toLowerCase() || '').includes(termino) ||
       (cita.fecha?.toLowerCase() || '').includes(termino) ||
-      (cita.estado?.toLowerCase() || '').includes(termino)
+      (cita.estado?.toLowerCase() || '').includes(termino))
     );
+  }
+
+  onEstadoChange(): void {
+    this.onSearchChange();
   }
 
   actualizarEstado(citaId: number, nuevoEstado: string): void {

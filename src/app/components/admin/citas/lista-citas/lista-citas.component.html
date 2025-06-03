@@ -11,6 +11,14 @@
     <div class="header">
       <h1>Todas las Citas</h1>
       <div class="actions">
+        <div class="state-filter">
+          <select [(ngModel)]="selectedEstado" (ngModelChange)="onEstadoChange()">
+            <option value="">TODOS LOS ESTADOS</option>
+            <option value="PROGRAMADA">PROGRAMADA</option>
+            <option value="COMPLETADA">COMPLETADA</option>
+            <option value="CANCELADA">CANCELADA</option>
+          </select>
+        </div>
         <div class="search-box">
           <input
             type="text"

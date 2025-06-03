@@ -1,0 +1,60 @@
+/* Estilos para la home del admin */
+.admin-home-container {
+  max-width: 700px;
+  margin: 4rem auto 0 auto;
+  background: rgba(206, 161, 72, 0.05);
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+  border: 1px solid rgba(206, 161, 72, 0.15);
+  text-align: center;
+}
+
+.admin-title {
+  font-family: 'Gilda Display', serif;
+  color: var(--primary-color);
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: normal;
+}
+
+.admin-intro {
+  color: var(--text-color);
+  font-family: var(--font-secondary);
+  font-size: 1.15rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+
+.admin-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+}
+
+.admin-features li {
+  color: var(--primary-color);
+  font-family: var(--font-secondary);
+  font-size: 1.08rem;
+  margin-bottom: 0.7rem;
+  padding-left: 1.2em;
+  position: relative;
+  text-align: left;
+}
+
+.admin-features li::before {
+  content: '\2022';
+  color: var(--primary-color);
+  font-size: 1.2em;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.admin-welcome {
+  color: var(--success-color);
+  font-family: var(--font-secondary);
+  font-size: 1.1rem;
+  margin-top: 1.5rem;
+  font-weight: 500;
+}

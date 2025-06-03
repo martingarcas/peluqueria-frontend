@@ -1,1 +1,59 @@
-<p>lsadsadashdashdgsadhasgdsayjdgasyudgasdj</p>
+<div class="home-container">
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Tu peluquería de confianza</h1>
+    <p>Ofrecemos servicios de peluquería de la más alta calidad en un ambiente acogedor.</p>
+    <button class="btn-reservar" routerLink="/client/citas">Reservar cita</button>
+  </section>
+
+  <!-- SERVICIOS DESTACADOS -->
+  <section class="destacados">
+    <h2>Nuestros servicios</h2>
+    <div class="cards-list">
+      <div class="card servicio" *ngFor="let servicio of serviciosDestacados">
+        <div class="icono-servicio">
+          <img [src]="getIcono(servicio)" [alt]="servicio.nombre" />
+        </div>
+        <div class="nombre">{{ servicio.nombre }}</div>
+        <div class="descripcion">{{ servicio.descripcion }}</div>
+      </div>
+    </div>
+    <button class="btn-reservar" routerLink="/client/servicios">Ver todos los servicios</button>
+  </section>
+
+  <!-- PRODUCTOS DESTACADOS -->
+  <section class="destacados">
+    <h2>Productos destacados</h2>
+    <div class="cards-list">
+      <div class="card producto" *ngFor="let producto of productosDestacados">
+        <div class="img-producto">
+          <img [src]="getImageUrl(producto.foto)" [alt]="producto.nombre" />
+        </div>
+        <div class="nombre">{{ producto.nombre }}</div>
+        <div class="precio">{{ producto.precio | number:'1.2-2' }} €</div>
+      </div>
+    </div>
+    <button class="btn-reservar" routerLink="/client/productos">Ver todos los productos</button>
+  </section>
+
+  <!-- GALERÍA -->
+  <section class="galeria">
+    <h2>Conoce nuestro espacio</h2>
+    <div class="galeria-slider">
+      <button class="galeria-flecha izq" (click)="retrocederGaleria()" aria-label="Anterior">&#10094;</button>
+      <div class="galeria-carrusel-outer">
+        <div class="galeria-carrusel-malak">
+          <ng-container *ngFor="let img of galeria; let i = index">
+            <img
+              [src]="img"
+              [alt]="'Foto local ' + (i+1)"
+              class="gallery-photo-cnt"
+              [ngClass]="getLayerClass(i)"
+            />
+          </ng-container>
+        </div>
+      </div>
+      <button class="galeria-flecha der" (click)="avanzarGaleria()" aria-label="Siguiente">&#10095;</button>
+    </div>
+  </section>
+</div>

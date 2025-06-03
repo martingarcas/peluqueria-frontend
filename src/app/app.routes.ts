@@ -16,6 +16,7 @@ import { CarritoComponent } from './components/client/tienda/carrito/carrito.com
 import { ListaCitasComponent as ClientListaCitasComponent } from './components/client/citas/lista-citas/lista-citas.component';
 import { PerfilComponent as ClientPerfilComponent } from './components/client/perfil/perfil.component';
 import { ListaPedidosComponent as ClientListaPedidosComponent } from './components/client/pedidos/lista-pedidos/lista-pedidos.component';
+
 // Admin
 import { AdminComponent } from './components/admin/admin.component';
 import { HomeComponent as AdminHomeComponent } from './components/admin/home/home.component';
@@ -33,7 +34,6 @@ import { AuthGuard } from './guards/auth.guard';
 import { ClienteGuard } from './guards/cliente.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { TrabajadorGuard } from './guards/trabajador.guard';
-// futuros guards: workerGuard
 
 export const routes: Routes = [
   // Layout público
@@ -41,10 +41,9 @@ export const routes: Routes = [
     path: '',
     component: PublicComponent,
     children: [
-      { path: '', component: PublicHomeComponent },
-      { path: 'auth', component: AuthContainerComponent },
-      { path: 'login', redirectTo: 'auth', pathMatch: 'full' },
-      { path: 'register', redirectTo: 'auth', pathMatch: 'full' }
+      //{ path: '', component: PublicHomeComponent },
+      { path: '', redirectTo: '/auth', pathMatch: 'full'},
+      { path: 'auth', component: AuthContainerComponent }
     ]
   },
 

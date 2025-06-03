@@ -27,7 +27,7 @@ export class HeaderComponent implements OnInit {
   }
 
   onUserAccessClick(): void {
-    this.router.navigate(['/client/profile']);
+    this.router.navigate(['/admin/perfil']);
     this.isMenuActive = false;
   }
 

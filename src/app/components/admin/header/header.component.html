@@ -18,16 +18,9 @@
         <!-- Separador y opciones de usuario solo visibles en móvil -->
         <div class="mobile-separator"></div>
         <li class="mobile-only">
-          <a (click)="navigateTo('/admin/profile')" class="menu-action-btn">
+          <a (click)="navigateTo('/admin/perfil')" class="menu-action-btn">
             <i class="fas fa-user"></i>
             <span>{{ userName }}</span>
-          </a>
-        </li>
-        <li class="mobile-only">
-          <a (click)="onCartClick()" class="menu-action-btn">
-            <i class="fas fa-shopping-cart"></i>
-            <span>Carrito</span>
-            <span class="menu-cart-count" *ngIf="cartItemCount > 0">({{cartItemCount}})</span>
           </a>
         </li>
         <li class="mobile-only">

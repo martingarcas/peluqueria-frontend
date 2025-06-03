@@ -40,7 +40,8 @@ import { ListaProductosComponent as ClientListaProductosComponent } from './comp
 import { CarritoComponent } from './components/client/tienda/carrito/carrito.component';
 import { PerfilComponent as ClientPerfilComponent } from './components/client/perfil/perfil.component';
 import { ListaPedidosComponent as ClientListaPedidosComponent } from './components/client/pedidos/lista-pedidos/lista-pedidos.component';
-
+import { PerfilComponent as PerfilAdminComponent } from './components/admin/perfil/perfil.component';
+import { PerfilComponent } from './components/admin/perfil/perfil.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -58,6 +59,7 @@ import { ListaPedidosComponent as ClientListaPedidosComponent } from './componen
     AdminComponent,
     AdminHeaderComponent,
     AdminFooterComponent,
+    PerfilAdminComponent,
     ListaCategoriasComponent,
     FormCategoriaComponent,
     ListaProductosComponent,
@@ -75,7 +77,8 @@ import { ListaPedidosComponent as ClientListaPedidosComponent } from './componen
     ClientListaProductosComponent,
     CarritoComponent,
     ClientPerfilComponent,
-    ClientListaPedidosComponent
+    ClientListaPedidosComponent,
+    PerfilComponent
   ],
   imports: [
     BrowserModule,

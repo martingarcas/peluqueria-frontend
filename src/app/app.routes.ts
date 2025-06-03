@@ -26,6 +26,7 @@ import { ListaServiciosComponent } from './components/admin/servicios/lista-serv
 import { ListaHorariosComponent } from './components/admin/horarios/lista-horarios/lista-horarios.component';
 import { ListaUsuariosComponent } from './components/admin/usuarios/lista-usuarios/lista-usuarios.component';
 import { ListaCitasComponent } from './components/admin/citas/lista-citas/lista-citas.component';
+import { PerfilComponent as PerfilAdminComponent } from './components/admin/perfil/perfil.component';
 // Otros
 import { TestImageComponent } from './components/test-image/test-image.component';
 
@@ -76,6 +77,7 @@ export const routes: Routes = [
       { path: 'horarios', component: ListaHorariosComponent },
       { path: 'usuarios', component: ListaUsuariosComponent },
       { path: 'citas', component: ListaCitasComponent },
+      { path: 'perfil', component: PerfilAdminComponent },
     ]
   },
 

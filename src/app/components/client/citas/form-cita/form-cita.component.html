@@ -59,7 +59,7 @@
               [class.disabled]="!esProfesionalDisponible(profesional.id)"
               (click)="esProfesionalDisponible(profesional.id) && seleccionarProfesional(profesional.id)">
             <div class="profesional-foto">
-              <img [src]="getImageUrl(profesional.foto)" [alt]="profesional.nombre">
+              <img [src]="profesional.imagenUrl" [alt]="profesional.nombre">
             </div>
             <div class="profesional-nombre">
               {{ profesional.nombre }} {{ profesional.apellidos }}

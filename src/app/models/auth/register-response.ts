@@ -1,3 +1,7 @@
+/**
+ * Interfaz que representa la respuesta del servidor después de registrar un usuario
+ * Incluye los datos del usuario creado y un mensaje de confirmación
+ */
 export interface RegisterResponse {
     data: {
         id: number;           // ID del usuario creado

@@ -5,12 +5,6 @@ import { ProductoService } from 'src/app/services/producto/producto.service';
 import { CategoriaResponse } from 'src/app/models/categorias/categoria-response';
 import { CategoriaRequest } from 'src/app/models/categorias/categoria-request';
 import { ProductoResponse } from 'src/app/models/productos/producto-response';
-import { ProductoRequest } from 'src/app/models/productos/producto-request';
-
-interface ApiResponse {
-  mensaje: string;
-  categoria?: CategoriaResponse;
-}
 
 @Component({
   selector: 'app-form-categoria',
@@ -32,8 +26,6 @@ export class FormCategoriaComponent implements OnInit {
   mostrarProductosExistentes: boolean = false;
   camposDeshabilitados: boolean = false;
   readonly NOMBRE_PROTEGIDO = 'Otros productos';
-  readonly MAX_IMAGE_SIZE = 500 * 1024; // 500KB en bytes
-  readonly MAX_DIMENSION = 800; // máximo 800px de ancho o alto
 
   constructor(
     private fb: FormBuilder,
@@ -60,7 +52,7 @@ export class FormCategoriaComponent implements OnInit {
     this.productoService.obtenerTodos().subscribe({
       next: (response) => {
         if (this.isEditing) {
-          this.productosDisponibles = response.productos.filter(p => p.categoriaId !== this.categoriaId);
+          this.productosDisponibles = response.productos.filter(producto => producto.categoriaId !== this.categoriaId);
         } else {
           this.productosDisponibles = response.productos;
         }
@@ -101,56 +93,6 @@ export class FormCategoriaComponent implements OnInit {
     }
   }
 
-  private async comprimirImagen(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          let width = img.width;
-          let height = img.height;
-
-          // Redimensionar si excede el tamaño máximo
-          if (width > this.MAX_DIMENSION || height > this.MAX_DIMENSION) {
-            if (width > height) {
-              height = Math.round((height * this.MAX_DIMENSION) / width);
-              width = this.MAX_DIMENSION;
-            } else {
-              width = Math.round((width * this.MAX_DIMENSION) / height);
-              height = this.MAX_DIMENSION;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-
-          // Comprimir con calidad reducida si es necesario
-          let quality = 0.7; // Empezar con 70% de calidad
-          let base64 = canvas.toDataURL('image/jpeg', quality);
-
-          // Reducir calidad hasta que el tamaño sea aceptable
-          while (base64.length > this.MAX_IMAGE_SIZE && quality > 0.1) {
-            quality -= 0.1;
-            base64 = canvas.toDataURL('image/jpeg', quality);
-          }
-
-          if (base64.length > this.MAX_IMAGE_SIZE) {
-            reject('La imagen es demasiado grande incluso después de la compresión');
-            return;
-          }
-
-          resolve(base64.split(',')[1]); // Solo devolver la parte base64
-        };
-        img.src = e.target?.result as string;
-      };
-      reader.onerror = (error) => reject(error);
-      reader.readAsDataURL(file);
-    });
-  }
-
   onFileSelected(event: Event, index: number): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
@@ -172,7 +114,7 @@ export class FormCategoriaComponent implements OnInit {
 
   cargarCategoria(id: number): void {
     this.categoriaService.obtenerPorId(id).subscribe({
-      next: (response: ApiResponse) => {
+      next: (response: { mensaje: string, categoria: CategoriaResponse }) => {
         if (response.categoria) {
           this.categoriaForm.patchValue({
             nombre: response.categoria.nombre,

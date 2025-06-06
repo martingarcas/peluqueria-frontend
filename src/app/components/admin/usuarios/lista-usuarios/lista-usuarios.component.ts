@@ -1,11 +1,9 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { SecurityContext } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { UsuarioResponse } from 'src/app/models/usuarios/usuario-response';
 import { UsuarioService } from 'src/app/services/usuario/usuario.service';
 import { ContratoService } from 'src/app/services/contrato/contrato.service';
-import { trigger, state, style, transition, animate } from '@angular/animations';
+import { trigger, style, transition, animate } from '@angular/animations';
 import { ContratoResponse } from 'src/app/models/usuarios/contrato-response';
 
 @Component({
@@ -24,7 +22,7 @@ import { ContratoResponse } from 'src/app/models/usuarios/contrato-response';
     ])
   ]
 })
-export class ListaUsuariosComponent implements OnInit, OnDestroy {
+export class ListaUsuariosComponent implements OnInit {
   usuarios: UsuarioResponse[] = [];
   usuariosFiltrados: UsuarioResponse[] = [];
   mensajeError: string = '';
@@ -41,14 +39,9 @@ export class ListaUsuariosComponent implements OnInit, OnDestroy {
   modoFormulario: 'crear' | 'editar' = 'crear';
   usuarioEnEdicion: UsuarioResponse | null = null;
 
-  // Cache de imágenes
-  imagenesCache = new Map<string, SafeUrl>();
-
   constructor(
     private usuarioService: UsuarioService,
     private contratoService: ContratoService,
-    private router: Router,
-    private cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer
   ) { }
 
@@ -56,47 +49,34 @@ export class ListaUsuariosComponent implements OnInit, OnDestroy {
     this.cargarUsuarios();
   }
 
-  ngOnDestroy(): void {
-    // Limpiar las URLs de las imágenes cacheadas
-    this.imagenesCache.forEach((safeUrl) => {
-      const url = this.sanitizer.sanitize(SecurityContext.URL, safeUrl);
-      if (url) URL.revokeObjectURL(url);
-    });
-  }
-
-  getImageUrl(fotoPath: string | undefined): SafeUrl {
-    if (!fotoPath) return 'assets/images/no-image.png';
-
-    if (this.imagenesCache.has(fotoPath)) {
-      return this.imagenesCache.get(fotoPath)!;
-    }
-
-    this.usuarioService.obtenerImagen(fotoPath).subscribe({
-      next: (blob: Blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        const safeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
-        this.imagenesCache.set(fotoPath, safeUrl);
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error al cargar la imagen:', error);
-        this.imagenesCache.set(fotoPath, 'assets/images/no-image.png');
-      }
-    });
-
-    return 'assets/images/no-image.png';
-  }
-
   cargarUsuarios(): void {
     this.usuarioService.obtenerTodos().subscribe({
       next: (response) => {
         this.usuarios = response.usuarios;
+        this.cargarImagenesUsuarios();
         this.aplicarFiltros();
         this.mostrarExito(response.mensaje);
       },
-      error: (error) => {
-        console.error('Error al cargar usuarios:', error);
-        this.mostrarError('Error al cargar los usuarios');
+      error: (error: { error?: { mensaje?: string } }) => {
+        this.mostrarError(error.error?.mensaje || 'Error al cargar los usuarios');
+      }
+    });
+  }
+
+  private cargarImagenesUsuarios(): void {
+    this.usuarios.forEach(usuario => {
+      if (usuario.foto) {
+        this.usuarioService.obtenerImagen(usuario.foto).subscribe({
+          next: (blob: Blob) => {
+            const objectUrl = URL.createObjectURL(blob);
+            usuario.imagenUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+          },
+          error: () => {
+            usuario.imagenUrl = 'assets/images/no-image.png';
+          }
+        });
+      } else {
+        usuario.imagenUrl = 'assets/images/no-image.png';
       }
     });
   }
@@ -170,9 +150,9 @@ export class ListaUsuariosComponent implements OnInit, OnDestroy {
       this.mostrarExito(response?.mensaje || 'Usuario eliminado correctamente');
       this.cargarUsuarios();
 
-    } catch (error: any) {
-      this.mostrarError(error.error?.mensaje || 'Error al eliminar el usuario');
-      console.error('Error:', error);
+    } catch (error: unknown) {
+      const errorObj = error as { error?: { mensaje?: string } };
+      this.mostrarError(errorObj.error?.mensaje || 'Error al eliminar el usuario');
     } finally {
       this.cancelarEliminacion();
     }
@@ -192,9 +172,8 @@ export class ListaUsuariosComponent implements OnInit, OnDestroy {
           document.body.removeChild(link);
           window.URL.revokeObjectURL(url);
         },
-        error: (error) => {
-          console.error('Error al descargar el contrato:', error);
-          this.mostrarError('Error al descargar el contrato');
+        error: (error: { error?: { mensaje?: string } }) => {
+          this.mostrarError(error.error?.mensaje || 'Error al descargar el contrato');
         }
       });
     }
@@ -240,12 +219,10 @@ export class ListaUsuariosComponent implements OnInit, OnDestroy {
                 )[0];
               usuario.contrato = contratoMasReciente;
             }
-            this.cdr.detectChanges();
           }
         },
-        error: (error) => {
-          console.error('Error al cargar el contrato:', error);
-          this.mostrarError('Error al cargar los datos del contrato');
+        error: (error: { error?: { mensaje?: string } }) => {
+          this.mostrarError(error.error?.mensaje || 'Error al cargar los datos del contrato');
         }
       });
     }

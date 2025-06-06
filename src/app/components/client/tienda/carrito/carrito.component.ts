@@ -1,12 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CarritoService } from 'src/app/services/carrito/carrito.service';
 import { UsuarioService } from 'src/app/services/usuario/usuario.service';
-import { CarritoResponse } from 'src/app/models/carrito/carrito-response';
-import { UsuarioResponse } from 'src/app/models/usuarios/usuario-response';
 import { ProductoService } from 'src/app/services/producto/producto.service';
 import { ProductoResponse } from 'src/app/models/productos/producto-response';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { ChangeDetectorRef, SecurityContext } from '@angular/core';
 
 @Component({
   selector: 'app-carrito',
@@ -24,8 +21,6 @@ export class CarritoComponent implements OnInit {
     direccion: '',
     email: ''
   };
-  mensajeVacio: string = '';
-  imagenesCache = new Map<string, SafeUrl>();
   mensajeError: string = '';
   mensajeExito: string = '';
 
@@ -33,7 +28,6 @@ export class CarritoComponent implements OnInit {
     private carritoService: CarritoService,
     private usuarioService: UsuarioService,
     private productoService: ProductoService,
-    private cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer
   ) { }
 
@@ -46,8 +40,33 @@ export class CarritoComponent implements OnInit {
   cargarProductos() {
     this.productoService.obtenerTodos().subscribe(resp => {
       this.todosLosProductos = resp.productos;
-      this.combinarCarritoConProductos();
+      // Cargar imágenes para cada producto
+      this.todosLosProductos.forEach(producto => {
+        if (producto.foto) {
+          this.productoService.obtenerImagen(producto.foto).subscribe({
+            next: (blob: Blob) => {
+              const objectUrl = URL.createObjectURL(blob);
+              producto.imagenUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+              // Actualizar productos del carrito si ya existen
+              this.actualizarImagenesCarrito();
+            },
+            error: () => {
+              producto.imagenUrl = 'assets/images/no-image.png';
+              this.actualizarImagenesCarrito();
+            }
+          });
+        } else {
+          producto.imagenUrl = 'assets/images/no-image.png';
+          this.actualizarImagenesCarrito();
+        }
+      });
     });
+  }
+
+  actualizarImagenesCarrito() {
+    if (this.carritoArray.length > 0) {
+      this.combinarCarritoConProductos();
+    }
   }
 
   cargarCarrito() {
@@ -67,12 +86,13 @@ export class CarritoComponent implements OnInit {
   combinarCarritoConProductos() {
     if (!this.todosLosProductos || !this.carritoArray) return;
     this.productosCarrito = this.carritoArray.map((item: any) => {
-      const producto = this.todosLosProductos.find((p: any) => p.id === item.productoId);
+      const producto = this.todosLosProductos.find((producto: any) => producto.id === item.productoId);
       return {
         ...item,
         nombre: producto?.nombre || 'Producto',
         foto: producto?.foto,
-        precio: producto?.precio || 0
+        precio: producto?.precio || 0,
+        imagenUrl: producto?.imagenUrl || 'assets/images/no-image.png'
       };
     });
   }
@@ -96,7 +116,7 @@ export class CarritoComponent implements OnInit {
   }
 
   get subtotal(): number {
-    return this.productosCarrito.reduce((acc, item) => acc + (item.precio * item.cantidad), 0);
+    return Number(this.productosCarrito.reduce((acumulador, item) => acumulador + (item.precio * item.cantidad), 0).toFixed(2));
   }
 
   get total(): number {
@@ -180,28 +200,6 @@ export class CarritoComponent implements OnInit {
         this.mensajeExito = '';
       }
     });
-  }
-
-  getImageUrl(fotoPath: string | undefined): SafeUrl {
-    if (!fotoPath) return 'assets/images/no-image.png';
-
-    if (this.imagenesCache.has(fotoPath)) {
-      return this.imagenesCache.get(fotoPath)!;
-    }
-
-    this.productoService.obtenerImagen(fotoPath).subscribe({
-      next: (blob: Blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        const safeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
-        this.imagenesCache.set(fotoPath, safeUrl);
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        this.imagenesCache.set(fotoPath, 'assets/images/no-image.png');
-      }
-    });
-
-    return 'assets/images/no-image.png';
   }
 
   eliminarProducto(item: any) {

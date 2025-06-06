@@ -42,7 +42,7 @@
       <div class="table-body">
         <div class="table-row" *ngFor="let producto of productosFiltrados">
           <div class="column imagen" data-label="Imagen:">
-            <img [src]="getImageUrl(producto.foto)" [alt]="producto.nombre">
+            <img [src]="producto.imagenUrl" [alt]="producto.nombre">
           </div>
           <div class="column nombre" data-label="Nombre:">
             {{ producto.nombre }}
@@ -84,7 +84,7 @@
       <div class="modal-content">
         <p>¿Estás seguro de que deseas eliminar el producto <strong>"{{productoAEliminar?.nombre}}"</strong>?</p>
         <div class="producto-preview" *ngIf="productoAEliminar">
-          <img [src]="getImageUrl(productoAEliminar.foto)" [alt]="productoAEliminar.nombre">
+          <img [src]="productoAEliminar.imagenUrl" [alt]="productoAEliminar.nombre">
           <div class="producto-info">
             <p class="precio">{{ productoAEliminar.precio | currency:'EUR':'symbol':'1.2-2' }}</p>
             <p class="stock">Stock: {{ productoAEliminar.stock }}</p>

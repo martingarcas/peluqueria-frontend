@@ -27,7 +27,7 @@
     <div class="cards-list">
       <div class="card producto" *ngFor="let producto of productosDestacados">
         <div class="img-producto">
-          <img [src]="getImageUrl(producto.foto)" [alt]="producto.nombre" />
+          <img [src]="producto.imagenUrl" [alt]="producto.nombre" />
         </div>
         <div class="nombre">{{ producto.nombre }}</div>
         <div class="precio">{{ producto.precio | number:'1.2-2' }} €</div>
@@ -48,7 +48,7 @@
               [src]="img"
               [alt]="'Foto local ' + (i+1)"
               class="gallery-photo-cnt"
-              [ngClass]="getLayerClass(i)"
+              [ngClass]="getImgClass(i)"
             />
           </ng-container>
         </div>

@@ -14,7 +14,7 @@
         <input type="text" [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" placeholder="Buscar pedido, usuario, estado...">
       </div>
       <div class="search-box">
-        <select [(ngModel)]="estadoSeleccionado" (ngModelChange)="onEstadoChange()">
+        <select [(ngModel)]="estadoSeleccionado" (ngModelChange)="onSearchChange()">
           <option value="">Todos los estados</option>
           <option *ngFor="let estado of estadosPosibles" [value]="estado">{{ estado | titlecase }}</option>
         </select>
@@ -63,7 +63,9 @@
             <h3>Detalle del pedido</h3>
             <div class="lineas-pedido-list">
               <div class="linea-pedido-item" *ngFor="let linea of pedido.lineasPedido">
-                <img [src]="getProductoImage(linea.productoId)" alt="Foto producto" />
+                <div class="producto-imagen">
+                  <img [src]="linea.imagenUrl" [alt]="linea.nombreProducto" class="img-fluid">
+                </div>
                 <div class="linea-info">
                   <div class="nombre">{{ linea.nombreProducto }}</div>
                   <div class="cantidad">Cantidad: {{ linea.cantidad }}</div>

@@ -10,7 +10,7 @@
       <div class="carrito-lista-productos">
         <div class="carrito-producto" *ngFor="let item of productosCarrito">
           <div class="carrito-producto-img">
-            <img [src]="getImageUrl(item.foto)" [alt]="item.nombre" />
+            <img [src]="item.imagenUrl" [alt]="item.nombre" />
           </div>
           <div class="carrito-producto-nombre">{{ item.nombre }}</div>
           <div class="carrito-producto-cantidad">
@@ -21,7 +21,7 @@
               <i class="fas fa-trash"></i>
             </button>
           </div>
-          <div class="carrito-producto-precio">{{ item.precio | currency:'EUR':'symbol':'1.2-2' }}</div>
+          <div class="carrito-producto-precio">{{ item.precio }} €</div>
         </div>
       </div>
       <!-- Formulario de datos de contacto -->
@@ -40,7 +40,7 @@
       <div class="carrito-resumen">
         <div class="carrito-resumen-row">
           <span>Subtotal</span>
-          <span>{{ subtotal | currency:'EUR':'symbol':'1.2-2' }}</span>
+          <span>{{ subtotal | number:'1.2-2' }} €</span>
         </div>
         <div class="carrito-resumen-row">
           <span>Envío</span>
@@ -48,7 +48,7 @@
         </div>
         <div class="carrito-resumen-row total">
           <span>Total</span>
-          <span>{{ total | currency:'EUR':'symbol':'1.2-2' }}</span>
+          <span>{{ total | number:'1.2-2' }} €</span>
         </div>
       </div>
       <button class="carrito-finalizar" (click)="finalizarCompra()">Finalizar compra</button>

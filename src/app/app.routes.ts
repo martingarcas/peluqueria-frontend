@@ -28,8 +28,6 @@ import { ListaUsuariosComponent } from './components/admin/usuarios/lista-usuari
 import { ListaCitasComponent } from './components/admin/citas/lista-citas/lista-citas.component';
 import { PerfilComponent as PerfilAdminComponent } from './components/admin/perfil/perfil.component';
 import { ListaPedidosComponent } from './components/admin/pedidos/lista-pedidos/lista-pedidos.component';
-// Otros
-import { TestImageComponent } from './components/test-image/test-image.component';
 
 // Guards
 import { AuthGuard } from './guards/auth.guard';
@@ -82,9 +80,6 @@ export const routes: Routes = [
       { path: 'pedidos', component: ListaPedidosComponent },
     ]
   },
-
-  // Ruta protegida de test
-  { path: 'test-image', component: TestImageComponent, canActivate: [AuthGuard] },
 
   // Ruta por defecto (página no encontrada)
   { path: '**', redirectTo: '' }

@@ -73,7 +73,7 @@
             <div class="productos-body">
               <div class="producto-row" *ngFor="let producto of categoria.productos">
                 <div class="producto-column foto" data-label="Foto:">
-                  <img [src]="getImageUrl(producto.foto)" [alt]="producto.nombre">
+                  <img [src]="producto.imagenUrl" [alt]="producto.nombre">
                 </div>
                 <div class="producto-column nombre" data-label="Nombre:">{{ producto.nombre }}</div>
                 <div class="producto-column descripcion" data-label="Descripción:">{{ producto.descripcion }}</div>

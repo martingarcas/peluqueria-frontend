@@ -5,6 +5,7 @@ import { CategoriaResponse } from 'src/app/models/categorias/categoria-response'
 import { ProductoService } from 'src/app/services/producto/producto.service';
 import { CategoriaService } from 'src/app/services/categoria/categoria.service';
 import { ProductoRequest } from 'src/app/models/productos/producto-request';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-form-producto',
@@ -20,14 +21,15 @@ export class FormProductoComponent implements OnInit {
   productoForm: FormGroup;
   categorias: CategoriaResponse[] = [];
   imagenSeleccionada: File | null = null;
-  previewImagen: string | null = null;
+  previewImagen: SafeUrl = 'assets/images/no-image.png';
   mensajeError: string = '';
   mensajeExito: string = '';
 
   constructor(
     private fb: FormBuilder,
     private productoService: ProductoService,
-    private categoriaService: CategoriaService
+    private categoriaService: CategoriaService,
+    private sanitizer: DomSanitizer
   ) {
     this.productoForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
@@ -53,7 +55,6 @@ export class FormProductoComponent implements OnInit {
       },
       error: (error) => {
         this.mostrarError('Error al cargar las categorías');
-        console.error('Error:', error);
       }
     });
   }
@@ -69,7 +70,15 @@ export class FormProductoComponent implements OnInit {
       });
 
       if (this.productoAEditar.foto) {
-        this.previewImagen = `http://localhost:9000${this.productoAEditar.foto}`;
+        this.productoService.obtenerImagen(this.productoAEditar.foto).subscribe({
+          next: (blob: Blob) => {
+            const objectUrl = URL.createObjectURL(blob);
+            this.previewImagen = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+          },
+          error: () => {
+            this.previewImagen = 'assets/images/no-image.png';
+          }
+        });
       }
     }
   }
@@ -78,10 +87,9 @@ export class FormProductoComponent implements OnInit {
     const file = event.target.files[0];
     if (file) {
       this.imagenSeleccionada = file;
-      // Crear preview de la imagen
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.previewImagen = e.target.result;
+        this.previewImagen = this.sanitizer.bypassSecurityTrustUrl(e.target.result);
       };
       reader.readAsDataURL(file);
     }
@@ -114,7 +122,6 @@ export class FormProductoComponent implements OnInit {
       this.mostrarExito('Producto guardado correctamente');
     } catch (error: any) {
       this.mostrarError(error.error?.mensaje || 'Error al guardar el producto');
-      console.error('Error:', error);
     }
   }
 

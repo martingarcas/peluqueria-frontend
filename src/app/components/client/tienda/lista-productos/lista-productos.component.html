@@ -28,7 +28,7 @@
   <div class="productos-grid">
     <div class="producto-card" *ngFor="let producto of productosFiltrados">
       <div class="producto-img">
-        <img [src]="getImageUrl(producto.foto)" [alt]="producto.nombre">
+        <img [src]="producto.imagenUrl" [alt]="producto.nombre">
       </div>
       <div class="producto-nombre">{{ producto.nombre }}</div>
       <div class="producto-precio">{{ producto.precio | number:'1.2-2' }} €</div>

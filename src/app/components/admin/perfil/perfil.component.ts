@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UsuarioService } from 'src/app/services/usuario/usuario.service';
 import { UsuarioResponse } from 'src/app/models/usuarios/usuario-response';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
@@ -16,7 +16,6 @@ export class PerfilComponent implements OnInit {
   mensajeError: string = '';
   imagenPerfil: SafeUrl = 'assets/images/no-image.png';
   nuevaFoto: File | null = null;
-  imagenesCache = new Map<string, SafeUrl>();
 
   // Campos editables
   editUsuario: Partial<UsuarioResponse> = {};
@@ -24,7 +23,6 @@ export class PerfilComponent implements OnInit {
   constructor(
     private usuarioService: UsuarioService,
     private sanitizer: DomSanitizer,
-    private cdr: ChangeDetectorRef,
     private router: Router
   ) {}
 
@@ -33,7 +31,6 @@ export class PerfilComponent implements OnInit {
   }
 
   cargarUsuario(): void {
-    // Suponiendo que tienes el id del usuario en sessionStorage
     const storedLogin = sessionStorage.getItem('LOGIN');
     let userId = null;
     if (storedLogin) {
@@ -61,17 +58,10 @@ export class PerfilComponent implements OnInit {
       this.imagenPerfil = 'assets/images/no-image.png';
       return;
     }
-    if (this.imagenesCache.has(fotoPath)) {
-      this.imagenPerfil = this.imagenesCache.get(fotoPath)!;
-      return;
-    }
     this.usuarioService.obtenerImagen(fotoPath).subscribe({
       next: (blob: Blob) => {
         const objectUrl = URL.createObjectURL(blob);
-        const safeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
-        this.imagenesCache.set(fotoPath, safeUrl);
-        this.imagenPerfil = safeUrl;
-        this.cdr.detectChanges();
+        this.imagenPerfil = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
       },
       error: () => {
         this.imagenPerfil = 'assets/images/no-image.png';

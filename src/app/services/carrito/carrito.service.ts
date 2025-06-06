@@ -65,7 +65,7 @@ export class CarritoService {
         if (resp && resp.carrito) {
           try {
             const carritoArray = JSON.parse(resp.carrito);
-            count = carritoArray.reduce((acc: number, item: any) => acc + (item.cantidad || 0), 0);
+            count = carritoArray.reduce((acc: number, item: any) => acc + (item.cantidad || 0), 0); // acc = acumulador, item = item del carrito
           } catch (e) {
             count = 0;
           }

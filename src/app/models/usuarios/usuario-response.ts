@@ -1,5 +1,10 @@
 import { ContratoResponse } from './contrato-response';
+import { SafeUrl } from '@angular/platform-browser';
 
+/**
+ * Interfaz que representa la respuesta del servidor para un usuario
+ * Utilizada en componentes de listado y detalle de usuarios
+ */
 export interface UsuarioResponse {
   id: number;
   nombre: string;
@@ -9,6 +14,7 @@ export interface UsuarioResponse {
   direccion: string;
   role: string;
   foto?: string;
+  imagenUrl?: SafeUrl;
   fechaRegistro: string;
   expanded?: boolean;
   // Campos específicos para trabajadores
@@ -17,17 +23,3 @@ export interface UsuarioResponse {
   horarios?: { id: number; dia: string; horaInicio: string; horaFin: string }[];
 }
 
-export interface ServicioResponse {
-  id: number;
-  nombre: string;
-  descripcion: string;
-  precio: number;
-  duracion: string;
-}
-
-export interface HorarioResponse {
-  id: number;
-  dia: string;
-  horaInicio: string;
-  horaFin: string;
-}

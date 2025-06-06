@@ -53,7 +53,7 @@
           <!-- Fila principal -->
           <div class="table-row" (click)="toggleDetalles(usuario)" [class.expanded]="usuario.expanded">
             <div class="column foto" data-label="Foto:">
-              <img [src]="getImageUrl(usuario.foto)" alt="Foto de perfil">
+              <img [src]="usuario.imagenUrl" alt="Foto de perfil">
             </div>
             <div class="column nombre" data-label="Nombre:">
               {{ usuario.nombre }}

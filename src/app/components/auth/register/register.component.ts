@@ -14,16 +14,15 @@ export class RegisterComponent {
   registerForm: FormGroup;
   errorMessage: string = '';
   successMessage: string = '';
-  backendErrors: { [key: string]: string } = {};
 
   private passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   private emailPattern = /^[A-Za-z0-9+_.-]+@(.+)$/;
 
   constructor(
-    private fb: FormBuilder,
+    private formBuilder: FormBuilder,
     private registerService: RegisterService
   ) {
-    this.registerForm = this.fb.group({
+    this.registerForm = this.formBuilder.group({
       nombre: ['', [Validators.required, Validators.minLength(2)]],
       apellidos: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [
@@ -48,7 +47,6 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       this.errorMessage = '';
       this.successMessage = '';
-      this.backendErrors = {};
 
       const request = {
         ...this.registerForm.value,
@@ -89,17 +87,8 @@ export class RegisterComponent {
     }
   }
 
-  // Método helper para obtener errores del backend para un campo específico
-  getBackendError(fieldName: string): string | null {
-    const control = this.registerForm.get(fieldName);
-    if (control?.errors?.['serverError']) {
-      return control.errors['serverError'];
-    }
-    return null;
-  }
-
-  passwordMatchValidator(g: FormGroup) {
-    return g.get('password')?.value === g.get('confirmPassword')?.value
+  passwordMatchValidator(registroForm: FormGroup) {
+    return registroForm.get('password')?.value === registroForm.get('confirmPassword')?.value
       ? null : { 'mismatch': true };
   }
 

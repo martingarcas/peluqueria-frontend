@@ -1,26 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { PedidoService } from 'src/app/services/pedidos/pedidos.service';
 import { ProductoService } from 'src/app/services/producto/producto.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-
-interface PedidoProducto {
-  productoId: number;
-  nombreProducto: string;
-  cantidad: number;
-  precioUnitario: number;
-  foto?: string;
-}
-
-interface PedidoResponse {
-  id: number;
-  usuario?: { nombre: string; apellidos: string };
-  usuarioNombre?: string;
-  fechaPedido: string;
-  estado: string;
-  total: number;
-  lineasPedido: PedidoProducto[];
-  expanded?: boolean;
-}
+import { PedidoResponse } from 'src/app/models/pedidos/pedido.interface';
 
 @Component({
   selector: 'app-lista-pedidos',
@@ -37,12 +19,8 @@ export class ListaPedidosComponent implements OnInit {
   pedidoExpandido: number | null = null;
   estadosPosibles: string[] = ['PENDIENTE', 'ACEPTADO', 'ENVIADO', 'COMPLETADO', 'CANCELADO'];
 
-  imagenesCache = new Map<string, SafeUrl>();
-  imagenesProductoCache = new Map<number, SafeUrl>();
-
   constructor(
     private pedidoService: PedidoService,
-    private cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
     private productoService: ProductoService
   ) {}
@@ -54,12 +32,43 @@ export class ListaPedidosComponent implements OnInit {
   cargarPedidos(): void {
     this.pedidoService.obtenerTodosPedidos().subscribe({
       next: (response: { mensaje: string, pedidos: PedidoResponse[] }) => {
-        console.log('Pedidos recibidos:', response.pedidos);
         this.pedidos = response.pedidos;
         this.pedidosFiltrados = this.pedidos;
+        this.cargarImagenesProductos();
       },
       error: (error: any) => {
         this.mensajeError = error.error?.mensaje || 'Error al cargar los pedidos';
+      }
+    });
+  }
+
+  cargarImagenesProductos(): void {
+    this.pedidos.forEach(pedido => {
+      if (pedido.lineasPedido) {
+        pedido.lineasPedido.forEach(linea => {
+          if (linea.productoId) {
+            this.productoService.obtenerPorId(linea.productoId).subscribe({
+              next: (resp) => {
+                if (resp.producto?.foto) {
+                  this.productoService.obtenerImagen(resp.producto.foto).subscribe({
+                    next: (blob: Blob) => {
+                      const objectUrl = URL.createObjectURL(blob);
+                      linea.imagenUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+                    },
+                    error: () => {
+                      linea.imagenUrl = 'assets/images/no-image.png';
+                    }
+                  });
+                } else {
+                  linea.imagenUrl = 'assets/images/no-image.png';
+                }
+              },
+              error: () => {
+                linea.imagenUrl = 'assets/images/no-image.png';
+              }
+            });
+          }
+        });
       }
     });
   }
@@ -70,19 +79,15 @@ export class ListaPedidosComponent implements OnInit {
       return;
     }
     const term = this.searchTerm.toLowerCase();
-    this.pedidosFiltrados = this.pedidos.filter(p =>
-      (!this.estadoSeleccionado || p.estado === this.estadoSeleccionado) &&
+    this.pedidosFiltrados = this.pedidos.filter(pedido =>
+      (!this.estadoSeleccionado || pedido.estado === this.estadoSeleccionado) &&
       (
-        p.usuarioNombre?.toLowerCase().includes(term) ||
-        p.estado.toLowerCase().includes(term) ||
-        p.fechaPedido.toLowerCase().includes(term) ||
-        p.total.toString().includes(term)
+        pedido.usuarioNombre?.toLowerCase().includes(term) ||
+        pedido.estado.toLowerCase().includes(term) ||
+        pedido.fechaPedido.toLowerCase().includes(term) ||
+        pedido.total.toString().includes(term)
       )
     );
-  }
-
-  onEstadoChange(): void {
-    this.onSearchChange();
   }
 
   actualizarEstadoPedido(pedido: PedidoResponse, nuevoEstado: string): void {
@@ -102,37 +107,5 @@ export class ListaPedidosComponent implements OnInit {
 
   toggleDetalles(pedido: PedidoResponse): void {
     pedido.expanded = !pedido.expanded;
-    this.cdr.detectChanges();
-  }
-
-  getProductoImage(productoId: number): SafeUrl {
-    if (!productoId) return 'assets/images/no-image.png';
-    if (this.imagenesProductoCache.has(productoId)) {
-      return this.imagenesProductoCache.get(productoId)!;
-    }
-    this.productoService.obtenerPorId(productoId).subscribe({
-      next: (resp) => {
-        const fotoPath = resp.producto?.foto;
-        if (fotoPath) {
-          this.productoService.obtenerImagen(fotoPath).subscribe({
-            next: (blob: Blob) => {
-              const objectUrl = URL.createObjectURL(blob);
-              const safeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
-              this.imagenesProductoCache.set(productoId, safeUrl);
-              this.cdr.detectChanges();
-            },
-            error: () => {
-              this.imagenesProductoCache.set(productoId, 'assets/images/no-image.png');
-            }
-          });
-        } else {
-          this.imagenesProductoCache.set(productoId, 'assets/images/no-image.png');
-        }
-      },
-      error: () => {
-        this.imagenesProductoCache.set(productoId, 'assets/images/no-image.png');
-      }
-    });
-    return 'assets/images/no-image.png';
   }
 }

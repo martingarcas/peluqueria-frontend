@@ -1,10 +1,9 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { Component, OnInit } from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ProductoService } from 'src/app/services/producto/producto.service';
 import { CategoriaService } from 'src/app/services/categoria/categoria.service';
 import { ProductoResponse } from 'src/app/models/productos/producto-response';
 import { CategoriaResponse } from 'src/app/models/categorias/categoria-response';
-import { SecurityContext } from '@angular/core';
 import { CarritoService } from 'src/app/services/carrito/carrito.service';
 
 @Component({
@@ -12,7 +11,7 @@ import { CarritoService } from 'src/app/services/carrito/carrito.service';
   templateUrl: './lista-productos.component.html',
   styleUrls: ['./lista-productos.component.css']
 })
-export class ListaProductosComponent implements OnInit, OnDestroy {
+export class ListaProductosComponent implements OnInit {
   productos: ProductoResponse[] = [];
   productosFiltrados: ProductoResponse[] = [];
   categorias: CategoriaResponse[] = [];
@@ -20,16 +19,11 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
   textoBusqueda: string = '';
   mensajeError: string = '';
   mensajeExito: string = '';
-
-  // Cache de imágenes
-  imagenesCache = new Map<string, SafeUrl>();
-
   cantidades: { [productoId: number]: number } = {};
 
   constructor(
     private productoService: ProductoService,
     private categoriaService: CategoriaService,
-    private cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
     private carritoService: CarritoService
   ) { }
@@ -37,14 +31,6 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.cargarCategorias();
     this.cargarProductos();
-  }
-
-  ngOnDestroy(): void {
-    // Limpiar las URLs de las imágenes cacheadas
-    this.imagenesCache.forEach((safeUrl) => {
-      const url = this.sanitizer.sanitize(SecurityContext.URL, safeUrl);
-      if (url) URL.revokeObjectURL(url);
-    });
   }
 
   cargarCategorias(): void {
@@ -62,35 +48,28 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
     this.productoService.obtenerTodos().subscribe({
       next: (resp) => {
         this.productos = resp.productos;
+        // Cargar imágenes para cada producto
+        this.productos.forEach(producto => {
+          if (producto.foto) {
+            this.productoService.obtenerImagen(producto.foto).subscribe({
+              next: (blob: Blob) => {
+                const objectUrl = URL.createObjectURL(blob);
+                producto.imagenUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+              },
+              error: () => {
+                producto.imagenUrl = 'assets/images/no-image.png';
+              }
+            });
+          } else {
+            producto.imagenUrl = 'assets/images/no-image.png';
+          }
+        });
         this.filtrarProductos();
       },
       error: () => {
         this.mensajeError = 'No se pudieron cargar los productos';
       }
     });
-  }
-
-  getImageUrl(fotoPath: string | undefined): SafeUrl {
-    if (!fotoPath) return 'assets/images/no-image.png';
-
-    if (this.imagenesCache.has(fotoPath)) {
-      return this.imagenesCache.get(fotoPath)!;
-    }
-
-    this.productoService.obtenerImagen(fotoPath).subscribe({
-      next: (blob: Blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        const safeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
-        this.imagenesCache.set(fotoPath, safeUrl);
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error al cargar la imagen:', error);
-        this.imagenesCache.set(fotoPath, 'assets/images/no-image.png');
-      }
-    });
-
-    return 'assets/images/no-image.png';
   }
 
   filtrarProductos(): void {
@@ -119,17 +98,17 @@ export class ListaProductosComponent implements OnInit, OnDestroy {
     this.carritoService.getCarrito().subscribe({
       next: (carrito) => {
         const carritoArray = Array.isArray(carrito) ? carrito : [];
-        const existe = carritoArray.find((p: any) => p.productoId === producto.id);
+        const existe = carritoArray.find((itemCarrito: any) => itemCarrito.productoId === producto.id);
         let productosActualizados;
         if (existe) {
-          productosActualizados = carritoArray.map((p: any) =>
-            p.productoId === producto.id
-              ? { productoId: p.productoId, cantidad: p.cantidad + cantidadFinal }
-              : { productoId: p.productoId, cantidad: p.cantidad }
+          productosActualizados = carritoArray.map((itemCarrito: any) =>
+            itemCarrito.productoId === producto.id
+              ? { productoId: itemCarrito.productoId, cantidad: itemCarrito.cantidad + cantidadFinal }
+              : { productoId: itemCarrito.productoId, cantidad: itemCarrito.cantidad }
           );
         } else {
           productosActualizados = [
-            ...carritoArray.map((p: any) => ({ productoId: p.productoId, cantidad: p.cantidad })),
+            ...carritoArray.map((itemCarrito: any) => ({ productoId: itemCarrito.productoId, cantidad: itemCarrito.cantidad })),
             {
               productoId: producto.id,
               cantidad: cantidadFinal

@@ -1,5 +1,4 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
 import { ServicioResponse } from 'src/app/models/servicios/servicio-response';
 import { ServicioService } from 'src/app/services/servicio/servicio.service';
 
@@ -8,7 +7,7 @@ import { ServicioService } from 'src/app/services/servicio/servicio.service';
   templateUrl: './lista-servicios.component.html',
   styleUrls: ['./lista-servicios.component.css']
 })
-export class ListaServiciosComponent implements OnInit, OnDestroy {
+export class ListaServiciosComponent implements OnInit {
   servicios: ServicioResponse[] = [];
   serviciosFiltrados: ServicioResponse[] = [];
   mensajeError: string = '';
@@ -26,15 +25,10 @@ export class ListaServiciosComponent implements OnInit, OnDestroy {
 
   constructor(
     private servicioService: ServicioService,
-    private router: Router
   ) { }
 
   ngOnInit(): void {
     this.cargarServicios();
-  }
-
-  ngOnDestroy(): void {
-    // Limpieza si es necesaria
   }
 
   cargarServicios(): void {

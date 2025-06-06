@@ -86,10 +86,6 @@ export class ListaCitasComponent implements OnInit {
     );
   }
 
-  onEstadoChange(): void {
-    this.onSearchChange();
-  }
-
   actualizarEstado(citaId: number, nuevoEstado: string): void {
     if (!citaId || !nuevoEstado) {
       this.mostrarError('Datos de cita inválidos');

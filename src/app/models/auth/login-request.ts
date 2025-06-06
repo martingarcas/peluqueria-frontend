@@ -1,4 +1,8 @@
+/**
+ * Interfaz que representa los datos necesarios para iniciar sesión
+ * Utilizada en el formulario de login
+ */
 export interface LoginRequest {
-    email: string;      // User's email for login
-    password: string;   // User's password
+    email: string;
+    password: string;
 }

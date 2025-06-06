@@ -58,53 +58,6 @@ export class UsuarioService {
     );
   }
 
-  private crearTrabajador(usuario: UsuarioRequest): Observable<{ mensaje: string, usuario: UsuarioResponse }> {
-    const formData = new FormData();
-
-    // Datos básicos del usuario
-    const usuarioBlob = new Blob([JSON.stringify({
-      nombre: usuario.nombre,
-      apellidos: usuario.apellidos,
-      email: usuario.email,
-      password: usuario.password,
-      telefono: usuario.telefono,
-      direccion: usuario.direccion || '',
-      role: 'trabajador',
-      serviciosIds: usuario.serviciosIds,
-      horariosIds: usuario.horariosIds
-    })], {
-      type: 'application/json'
-    });
-
-    formData.append('usuario', usuarioBlob);
-
-    // Foto del usuario
-    if (usuario.foto) {
-      formData.append('foto', usuario.foto);
-    }
-
-    // Documento del contrato
-    if (usuario.contrato && usuario.contrato.documento) {
-      formData.append('documentoContrato', usuario.contrato.documento);
-    }
-
-    // Parámetros del contrato
-    if (usuario.contrato) {
-      formData.append('fechaInicioContrato', usuario.contrato.fechaInicio);
-      if (usuario.contrato.fechaFin) {
-        formData.append('fechaFinContrato', usuario.contrato.fechaFin);
-      }
-      formData.append('tipoContrato', usuario.contrato.tipoContrato);
-      formData.append('salario', usuario.contrato.salario.toString());
-    }
-
-    return this.http.post<{ mensaje: string, usuario: UsuarioResponse }>(
-      `${this.apiUrl}/trabajador`,
-      formData,
-      { headers: this.obtenerHeaders(true) }
-    );
-  }
-
   actualizar(id: number, usuario: FormData): Observable<{ mensaje: string, usuario: UsuarioResponse }> {
     // Log para depuración
     const formDataObj: any = {};

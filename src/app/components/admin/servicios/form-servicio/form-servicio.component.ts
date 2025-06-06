@@ -67,9 +67,8 @@ export class FormServicioComponent implements OnInit {
           this.mostrarExito('Servicio actualizado correctamente');
           this.onGuardar.emit(response.servicio);
         },
-        error: (error) => {
+        error: (error: { error?: { mensaje?: string } }) => {
           this.mostrarError(error.error?.mensaje || 'Error al actualizar el servicio');
-          console.error('Error:', error);
         }
       });
     } else {
@@ -78,9 +77,8 @@ export class FormServicioComponent implements OnInit {
           this.mostrarExito('Servicio creado correctamente');
           this.onGuardar.emit(response.servicio);
         },
-        error: (error) => {
+        error: (error: { error?: { mensaje?: string } }) => {
           this.mostrarError(error.error?.mensaje || 'Error al crear el servicio');
-          console.error('Error:', error);
         }
       });
     }

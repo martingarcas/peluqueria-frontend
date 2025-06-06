@@ -37,32 +37,14 @@ export class FormHorarioComponent implements OnInit {
       this.horarioForm.patchValue({
         nombre: this.horario.nombre,
         diaSemana: this.horario.diaSemana.toLowerCase(),
-        horaInicio: this.formatTimeForInput(this.horario.horaInicio),
-        horaFin: this.formatTimeForInput(this.horario.horaFin)
+        horaInicio: this.horario.horaInicio.substring(0, 5),
+        horaFin: this.horario.horaFin.substring(0, 5)
       });
     }
   }
 
   formatDiaSemana(dia: string): string {
     return dia.charAt(0).toUpperCase() + dia.slice(1);
-  }
-
-  formatTimeForInput(time: string): string {
-    // Si ya está en formato HH:mm, lo devolvemos tal cual
-    if (/^\d{2}:\d{2}$/.test(time)) return time;
-
-    // Si viene en otro formato, intentamos convertirlo
-    try {
-      const date = new Date(`2000-01-01T${time}`);
-      return date.toTimeString().substring(0, 5);
-    } catch {
-      return time;
-    }
-  }
-
-  formatTimeForBackend(time: string): string {
-    // Aseguramos que la hora esté en formato HH:mm:ss
-    return time + ':00';
   }
 
   private mostrarError(mensaje: string): void {
@@ -76,8 +58,8 @@ export class FormHorarioComponent implements OnInit {
       const horarioData: HorarioRequest = {
         nombre: formValues.nombre,
         diaSemana: formValues.diaSemana.toLowerCase(),
-        horaInicio: this.formatTimeForBackend(formValues.horaInicio),
-        horaFin: this.formatTimeForBackend(formValues.horaFin)
+        horaInicio: formValues.horaInicio + ':00',
+        horaFin: formValues.horaFin + ':00'
       };
 
       const operacion = this.modo === 'crear'

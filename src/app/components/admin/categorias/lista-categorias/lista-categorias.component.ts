@@ -1,6 +1,6 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { DomSanitizer } from '@angular/platform-browser';
 import { SecurityContext } from '@angular/core';
 import { CategoriaResponse } from 'src/app/models/categorias/categoria-response';
 import { CategoriaService } from 'src/app/services/categoria/categoria.service';
@@ -11,16 +11,13 @@ import { ProductoService } from 'src/app/services/producto/producto.service';
   templateUrl: './lista-categorias.component.html',
   styleUrls: ['./lista-categorias.component.css']
 })
-export class ListaCategoriasComponent implements OnInit, OnDestroy {
+export class ListaCategoriasComponent implements OnInit {
   categorias: CategoriaResponse[] = [];
   categoriasFiltradas: CategoriaResponse[] = [];
   mensajeError: string = '';
   mensajeExito: string = '';
   searchTerm: string = '';
   categoriasExpandidas: Set<number> = new Set();
-
-  // Cache de imágenes
-  imagenesCache = new Map<string, SafeUrl>();
 
   // Propiedades para el modal
   mostrarModalConfirmacion = false;
@@ -35,7 +32,6 @@ export class ListaCategoriasComponent implements OnInit, OnDestroy {
     private categoriaService: CategoriaService,
     private productoService: ProductoService,
     private router: Router,
-    private cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer
   ) { }
 
@@ -43,46 +39,39 @@ export class ListaCategoriasComponent implements OnInit, OnDestroy {
     this.cargarCategorias();
   }
 
-  ngOnDestroy(): void {
-    // Limpiar las URLs de las imágenes cacheadas
-    this.imagenesCache.forEach((safeUrl) => {
-      const url = this.sanitizer.sanitize(SecurityContext.URL, safeUrl);
-      if (url) URL.revokeObjectURL(url);
-    });
-  }
-
-  getImageUrl(fotoPath: string | undefined): SafeUrl {
-    if (!fotoPath) return 'assets/images/no-image.png';
-
-    if (this.imagenesCache.has(fotoPath)) {
-      return this.imagenesCache.get(fotoPath)!;
-    }
-
-    this.productoService.obtenerImagen(fotoPath).subscribe({
-      next: (blob: Blob) => {
-        const objectUrl = URL.createObjectURL(blob);
-        const safeUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
-        this.imagenesCache.set(fotoPath, safeUrl);
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error al cargar la imagen:', error);
-        this.imagenesCache.set(fotoPath, 'assets/images/no-image.png');
-      }
-    });
-
-    return 'assets/images/no-image.png';
-  }
-
   cargarCategorias(): void {
     this.categoriaService.obtenerTodas().subscribe({
       next: (response) => {
         this.categorias = response.categorias;
         this.categoriasFiltradas = this.categorias;
+        this.cargarImagenesProductos();
       },
       error: (error) => {
         this.mostrarError(error.error?.mensaje || 'Error al cargar las categorías');
         console.error('Error:', error);
+      }
+    });
+  }
+
+  cargarImagenesProductos(): void {
+    this.categorias.forEach(categoria => {
+      if (categoria.productos) {
+        categoria.productos.forEach(producto => {
+          if (producto.foto) {
+            this.productoService.obtenerImagen(producto.foto).subscribe({
+              next: (blob: Blob) => {
+                const objectUrl = URL.createObjectURL(blob);
+                producto.imagenUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+              },
+              error: (error) => {
+                console.error('Error al cargar la imagen:', error);
+                producto.imagenUrl = 'assets/images/no-image.png';
+              }
+            });
+          } else {
+            producto.imagenUrl = 'assets/images/no-image.png';
+          }
+        });
       }
     });
   }

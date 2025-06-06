@@ -14,7 +14,6 @@ import { FooterComponent as PublicFooterComponent } from './components/public/fo
 import { LoginComponent } from './components/auth/login/login.component';
 import { RegisterComponent } from './components/auth/register/register.component';
 import { AuthContainerComponent } from './components/auth/auth-container/auth-container.component';
-import { TestImageComponent } from './components/test-image/test-image.component';
 import { HomeComponent } from './components/client/home/home.component';
 import { ClientComponent } from './components/client/client.component';
 import { HeaderComponent as ClientHeaderComponent} from './components/client/header/header.component';
@@ -52,7 +51,6 @@ import { ListaPedidosComponent } from './components/admin/pedidos/lista-pedidos/
     LoginComponent,
     RegisterComponent,
     AuthContainerComponent,
-    TestImageComponent,
     HomeComponent,
     ClientComponent,
     ClientHeaderComponent,

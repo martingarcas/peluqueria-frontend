@@ -95,6 +95,7 @@ export class UsuarioService {
   obtenerImagen(rutaImagen: string): Observable<Blob> {
     const url = rutaImagen.startsWith('http') ? rutaImagen : `http://localhost:9000${rutaImagen}`;
     return this.http.get(url, {
+      headers: this.obtenerHeaders(),
       responseType: 'blob'
     });
   }

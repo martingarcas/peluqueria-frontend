@@ -169,12 +169,12 @@
   cursor: pointer;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
   box-shadow: 0 2px 8px 0 rgba(255, 215, 0, 0.07);
+  border: 1.5px solid #ffe082;
 }
 .btn-anadir:hover:enabled {
   background: #181818;
   color: #ffe082;
   box-shadow: 0 4px 18px 0 rgba(255, 215, 0, 0.18);
-  border: 1.5px solid #ffe082;
 }
 .btn-anadir:disabled {
   opacity: 0.6;

@@ -15,9 +15,6 @@ export class HomeComponent implements OnInit {
   productosDestacados: ProductoResponse[] = [];
   galeria: string[] = [];
   imagenActiva: number = 0;
-  animando: boolean = false;
-  animacion: '' | 'slide-left' | 'slide-right' = '';
-  direccion: 'izq' | 'der' = 'der';
 
   // Diccionario de iconos de servicios
   iconosServicios: { [nombre: string]: string } = {
@@ -92,37 +89,12 @@ export class HomeComponent implements OnInit {
     this.imagenActiva = 0;
   }
 
-  get anteriorIndex(): number {
-    return (this.imagenActiva - 1 + this.galeria.length) % this.galeria.length;
-  }
-
-  get siguienteIndex(): number {
-    return (this.imagenActiva + 1) % this.galeria.length;
-  }
-
-  get visibleImages(): string[] {
-    return [
-      this.galeria[this.anteriorIndex],
-      this.galeria[this.imagenActiva],
-      this.galeria[this.siguienteIndex]
-    ];
-  }
-
   avanzarGaleria(): void {
     this.imagenActiva = (this.imagenActiva + 1) % this.galeria.length;
   }
 
   retrocederGaleria(): void {
     this.imagenActiva = (this.imagenActiva - 1 + this.galeria.length) % this.galeria.length;
-  }
-
-  getTranslateX(): string {
-    const ancho = 180; // px
-    const gap = 24; // px
-    const offset = (ancho + gap) * this.imagenActiva;
-    const visibleWidth = (ancho + gap) * 3 - gap;
-    const centerOffset = (visibleWidth / 2) - (ancho / 2);
-    return `translateX(-${offset - centerOffset}px)`;
   }
 
   getIcono(servicio: ServicioResponse): string {
